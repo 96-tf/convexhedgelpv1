@@ -2493,6 +2493,12 @@
         defs.innerHTML = defsHTML;
         svg.appendChild(defs);
 
+        // Create a scrollable group container for all halftone rects
+        var scrollGroup = document.createElementNS(NS, 'g');
+        scrollGroup.id = 'halftone-scroll-group';
+        // Add smooth transform transition to eliminate stuttering and provide elegant easing
+        scrollGroup.style.cssText = 'will-change: transform; transition: transform 0.22s cubic-bezier(0.1, 0.88, 0.25, 0.97);';
+
         // One screen-space rect per logo section, filled with the dot pattern and masked by the respective logo mask
         for (var j = 0; j < COUNT; j++) {
             var r = document.createElementNS(NS, 'rect');
@@ -2502,16 +2508,18 @@
             r.setAttribute('height', VH);
             r.setAttribute('fill', 'url(#lhd)');
             r.setAttribute('mask', 'url(#lhm' + j + ')');
-            svg.appendChild(r);
+            scrollGroup.appendChild(r);
         }
+        svg.appendChild(scrollGroup);
 
         document.body.appendChild(svg);
 
-        // Scroll parallax: SVG viewBox moves at 0.45× scroll speed (pronounced, smooth layered depth)
+        // Hardware-accelerated smooth CSS parallax scroll handler
         var raf = null;
         function tick() {
+            // 0.45x factor: background shifts slower than content for deep parallax layout
             var py = window.scrollY * 0.45;
-            svg.setAttribute('viewBox', '0 ' + py + ' ' + VW + ' ' + VH);
+            scrollGroup.style.transform = 'translate3d(0, ' + (-py) + 'px, 0)';
             raf = null;
         }
         window.addEventListener('scroll', function() {
