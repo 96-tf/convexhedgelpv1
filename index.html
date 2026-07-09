@@ -220,7 +220,7 @@
             }
             100% {
                 stroke-dashoffset: 0;
-                fill: #C6FF33;
+                fill: var(--brand-accent);
             }
         }
         .draw-path {
@@ -236,7 +236,7 @@
         }
         .logo-container:hover svg path,
         .logo-container:hover svg polygon {
-            stroke: #C6FF33;
+            stroke: var(--brand-accent);
             stroke-width: 12px;
             stroke-dasharray: 2500;
             stroke-dashoffset: 2500;
@@ -254,7 +254,7 @@
             }
             100% {
                 stroke-dashoffset: 0;
-                fill: #C6FF33;
+                fill: var(--brand-accent);
             }
         }
         /* Loader 3D Tilt Animation */
@@ -306,8 +306,8 @@
             top: 0;
             width: 100%;
             height: 3px;
-            background: linear-gradient(to right, transparent, #C6FF33, transparent);
-            box-shadow: 0 0 10px #C6FF33, 0 0 4px #C6FF33;
+            background: linear-gradient(to right, transparent, var(--brand-accent), transparent);
+            box-shadow: 0 0 10px var(--brand-accent), 0 0 4px var(--brand-accent);
             opacity: 0;
             pointer-events: none;
             z-index: 50;
@@ -580,13 +580,13 @@
                     </div>
                     <div class="flex items-center space-x-3">
                         <div class="flex border border-brand-precision rounded overflow-hidden">
-                            <button class="bg-[#131F02] text-[#C6FF33] px-3 py-1 font-bold text-[10px] hover:bg-[#002613]">COLLAPSED</button>
+                            <button class="bg-brand-accentDim text-brand-accent px-3 py-1 font-bold text-[10px] hover:bg-[#002613]">COLLAPSED</button>
                             <button class="bg-[#1C1C21] text-brand-muted px-3 py-1 text-[10px] hover:text-white border-l border-brand-precision">EXPANDED</button>
                         </div>
                         <span class="text-brand-dim">|</span>
                         <button class="text-brand-muted hover:text-white text-[10px]">VIEW PYTHON</button>
                         <button class="border border-brand-precision px-3 py-1 rounded hover:bg-brand-precision text-[10px]">SAVE</button>
-                        <button class="bg-[#C6FF33] text-brand-void font-bold px-4 py-1 rounded hover:bg-white hover:shadow-[0_0_15px_rgba(255,165,0,0.4)] transition-all text-[10px]">▶ RUN</button>
+                        <button class="bg-brand-accent text-brand-void font-bold px-4 py-1 rounded hover:bg-white hover:shadow-[0_0_15px_rgba(255,165,0,0.4)] transition-all text-[10px]">▶ RUN</button>
                     </div>
                 </div>
 
@@ -634,9 +634,9 @@
                             </svg>
 
                             <!-- Node 1: Instrument -->
-                            <div id="node-instrument" class="node-card absolute top-[5%] left-[50%] -translate-x-1/2 z-20 w-56 bg-[#08080A]/90 border border-[#C6FF33] rounded shadow-lg p-3 text-center">
+                            <div id="node-instrument" class="node-card absolute top-[5%] left-[50%] -translate-x-1/2 z-20 w-56 bg-[#08080A]/90 border border-brand-accent rounded shadow-lg p-3 text-center">
                                 <div class="text-[9px] font-mono text-brand-dim uppercase tracking-wider mb-1">Root Ingest</div>
-                                <div class="text-xs font-mono text-[#C6FF33] font-bold">INSTRUMENT / DATA12 +</div>
+                                <div class="text-xs font-mono text-brand-accent font-bold">INSTRUMENT / DATA12 +</div>
                             </div>
 
                             <!-- Node 2: Features (Inactive) -->
@@ -647,39 +647,39 @@
                             </div>
 
                             <!-- Node 3: Structures -->
-                            <div id="node-structures" class="node-card absolute top-[26%] left-[72%] -translate-x-1/2 z-20 w-64 bg-[#08080A]/90 border border-[#C6FF33] p-3 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] font-mono">
-                                <div class="flex justify-between items-center text-[9px] text-[#C6FF33] mb-1.5 font-bold">
+                            <div id="node-structures" class="node-card absolute top-[26%] left-[72%] -translate-x-1/2 z-20 w-64 bg-[#08080A]/90 border border-brand-accent p-3 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] font-mono">
+                                <div class="flex justify-between items-center text-[9px] text-brand-accent mb-1.5 font-bold">
                                     <span>STRUCTURES</span>
-                                    <span class="bg-[#131F02] text-[#C6FF33] text-[8px] px-1 rounded">1 *</span>
+                                    <span class="bg-brand-accentDim text-brand-accent text-[8px] px-1 rounded">1 *</span>
                                 </div>
                                 <div class="text-xs text-white font-medium mb-2">strangle <span class="text-brand-dim">L111-119</span></div>
                                 <div class="flex flex-wrap gap-1">
                                     <span class="bg-[#1C1C21] text-brand-pure text-[8px] px-1.5 py-0.5 rounded border border-brand-precision">SHORT</span>
-                                    <span class="bg-[#131F02] text-[#C6FF33] text-[8px] px-1.5 py-0.5 rounded border border-[#C6FF33]/20">SELL CE</span>
-                                    <span class="bg-[#131F02] text-[#C6FF33] text-[8px] px-1.5 py-0.5 rounded border border-[#C6FF33]/20">SELL PE</span>
+                                    <span class="bg-brand-accentDim text-brand-accent text-[8px] px-1.5 py-0.5 rounded border border-brand-accent/20">SELL CE</span>
+                                    <span class="bg-brand-accentDim text-brand-accent text-[8px] px-1.5 py-0.5 rounded border border-brand-accent/20">SELL PE</span>
                                 </div>
                             </div>
 
                             <!-- Node 4: Signals -->
-                            <div id="node-signals" class="node-card absolute top-[48%] left-[50%] -translate-x-1/2 z-20 w-56 bg-[#08080A]/90 border border-[#C6FF33] px-3 py-2 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] text-center">
+                            <div id="node-signals" class="node-card absolute top-[48%] left-[50%] -translate-x-1/2 z-20 w-56 bg-[#08080A]/90 border border-brand-accent px-3 py-2 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] text-center">
                                 <div class="text-[9px] font-mono text-brand-dim uppercase tracking-wider mb-0.5">Control Gate</div>
-                                <div class="text-xs font-mono text-[#C6FF33] font-bold">SIGNALS / CONDITIONS</div>
+                                <div class="text-xs font-mono text-brand-accent font-bold">SIGNALS / CONDITIONS</div>
                             </div>
 
                             <!-- Node 5: Entry Signals -->
-                            <div id="node-entry" class="node-card absolute top-[68%] left-[15%] -translate-x-1/2 z-20 w-64 bg-[#08080A]/90 border border-[#C6FF33] p-3 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] font-mono text-[10px]">
-                                <div class="flex justify-between items-center text-[9px] text-[#C6FF33] mb-2 font-bold">
+                            <div id="node-entry" class="node-card absolute top-[68%] left-[15%] -translate-x-1/2 z-20 w-64 bg-[#08080A]/90 border border-brand-accent p-3 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] font-mono text-[10px]">
+                                <div class="flex justify-between items-center text-[9px] text-brand-accent mb-2 font-bold">
                                     <span>ENTRY SIGNALS</span>
-                                    <span class="bg-[#131F02] text-[#C6FF33] text-[8px] px-1 rounded">2 *</span>
+                                    <span class="bg-brand-accentDim text-brand-accent text-[8px] px-1 rounded">2 *</span>
                                 </div>
                                 <div class="space-y-2">
                                     <div>
                                         <div class="text-white font-medium">premium-target-entry <span class="text-brand-dim text-[9px]">L205-217</span></div>
-                                        <div class="text-[#C6FF33] text-[9px] mt-0.5">if ce and pe -> ENTRY</div>
+                                        <div class="text-brand-accent text-[9px] mt-0.5">if ce and pe -> ENTRY</div>
                                     </div>
                                     <div class="border-t border-brand-precision pt-1.5">
                                         <div class="text-white font-medium">premium-target-re-entry <span class="text-brand-dim text-[9px]">L205-217</span></div>
-                                        <div class="text-[#C6FF33] text-[9px] mt-0.5">if ce and pe -> ENTRY</div>
+                                        <div class="text-brand-accent text-[9px] mt-0.5">if ce and pe -> ENTRY</div>
                                     </div>
                                 </div>
                             </div>
@@ -700,19 +700,19 @@
                             </div>
 
                             <!-- Node 8: Exit Signals -->
-                            <div id="node-exit" class="node-card absolute top-[72%] left-[82%] -translate-x-1/2 z-20 w-72 bg-[#08080A]/90 border border-[#C6FF33] p-3 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] font-mono text-[10px]">
-                                <div class="flex justify-between items-center text-[9px] text-[#C6FF33] mb-2 font-bold">
+                            <div id="node-exit" class="node-card absolute top-[72%] left-[82%] -translate-x-1/2 z-20 w-72 bg-[#08080A]/90 border border-brand-accent p-3 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] font-mono text-[10px]">
+                                <div class="flex justify-between items-center text-[9px] text-brand-accent mb-2 font-bold">
                                     <span>EXIT SIGNALS</span>
-                                    <span class="bg-[#131F02] text-[#C6FF33] text-[8px] px-1 rounded">2 *</span>
+                                    <span class="bg-brand-accentDim text-brand-accent text-[8px] px-1 rounded">2 *</span>
                                 </div>
                                 <div class="space-y-2">
                                     <div>
                                         <div class="text-white font-medium flex justify-between"><span>time-exit</span><span class="text-brand-dim text-[9px]">L136-141</span></div>
-                                        <div class="text-[#C6FF33] text-[9px] mt-0.5">if ctx.positions and ctx.time >= <span id="exit-time-val" class="text-white font-bold transition-all duration-300">14:30</span> -> EXIT</div>
+                                        <div class="text-brand-accent text-[9px] mt-0.5">if ctx.positions and ctx.time >= <span id="exit-time-val" class="text-white font-bold transition-all duration-300">14:30</span> -> EXIT</div>
                                     </div>
                                     <div class="border-t border-brand-precision pt-1.5">
                                         <div class="text-white font-medium">premium-sl <span class="text-brand-dim text-[9px]">L166-171</span></div>
-                                        <div class="text-[#C6FF33] text-[9px] mt-0.5">if ce_hit or pe_hit -> EXIT</div>
+                                        <div class="text-brand-accent text-[9px] mt-0.5">if ce_hit or pe_hit -> EXIT</div>
                                     </div>
                                 </div>
                             </div>
@@ -728,7 +728,7 @@
                             <!-- Messages container -->
                             <div id="chat-history" class="flex-1 overflow-y-auto space-y-4 pr-1 text-brand-pure leading-relaxed">
                                 <div class="bg-brand-void/50 p-3 rounded border border-brand-precision">
-                                    <span class="text-[#C6FF33] font-bold">ECHO:</span> Hello, I have mapped your strangle strategy topology. Describe a change or use the suggestions below.
+                                    <span class="text-brand-accent font-bold">ECHO:</span> Hello, I have mapped your strangle strategy topology. Describe a change or use the suggestions below.
                                 </div>
                             </div>
 
@@ -736,13 +736,13 @@
                             <div class="space-y-2">
                                 <div class="text-[9px] text-brand-dim uppercase tracking-wider">SUGGESTIONS</div>
                                 <div class="flex flex-col space-y-1">
-                                    <button onclick="handleSuggestion('change the exit time to 14:38', '14:38')" class="text-left bg-brand-void hover:bg-[#131F02] border border-brand-precision hover:border-[#C6FF33]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#C6FF33] transition-all">
+                                    <button onclick="handleSuggestion('change the exit time to 14:38', '14:38')" class="text-left bg-brand-void hover:bg-brand-accentDim border border-brand-precision hover:border-brand-accent/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-brand-accent transition-all">
                                         &gt; change the exit time to 14:38
                                     </button>
-                                    <button onclick="handleSuggestion('change the exit time to 14:50', '14:50')" class="text-left bg-brand-void hover:bg-[#131F02] border border-brand-precision hover:border-[#C6FF33]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#C6FF33] transition-all">
+                                    <button onclick="handleSuggestion('change the exit time to 14:50', '14:50')" class="text-left bg-brand-void hover:bg-brand-accentDim border border-brand-precision hover:border-brand-accent/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-brand-accent transition-all">
                                         &gt; change the exit time to 14:50
                                     </button>
-                                    <button onclick="handleSuggestion('add delta hedge protection', 'hedge')" class="text-left bg-brand-void hover:bg-[#131F02] border border-brand-precision hover:border-[#C6FF33]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#C6FF33] transition-all">
+                                    <button onclick="handleSuggestion('add delta hedge protection', 'hedge')" class="text-left bg-brand-void hover:bg-brand-accentDim border border-brand-precision hover:border-brand-accent/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-brand-accent transition-all">
                                         &gt; add delta hedge protection
                                     </button>
                                 </div>
@@ -752,7 +752,7 @@
                             <div class="pt-3 border-t border-brand-precision">
                                 <div class="flex items-center space-x-2 bg-brand-void p-1 rounded border border-brand-precision">
                                     <input id="chat-input" type="text" placeholder="Describe a change..." class="w-full bg-transparent border-none text-[10px] text-brand-pure focus:outline-none px-2 py-1">
-                                    <button onclick="sendChatMessage()" class="bg-[#C6FF33] text-brand-void px-3 py-1 rounded text-[10px] font-bold hover:bg-white transition-all">SEND</button>
+                                    <button onclick="sendChatMessage()" class="bg-brand-accent text-brand-void px-3 py-1 rounded text-[10px] font-bold hover:bg-white transition-all">SEND</button>
                                 </div>
                             </div>
                         </div>
@@ -777,12 +777,12 @@
                 <!-- Dashboard Top Bar: Name + Date -->
                 <div class="bg-[#0B0A0D] px-6 py-4 border-b border-brand-precision flex flex-col md:flex-row items-center justify-between text-xs font-mono text-brand-muted gap-4">
                     <div class="flex items-center space-x-3">
-                        <span class="text-[#C6FF33] font-bold">← BACKTEST RESULTS</span>
+                        <span class="text-brand-accent font-bold">← BACKTEST RESULTS</span>
                         <span class="text-brand-dim">/</span>
                         <span class="text-white uppercase font-bold text-[10px]">DAILY_STRADDLE_V1 [HYPOTHETICAL HISTORICAL SIMULATION]</span>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <button class="bg-[#131F02] text-[#C6FF33] px-3 py-1 rounded border border-[#C6FF33]/20 hover:bg-[#002613]">RUN HISTORY (1)</button>
+                        <button class="bg-brand-accentDim text-brand-accent px-3 py-1 rounded border border-brand-accent/20 hover:bg-[#002613]">RUN HISTORY (1)</button>
                         <button class="bg-[#1C1C21] text-brand-pure px-3 py-1 rounded border border-brand-precision hover:bg-brand-precision">PARAMS *</button>
                     </div>
                 </div>
@@ -838,7 +838,7 @@
                     <!-- Tab Headers -->
                     <div class="px-6 py-2 border-b border-brand-precision bg-[#0B0A0D] flex items-center justify-between text-xs font-mono">
                         <div class="flex space-x-6">
-                            <span class="text-[#C6FF33] border-b-2 border-[#C6FF33] py-2 font-bold cursor-pointer">OVERVIEW</span>
+                            <span class="text-brand-accent border-b-2 border-brand-accent py-2 font-bold cursor-pointer">OVERVIEW</span>
                             <span class="text-brand-muted py-2 hover:text-white cursor-pointer transition-colors">DAYLOG</span>
                             <span class="text-brand-muted py-2 hover:text-white cursor-pointer transition-colors">TRADES</span>
                             <span class="text-brand-muted py-2 hover:text-white cursor-pointer transition-colors">DIAGNOSTICS</span>
@@ -852,7 +852,7 @@
                         <div class="lg:col-span-8 p-6 border-r border-brand-precision flex flex-col justify-between">
                             <div class="flex justify-between items-center text-[10px] font-mono text-brand-muted mb-4">
                                 <div class="flex items-center space-x-4">
-                                    <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-[#C6FF33] mr-1.5"></span>EQUITY (₹1,00,00,000 ANCHOR)</span>
+                                    <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-brand-accent mr-1.5"></span>EQUITY (₹1,00,00,000 ANCHOR)</span>
                                     <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-brand-down/10 border border-brand-down/30 mr-1.5"></span>DRAWDOWN</span>
                                 </div>
                                 <div>Hover to inspect points</div>
@@ -886,7 +886,7 @@
                                 
                                 <!-- Floating Tooltip HTML -->
                                 <div id="chart-tooltip" class="absolute hidden bg-brand-elevate border border-brand-precision p-3 rounded font-mono text-[10px] shadow-2xl z-30 pointer-events-none text-white w-48">
-                                    <div class="text-[#C6FF33] font-bold mb-1" id="tooltip-date">Aug 2025</div>
+                                    <div class="text-brand-accent font-bold mb-1" id="tooltip-date">Aug 2025</div>
                                     <div class="flex justify-between">
                                         <span class="text-brand-muted">Equity:</span>
                                         <span class="font-bold" id="tooltip-eq">₹15,195,633.16</span>
@@ -934,7 +934,7 @@
                 <!-- KDE Card -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-5 flex flex-col justify-between min-h-[180px]">
                     <div>
-                        <div class="font-mono text-[9px] text-[#C6FF33] mb-3 uppercase">[ KDE RETURNS DISTRIBUTION ]</div>
+                        <div class="font-mono text-[9px] text-brand-accent mb-3 uppercase">[ KDE RETURNS DISTRIBUTION ]</div>
                         <div class="h-20 w-full relative">
                             <!-- SVG KDE curve -->
                             <svg class="w-full h-full overflow-visible" stroke="#00E676" stroke-width="1.5" fill="none">
@@ -953,7 +953,7 @@
                 <!-- Day Extremes Card -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-5 flex flex-col justify-between min-h-[180px]">
                     <div>
-                        <div class="font-mono text-[9px] text-[#C6FF33] mb-3 uppercase">[ DAY EXTREMES ]</div>
+                        <div class="font-mono text-[9px] text-brand-accent mb-3 uppercase">[ DAY EXTREMES ]</div>
                         <div class="space-y-2 text-xs font-mono">
                             <div class="flex justify-between"><span class="text-brand-muted">Max Gain:</span><span class="text-brand-accent">+₹2,45,210.00</span></div>
                             <div class="flex justify-between"><span class="text-brand-muted">Max Loss:</span><span class="text-brand-down">-₹1,84,330.00</span></div>
@@ -966,7 +966,7 @@
                 <!-- Activity / Diagnostics -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-5 flex flex-col justify-between min-h-[180px]">
                     <div>
-                        <div class="font-mono text-[9px] text-[#C6FF33] mb-3 uppercase">[ ENGINE STATUS ]</div>
+                        <div class="font-mono text-[9px] text-brand-accent mb-3 uppercase">[ ENGINE STATUS ]</div>
                         <div class="text-xs font-mono space-y-2">
                             <div class="flex justify-between"><span class="text-brand-muted">Simulation Nodes:</span><span class="text-white">Active (24)</span></div>
                             <div class="flex justify-between"><span class="text-brand-muted">Precision Tolerance:</span><span class="text-brand-accent">Pass</span></div>
@@ -1029,7 +1029,7 @@
     <!-- Volume & Trader Longevity Callout Section -->
     <section class="scroll-reveal py-20 border-b border-brand-precision bg-transparent relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="bg-brand-elevate border border-[#C6FF33]/30 rounded p-12 relative overflow-hidden shadow-[0_0_50px_-20px_rgba(255,165,0,0.15)]">
+            <div class="bg-brand-elevate border border-brand-accent/30 rounded p-12 relative overflow-hidden shadow-[0_0_50px_-20px_rgba(255,165,0,0.15)]">
                 <!-- Radial background spotlight -->
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-accent/5 blur-[80px] pointer-events-none"></div>
                 
@@ -1473,14 +1473,14 @@
             // Simulate thinking
             const thinkingMsg = document.createElement('div');
             thinkingMsg.className = 'bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse';
-            thinkingMsg.innerHTML = `<span class="text-[#C6FF33] font-bold">ECHO:</span> Evaluating instruction...`;
+            thinkingMsg.innerHTML = `<span class="text-brand-accent font-bold">ECHO:</span> Evaluating instruction...`;
             history.appendChild(thinkingMsg);
             history.scrollTop = history.scrollHeight;
 
             setTimeout(() => {
                 history.removeChild(thinkingMsg);
                 const response = document.createElement('div');
-                response.className = 'bg-brand-void/50 p-3 rounded border border-[#C6FF33]/20';
+                response.className = 'bg-brand-void/50 p-3 rounded border border-brand-accent/20';
                 
                 if (valUpdate === 'hedge' || text.toLowerCase().includes('hedge')) {
                     // Activate Hedging Node!
@@ -1502,7 +1502,7 @@
                     // Redraw paths
                     drawStrategyLines();
 
-                    response.innerHTML = `<span class="text-[#C6FF33] font-bold">ECHO:</span> Dynamic Hedging rules compiled successfully. Added <code>delta_neutral_hedge</code> at L280. Re-routed execution flow through HEDGING node.`;
+                    response.innerHTML = `<span class="text-brand-accent font-bold">ECHO:</span> Dynamic Hedging rules compiled successfully. Added <code>delta_neutral_hedge</code> at L280. Re-routed execution flow through HEDGING node.`;
                 } else if (valUpdate && valUpdate !== 'hedge') {
                     // Trigger exit-time visual update
                     const exitVal = document.getElementById('exit-time-val');
@@ -1510,7 +1510,7 @@
                     exitVal.innerText = valUpdate;
                     
                     // Flash effect
-                    exitVal.className = 'text-black bg-[#C6FF33] px-1 rounded font-bold';
+                    exitVal.className = 'text-black bg-brand-accent px-1 rounded font-bold';
                     setTimeout(() => {
                         exitVal.className = 'text-white font-bold transition-all duration-300';
                     }, 1000);
@@ -1518,9 +1518,9 @@
                     // Redraw paths
                     drawStrategyLines();
 
-                    response.innerHTML = `<span class="text-[#C6FF33] font-bold">ECHO:</span> Patched cell metadata. <code>exit_time</code> updated: <code>${oldVal}</code> → <code>${valUpdate}</code>. Recompiling strategy node... Done.`;
+                    response.innerHTML = `<span class="text-brand-accent font-bold">ECHO:</span> Patched cell metadata. <code>exit_time</code> updated: <code>${oldVal}</code> → <code>${valUpdate}</code>. Recompiling strategy node... Done.`;
                 } else {
-                    response.innerHTML = `<span class="text-[#C6FF33] font-bold">ECHO:</span> Parameter update logged. Node instructions compiled successfully. No anomalies detected.`;
+                    response.innerHTML = `<span class="text-brand-accent font-bold">ECHO:</span> Parameter update logged. Node instructions compiled successfully. No anomalies detected.`;
                 }
                 history.appendChild(response);
                 history.scrollTop = history.scrollHeight;
@@ -1791,7 +1791,7 @@
             function resetDemoState() {
                 chatHistory.innerHTML = `
                     <div class="bg-brand-void/50 p-3 rounded border border-brand-precision transition-all duration-300">
-                        <span class="text-[#C6FF33] font-bold">ECHO:</span> Hello, I have mapped your strangle strategy topology. Describe a change or use the suggestions below.
+                        <span class="text-brand-accent font-bold">ECHO:</span> Hello, I have mapped your strangle strategy topology. Describe a change or use the suggestions below.
                     </div>
                 `;
                 nodes.forEach(node => {
@@ -1836,7 +1836,7 @@
 
                 if (exitTimeVal) {
                     exitTimeVal.innerText = '14:30';
-                    exitTimeVal.classList.remove('text-[#C6FF33]');
+                    exitTimeVal.classList.remove('text-brand-accent');
                 }
 
                 // Reset backdrop logo to full glowing visibility
@@ -1858,7 +1858,7 @@
                     : "bg-brand-precision/30 p-2.5 rounded text-brand-muted text-right transition-all duration-300";
                 
                 div.innerHTML = isEcho 
-                    ? `<span class="text-[#C6FF33] font-bold">ECHO:</span> ${text}`
+                    ? `<span class="text-brand-accent font-bold">ECHO:</span> ${text}`
                     : `<span class="text-white font-medium">YOU:</span> ${text}`;
                 
                 chatHistory.appendChild(div);
@@ -1897,7 +1897,7 @@
 
                         const thinking = document.createElement('div');
                         thinking.className = "bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse";
-                        thinking.innerHTML = `<span class="text-[#C6FF33] font-bold">ECHO:</span> Compiling strangle parameters...`;
+                        thinking.innerHTML = `<span class="text-brand-accent font-bold">ECHO:</span> Compiling strangle parameters...`;
                         chatHistory.appendChild(thinking);
                         chatHistory.scrollTop = chatHistory.scrollHeight;
 
@@ -1968,7 +1968,7 @@
 
                     const thinking = document.createElement('div');
                     thinking.className = "bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse";
-                    thinking.innerHTML = `<span class="text-[#C6FF33] font-bold">ECHO:</span> Appending hedging overlay...`;
+                    thinking.innerHTML = `<span class="text-brand-accent font-bold">ECHO:</span> Appending hedging overlay...`;
                     chatHistory.appendChild(thinking);
                     chatHistory.scrollTop = chatHistory.scrollHeight;
 
@@ -2020,7 +2020,7 @@
 
                     const thinking = document.createElement('div');
                     thinking.className = "bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse";
-                    thinking.innerHTML = `<span class="text-[#C6FF33] font-bold">ECHO:</span> Updating exit parameter...`;
+                    thinking.innerHTML = `<span class="text-brand-accent font-bold">ECHO:</span> Updating exit parameter...`;
                     chatHistory.appendChild(thinking);
                     chatHistory.scrollTop = chatHistory.scrollHeight;
 
@@ -2030,8 +2030,8 @@
 
                         if (exitTimeVal) {
                             exitTimeVal.innerText = '14:38';
-                            exitTimeVal.classList.add('text-[#C6FF33]');
-                            setTimeout(() => exitTimeVal.classList.remove('text-[#C6FF33]'), 1500);
+                            exitTimeVal.classList.add('text-brand-accent');
+                            setTimeout(() => exitTimeVal.classList.remove('text-brand-accent'), 1500);
                         }
 
                         setTimeout(step1, 6500);
@@ -2257,7 +2257,7 @@
     </script>
 
     <!-- Floating Quant HUD Cursor Overlay -->
-    <div id="quant-hud" class="fixed pointer-events-none z-50 font-mono text-[7px] text-[#C6FF33] opacity-0 transition-opacity duration-200 bg-[#08080A]/95 border border-[#1C1C21] px-1.5 py-0.5 rounded shadow-[0_0_15px_rgba(255,165,0,0.08)]">
+    <div id="quant-hud" class="fixed pointer-events-none z-50 font-mono text-[7px] text-brand-accent opacity-0 transition-opacity duration-200 bg-[#08080A]/95 border border-[#1C1C21] px-1.5 py-0.5 rounded shadow-[0_0_15px_rgba(255,165,0,0.08)]">
         X: <span id="hud-x">0</span> Y: <span id="hud-y">0</span> <span class="text-brand-dim">/</span> δ: <span id="hud-delta">0.00</span> <span class="text-brand-dim">/</span> IV: <span id="hud-iv">12.0%</span>
     </div>
 
@@ -2431,7 +2431,7 @@
     </script>
 
     <!-- Floating Quant HUD Cursor Overlay -->
-    <div id="quant-hud" class="fixed pointer-events-none z-50 font-mono text-[7px] text-[#C6FF33] opacity-0 transition-opacity duration-200 bg-[#08080A]/95 border border-[#1C1C21] px-1.5 py-0.5 rounded shadow-[0_0_15px_rgba(255,165,0,0.08)]">
+    <div id="quant-hud" class="fixed pointer-events-none z-50 font-mono text-[7px] text-brand-accent opacity-0 transition-opacity duration-200 bg-[#08080A]/95 border border-[#1C1C21] px-1.5 py-0.5 rounded shadow-[0_0_15px_rgba(255,165,0,0.08)]">
         X: <span id="hud-x">0</span> Y: <span id="hud-y">0</span> <span class="text-brand-dim">/</span> δ: <span id="hud-delta">0.00</span> <span class="text-brand-dim">/</span> IV: <span id="hud-iv">12.0%</span>
     </div>
 
