@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        window.addEventListener('error', function(e) {
+            var errDiv = document.createElement('div');
+            errDiv.id = 'debug-error-banner';
+            errDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:999999;background:rgba(255,0,0,0.95);color:white;font-family:monospace;padding:15px;font-size:12px;line-height:1.4;word-break:break-all;border-bottom:3px solid darkred;';
+            errDiv.innerHTML = '<strong>[JS RUNTIME ERROR]</strong><br>' + e.message + '<br>Source: ' + e.filename + ':' + e.lineno + ':' + e.colno + '<br>Stack: ' + (e.error ? e.error.stack : 'N/A');
+            document.body.appendChild(errDiv);
+        });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 652' fill='%23FFA500'%3E%3Cpath d='M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z'/%3E%3Cpolygon points='336,165 618,165 483,0'/%3E%3Cpolygon points='785,26 1023,26 493,645 389,452'/%3E%3Cpolygon points='716,381 806,380 792,425 680,426'/%3E%3Cpath d='M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z'/%3E%3C/svg%3E">
