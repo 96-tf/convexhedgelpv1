@@ -2,6 +2,61 @@
 <html lang="en">
 <head>
     <script>
+        (function initTheme() {
+            const activeTheme = localStorage.getItem('convex-theme') || 'lime';
+            let accentColor = '#C6FF33';
+            let accentDim = '#131F02';
+            let glowRgb = '198, 255, 51';
+            
+            if (activeTheme === 'amber') {
+                accentColor = '#FFA500';
+                accentDim = '#1A1200';
+                glowRgb = '255, 165, 0';
+            }
+            
+            // Inject CSS variables to propagate theme color dynamically to all SVG vector assets
+            const style = document.createElement('style');
+            style.innerHTML = `
+                :root {
+                    --brand-accent: ${accentColor};
+                    --brand-accent-dim: ${accentDim};
+                    --brand-accent-rgb: ${glowRgb};
+                }
+                .bento-glow:hover {
+                    border-color: rgba(${glowRgb}, 0.05) !important;
+                    box-shadow: 0 10px 40px -10px rgba(${glowRgb}, 0.12) !important;
+                }
+                .node-card.glowing {
+                    border-color: ${accentColor} !important;
+                    box-shadow: 0 0 25px rgba(${glowRgb}, 0.25) !important;
+                }
+                .node-aura {
+                    box-shadow: 0 0 30px -5px rgba(${glowRgb}, 0.25) !important;
+                }
+                #quant-hud {
+                    color: ${accentColor} !important;
+                    border-color: rgba(${glowRgb}, 0.1) !important;
+                    box-shadow: 0 0 15px rgba(${glowRgb}, 0.08) !important;
+                }
+                #mouse-glow {
+                    background: radial-gradient(circle, rgba(${glowRgb}, 0.04) 0%, transparent 70%) !important;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            
+            // Set Favicon color based on theme
+            const favicon = document.querySelector('link[rel="icon"]');
+            if (favicon) {
+                const fillHex = activeTheme === 'amber' ? 'FFA500' : 'C6FF33';
+                favicon.href = favicon.href.replace(/fill='%23[0-9a-fA-F]{6}'/, `fill='%23${fillHex}'`);
+            }
+
+            window.themeAccent = accentColor;
+            window.themeAccentDim = accentDim;
+        })();
+    </script>
+    <script>
         window.addEventListener('error', function(e) {
             var errDiv = document.createElement('div');
             errDiv.id = 'debug-error-banner';
@@ -24,11 +79,11 @@
                             void: '#08080A',
                             elevate: '#121215',
                             precision: '#1C1C21',
-                            accent: '#C6FF33',
+                            accent: window.themeAccent || '#C6FF33',
                             pure: '#F5F5F7',
                             muted: '#8E8E93',
                             dim: '#48484A',
-                            accentDim: '#131F02',
+                            accentDim: window.themeAccentDim || '#131F02',
                             up: '#00E676',
                             down: '#E11D48'
                         }
@@ -328,7 +383,7 @@
         <div class="flex flex-col items-center max-w-sm w-full px-6 relative z-10">
             <!-- Animated SVG Logo -->
             <div id="loader-logo-wrap" class="relative mb-8 transition-transform duration-[1200ms] cubic-bezier(0.85, 0, 0.15, 1) transform">
-                <svg id="loader-logo" class="w-24 h-16 text-brand-accent" viewBox="0 0 1024 652" fill="none" stroke="#C6FF33" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="loader-logo" class="w-24 h-16 text-brand-accent" viewBox="0 0 1024 652" fill="none" stroke="var(--brand-accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
                     <g class="loader-logo-group">
                         <!-- Shape 1: Left C-loop -->
                         <path class="draw-path" d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
@@ -570,12 +625,12 @@
                                 <path id="path-sign-exit" stroke="#1C1C21" stroke-width="1.5" fill="none" />
 
                                 <!-- Active neon glow lines (animated) -->
-                                <path id="glow-inst-struct" stroke="#C6FF33" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
-                                <path id="glow-struct-sign" stroke="#C6FF33" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
-                                <path id="glow-sign-entry" stroke="#C6FF33" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
-                                <path id="glow-sign-exit" stroke="#C6FF33" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
-                                <path id="glow-sign-hedge" stroke="#C6FF33" stroke-width="1.5" fill="none" class="glow-line opacity-0 transition-opacity duration-500" />
-                                <path id="glow-hedge-exit" stroke="#C6FF33" stroke-width="1.5" fill="none" class="glow-line opacity-0 transition-opacity duration-500" />
+                                <path id="glow-inst-struct" stroke="var(--brand-accent)" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-struct-sign" stroke="var(--brand-accent)" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-sign-entry" stroke="var(--brand-accent)" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-sign-exit" stroke="var(--brand-accent)" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-sign-hedge" stroke="var(--brand-accent)" stroke-width="1.5" fill="none" class="glow-line opacity-0 transition-opacity duration-500" />
+                                <path id="glow-hedge-exit" stroke="var(--brand-accent)" stroke-width="1.5" fill="none" class="glow-line opacity-0 transition-opacity duration-500" />
                             </svg>
 
                             <!-- Node 1: Instrument -->
@@ -885,7 +940,7 @@
                             <svg class="w-full h-full overflow-visible" stroke="#00E676" stroke-width="1.5" fill="none">
                                 <path d="M 0,60 Q 40,60 80,56 T 120,40 T 160,8 T 200,48 T 240,56 T 280,60" class="drop-shadow-[0_0_4px_rgba(0,230,118,0.35)]" />
                                 <line x1="0" y1="60" x2="280" y2="60" stroke="#1C1C21" stroke-width="1" />
-                                <line x1="160" y1="0" x2="160" y2="64" stroke="#131F02" stroke-width="1" stroke-dasharray="2 2" />
+                                <line x1="160" y1="0" x2="160" y2="64" stroke="var(--brand-accent-dim)" stroke-width="1" stroke-dasharray="2 2" />
                             </svg>
                         </div>
                     </div>
@@ -1037,9 +1092,9 @@
                     <rect x="50" y="34" width="40" height="6" fill="#00E676" opacity="0.8" />
                     
                     <!-- 21,500 Strike (Gamma Flip Crossing) -->
-                    <text x="5" y="56" fill="#C6FF33" font-family="monospace" font-weight="bold" font-size="6">21,500</text>
-                    <circle cx="50" cy="53" r="2.5" fill="#08080A" stroke="#C6FF33" stroke-width="1" />
-                    <line x1="5" y1="53" x2="95" y2="53" stroke="#C6FF33" stroke-width="0.5" stroke-dasharray="2 2" />
+                    <text x="5" y="56" fill="var(--brand-accent)" font-family="monospace" font-weight="bold" font-size="6">21,500</text>
+                    <circle cx="50" cy="53" r="2.5" fill="#08080A" stroke="var(--brand-accent)" stroke-width="1" />
+                    <line x1="5" y1="53" x2="95" y2="53" stroke="var(--brand-accent)" stroke-width="0.5" stroke-dasharray="2 2" />
                     
                     <!-- 21,400 Strike (Short GEX) -->
                     <text x="5" y="74" fill="#48484A" font-family="monospace" font-size="6">21,400</text>
@@ -2482,7 +2537,7 @@
         var defsHTML = ''
             // Dot grid pattern - clean, readable, in screen pixel space
             + '<pattern id="lhd" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">'
-            + '<circle cx="8" cy="8" r="2.2" fill="#C6FF33"/>'
+            + '<circle cx="8" cy="8" r="2.2" fill="var(--brand-accent)"/>'
             + '</pattern>'
             // Radial gradient inside the native logo coordinate space
             + '<radialGradient id="logoGrad" gradientUnits="userSpaceOnUse" cx="512" cy="326" r="480">'
@@ -2551,5 +2606,78 @@
         tick();
     })();
     </script>
+
+
+    <!-- Floating Identity Theme Toggle Banner (Monospace/Terminal Style) -->
+    <div id="theme-banner" class="fixed bottom-6 right-6 z-50 font-mono text-[9px] bg-[#08080A]/95 border border-[#1C1C21] p-3.5 rounded shadow-[0_0_20px_rgba(198,255,51,0.08)] text-white w-52 leading-relaxed transition-all duration-300">
+        <div class="text-brand-accent font-bold mb-2 flex items-center justify-between">
+            <span>┌ SYS_THEME_SELECT</span>
+            <button onclick="closeThemeBanner()" class="text-brand-muted hover:text-white font-sans text-xs flex items-center justify-center w-4 h-4 bg-brand-precision/50 hover:bg-brand-precision rounded">×</button>
+        </div>
+        <p class="text-brand-muted mb-3 leading-normal">
+            A/B testing active brand identities. Select system theme variant:
+        </p>
+        <div class="space-y-2 mb-3">
+            <label class="flex items-center gap-2 cursor-pointer group">
+                <input type="radio" name="sys-theme" value="lime" class="hidden" onchange="switchTheme('lime')">
+                <span class="w-2.5 h-2.5 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-accent" id="opt-lime">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-accent hidden" id="dot-lime"></span>
+                </span>
+                <span class="group-hover:text-brand-accent">LIME_CORE (#C6FF33)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer group">
+                <input type="radio" name="sys-theme" value="amber" class="hidden" onchange="switchTheme('amber')">
+                <span class="w-2.5 h-2.5 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-accent" id="opt-amber">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-accent hidden" id="dot-amber"></span>
+                </span>
+                <span class="group-hover:text-brand-accent">AMBER_CORE (#FFA500)</span>
+            </label>
+        </div>
+        <div class="text-[7px] text-brand-dim mt-2 pt-2 border-t border-brand-precision flex justify-between">
+            <span>CONVEX_SYS_OS</span>
+            <span>STATUS: READY</span>
+        </div>
+    </div>
+
+    <script>
+        function switchTheme(color) {
+            localStorage.setItem('convex-theme', color);
+            // Quick fade-out effect before reload
+            document.getElementById('theme-banner').style.opacity = '0';
+            setTimeout(() => {
+                window.location.reload();
+            }, 150);
+        }
+
+        function closeThemeBanner() {
+            const banner = document.getElementById('theme-banner');
+            if (banner) {
+                banner.classList.add('pointer-events-none', 'opacity-0');
+                localStorage.setItem('convex-theme-banner-closed', 'true');
+            }
+        }
+
+        // Initialize UI indicators inside theme toggle widget
+        (function initThemeIndicators() {
+            const currentTheme = localStorage.getItem('convex-theme') || 'lime';
+            
+            // Check correct radio input and show indicator dot
+            const radio = document.querySelector(`input[name="sys-theme"][value="${currentTheme}"]`);
+            if (radio) radio.checked = true;
+
+            const activeDot = document.getElementById(`dot-${currentTheme}`);
+            if (activeDot) activeDot.classList.remove('hidden');
+            
+            const activeCircle = document.getElementById(`opt-${currentTheme}`);
+            if (activeCircle) activeCircle.classList.add('border-brand-accent');
+
+            // Hide banner if closed previously
+            if (localStorage.getItem('convex-theme-banner-closed') === 'true') {
+                const banner = document.getElementById('theme-banner');
+                if (banner) banner.style.display = 'none';
+            }
+        })();
+    </script>
+
 </body>
 </html>
