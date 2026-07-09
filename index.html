@@ -2665,13 +2665,13 @@
         svg.setAttribute('aria-hidden', 'true');
         svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
         svg.setAttribute('preserveAspectRatio', 'none');
-        svg.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;opacity:0.25;'; // increased opacity slightly for better visibility
+        svg.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;opacity:0.10;';
 
         // Build all defs
         var defsHTML = ''
             // Dot grid pattern - clean, readable, in screen pixel space
             + '<pattern id="lhd" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">'
-            + '<circle cx="5" cy="5" r="2.0" fill="#FFA500"/>'
+            + '<circle cx="5" cy="5" r="2.0" fill="#FFFFFF"/>'
             + '</pattern>'
             // Radial gradient inside the native logo coordinate space
             + '<radialGradient id="logoGrad" gradientUnits="userSpaceOnUse" cx="512" cy="326" r="480">'
