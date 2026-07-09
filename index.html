@@ -13,9 +13,9 @@
                 accentDim = '#1A1200';
                 glowRgb = '255, 165, 0';
             } else if (activeTheme === 'orchid') {
-                accentColor = '#7D396B';
-                accentDim = '#1C0617';
-                glowRgb = '125, 57, 107';
+                accentColor = '#763DE6';
+                accentDim = '#120925';
+                glowRgb = '118, 61, 230';
             }
             
             // Inject CSS variables to propagate theme color dynamically to all SVG vector assets
@@ -52,7 +52,7 @@
             // Set Favicon color based on theme
             const favicon = document.querySelector('link[rel="icon"]');
             if (favicon) {
-                const fillHex = activeTheme === 'amber' ? 'FFA500' : (activeTheme === 'orchid' ? '7D396B' : 'C6FF33');
+                const fillHex = activeTheme === 'amber' ? 'FFA500' : (activeTheme === 'orchid' ? '763DE6' : 'C6FF33');
                 favicon.href = favicon.href.replace(/fill='%23[0-9a-fA-F]{6}'/, `fill='%23${fillHex}'`);
             }
 
@@ -2641,7 +2641,7 @@
                 <span class="w-3.5 h-3.5 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-accent" id="opt-orchid">
                     <span class="w-2 h-2 rounded-full bg-brand-accent hidden" id="dot-orchid"></span>
                 </span>
-                <span class="group-hover:text-brand-accent">ORCHID_CORE (#7D396B)</span>
+                <span class="group-hover:text-brand-accent">PURPLE_CORE (#763DE6)</span>
             </label>
         </div>
         <div class="text-[8.5px] text-brand-dim mt-2.5 pt-2.5 border-t border-brand-precision flex justify-between">
