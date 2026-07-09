@@ -2423,9 +2423,6 @@
             <span>- 60%</span>
             <span>- 70%</span>
             <span>- 80%</span>
-            <span>- 90%</span>
-        </div>
-
         <!-- Dynamic Tracking Crosshairs -->
         <div id="hud-crosshair-h" class="absolute left-0 right-0 h-px bg-brand-amber/10" style="top: -100px; transition: top 0.04s linear;"></div>
         <div id="hud-crosshair-v" class="absolute top-0 bottom-0 w-px bg-brand-amber/10" style="left: -100px; transition: left 0.04s linear;"></div>
@@ -2433,6 +2430,53 @@
 
     <!-- Ambient Mouse Glow (fixed background flashlight) -->
     <div id="mouse-glow" style="position:fixed;width:400px;height:400px;background:radial-gradient(circle, rgba(255, 165, 0, 0.04) 0%, transparent 70%);transform:translate(-50%,-50%);pointer-events:none;z-index:-1;opacity:0;transition:opacity 0.25s ease;"></div>
+
+    <!-- ============================================================
+         Logo halftone dot repeating background pattern
+         Logo shape (1024×652 viewBox) tiled at 33% scale ≈ 340×216px
+         Dots: amber #FFA500, ~7px spacing, fade radially to transparent
+    ============================================================ -->
+    <svg id="logo-halftone-bg"
+         xmlns="http://www.w3.org/2000/svg"
+         aria-hidden="true"
+         style="position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;opacity:0.14;">
+      <defs>
+        <!-- Amber dot grid in native logo coord space (18u spacing → ~6px on screen at 0.332 scale) -->
+        <pattern id="hbdots" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="11" cy="11" r="4.5" fill="#FFA500"/>
+        </pattern>
+        <!-- Radial gradient: bright at logo centre, transparent at edges (blends into #08080A) -->
+        <radialGradient id="hbgrad" gradientUnits="userSpaceOnUse" cx="512" cy="326" r="490">
+          <stop offset="0%"   stop-color="white" stop-opacity="0.85"/>
+          <stop offset="42%"  stop-color="white" stop-opacity="0.45"/>
+          <stop offset="80%"  stop-color="white" stop-opacity="0.12"/>
+          <stop offset="100%" stop-color="white" stop-opacity="0"/>
+        </radialGradient>
+        <!-- Mask: radial fade applied to the whole logo tile -->
+        <mask id="hbmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="652">
+          <rect width="1024" height="652" fill="url(#hbgrad)"/>
+        </mask>
+        <!-- Logo silhouette clip path (1024×652 native coords) -->
+        <clipPath id="hbclip">
+          <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z"/>
+          <polygon points="336,165 618,165 483,0"/>
+          <polygon points="785,26 1023,26 493,645 389,452"/>
+          <polygon points="716,381 806,380 792,425 680,426"/>
+          <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z"/>
+        </clipPath>
+        <!-- Tile: one logo at 33.2% = 340 × 216 px per tile cell -->
+        <pattern id="hbtile" x="0" y="0" width="340" height="216" patternUnits="userSpaceOnUse">
+          <g transform="scale(0.332)">
+            <!-- Dots clipped to logo shape → then radially faded -->
+            <rect width="1024" height="652"
+                  fill="url(#hbdots)"
+                  clip-path="url(#hbclip)"
+                  mask="url(#hbmask)"/>
+          </g>
+        </pattern>
+      </defs>
+      <!-- Full-screen rect tiled with the logo halftone pattern -->
+      <rect width="100%" height="100%" fill="url(#hbtile)"/>
+    </svg>
 </body>
 </html>
-
