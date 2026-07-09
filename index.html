@@ -2678,6 +2678,11 @@
         </div>
     </div>
 
+    <!-- Floating Trigger to reopen theme selector if closed -->
+    <button id="theme-trigger" onclick="openThemeBanner()" class="fixed bottom-8 right-8 z-50 font-mono text-[9px] bg-[#08080A]/95 border border-brand-precision hover:border-brand-accent px-3 py-1.5 rounded shadow-[0_0_15px_rgba(var(--brand-accent-rgb),0.05)] text-brand-muted hover:text-brand-accent transition-all duration-300 hidden">
+        [ SELECT_THEME ]
+    </button>
+
     <script>
         function switchTheme(color) {
             localStorage.setItem('convex-theme', color);
@@ -2699,10 +2704,31 @@
 
         function closeThemeBanner() {
             const banner = document.getElementById('theme-banner');
+            const trigger = document.getElementById('theme-trigger');
             if (banner) {
-                banner.classList.add('pointer-events-none', 'opacity-0');
-                localStorage.setItem('convex-theme-banner-closed', 'true');
+                banner.classList.add('pointer-events-none', 'opacity-0', 'scale-90');
+                setTimeout(() => { banner.classList.add('hidden'); }, 300);
             }
+            if (trigger) {
+                trigger.classList.remove('hidden');
+            }
+            localStorage.setItem('convex-theme-banner-closed', 'true');
+        }
+
+        function openThemeBanner() {
+            const banner = document.getElementById('theme-banner');
+            const trigger = document.getElementById('theme-trigger');
+            if (banner) {
+                banner.classList.remove('hidden');
+                // Allow browser layout pass then transition in
+                setTimeout(() => {
+                    banner.classList.remove('pointer-events-none', 'opacity-0', 'scale-90');
+                }, 20);
+            }
+            if (trigger) {
+                trigger.classList.add('hidden');
+            }
+            localStorage.setItem('convex-theme-banner-closed', 'false');
         }
 
         // Initialize UI indicators inside theme toggle widget
@@ -2719,10 +2745,23 @@
             const activeCircle = document.getElementById(`opt-${currentTheme}`);
             if (activeCircle) activeCircle.classList.add('border-brand-accent');
 
-            // Hide banner if closed previously
+            // Show trigger and hide banner if closed previously
+            const banner = document.getElementById('theme-banner');
+            const trigger = document.getElementById('theme-trigger');
             if (localStorage.getItem('convex-theme-banner-closed') === 'true') {
-                const banner = document.getElementById('theme-banner');
-                if (banner) banner.style.display = 'none';
+                if (banner) {
+                    banner.classList.add('hidden', 'pointer-events-none', 'opacity-0', 'scale-90');
+                }
+                if (trigger) {
+                    trigger.classList.remove('hidden');
+                }
+            } else {
+                if (banner) {
+                    banner.classList.remove('hidden', 'pointer-events-none', 'opacity-0', 'scale-90');
+                }
+                if (trigger) {
+                    trigger.classList.add('hidden');
+                }
             }
         })();
     </script>
