@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 652' fill='%2300E676'%3E%3Cpath d='M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z'/%3E%3Cpolygon points='336,165 618,165 483,0'/%3E%3Cpolygon points='785,26 1023,26 493,645 389,452'/%3E%3Cpolygon points='716,381 806,380 792,425 680,426'/%3E%3Cpath d='M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 652' fill='%23FFA500'%3E%3Cpath d='M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z'/%3E%3Cpolygon points='336,165 618,165 483,0'/%3E%3Cpolygon points='785,26 1023,26 493,645 389,452'/%3E%3Cpolygon points='716,381 806,380 792,425 680,426'/%3E%3Cpath d='M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z'/%3E%3C/svg%3E">
     <title>Convex Hedge // Precision Infrastructure for Derivative Trading</title>
-    <script src="assets/tailwind.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -15,11 +15,13 @@
                             void: '#08080A',
                             elevate: '#121215',
                             precision: '#1C1C21',
-                            emerald: '#00E676',
+                            amber: '#FFA500',
                             pure: '#F5F5F7',
                             muted: '#8E8E93',
                             dim: '#48484A',
-                            emeraldDim: '#0B1C11'
+                            amberDim: '#1A1200',
+                            up: '#22C55E',
+                            down: '#EF4444'
                         }
                     },
                     fontFamily: {
@@ -31,7 +33,7 @@
             }
         }
     </script>
-    <link href="assets/fonts.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         /* * IMPORTANT: IMPORT YOUR PP NEUE MACHINA FONT FILES HERE
          * Update the src url to point to where you host your webfonts.
@@ -51,41 +53,28 @@
             font-display: swap;
         }
 
-        .linear-grid {
-            background-size: 40px 40px;
-            background-image: 
-                linear-gradient(to right, #121215 1px, transparent 1px),
-                linear-gradient(to bottom, #121215 1px, transparent 1px);
-        }
-        .math-grid {
-            background-size: 20px 20px;
-            background-image: 
-                linear-gradient(to right, rgba(28, 28, 33, 0.4) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(28, 28, 33, 0.4) 1px, transparent 1px);
-        }
-        
         .bento-glow {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .bento-glow:hover {
-            border-color: rgba(0, 230, 118, 0.3);
-            box-shadow: 0 10px 40px -10px rgba(0, 230, 118, 0.12);
+            border-color: rgba(255, 165, 0, 0.05);
+            box-shadow: 0 10px 40px -10px rgba(255, 165, 0, 0.12);
             transform: translateY(-2px);
             background-color: rgba(18, 18, 21, 0.8);
         }
 
         .ambient-glow {
-            background: radial-gradient(circle at center, rgba(0, 230, 118, 0.08) 0%, transparent 60%);
+            background: radial-gradient(circle at center, rgba(255, 165, 0, 0.04) 0%, transparent 60%);
         }
         .node-aura {
-            box-shadow: 0 0 30px -5px rgba(0, 230, 118, 0.25);
+            box-shadow: 0 0 30px -5px rgba(255, 165, 0, 0.25);
             animation: pulse-aura 3s infinite;
         }
         
         @keyframes pulse-aura {
-            0% { box-shadow: 0 0 30px -5px rgba(0, 230, 118, 0.15); }
-            50% { box-shadow: 0 0 40px 0px rgba(0, 230, 118, 0.3); }
-            100% { box-shadow: 0 0 30px -5px rgba(0, 230, 118, 0.15); }
+            0% { box-shadow: 0 0 30px -5px rgba(255, 165, 0, 0.06); }
+            50% { box-shadow: 0 0 40px 0px rgba(255, 165, 0, 0.05); }
+            100% { box-shadow: 0 0 30px -5px rgba(255, 165, 0, 0.06); }
         }
 
         .node-line {
@@ -107,8 +96,8 @@
             box-shadow: none !important;
         }
         .node-card.glowing {
-            border-color: #00E676 !important;
-            box-shadow: 0 0 25px rgba(0, 230, 118, 0.25) !important;
+            border-color: #FFA500 !important;
+            box-shadow: 0 0 25px rgba(255, 165, 0, 0.25) !important;
         }
         
         .glow-line {
@@ -150,21 +139,21 @@
         @keyframes drawPath {
             0% {
                 stroke-dashoffset: 2500;
-                fill: rgba(0, 230, 118, 0);
+                fill: rgba(255, 165, 0, 0);
             }
             55% {
                 stroke-dashoffset: 900;
-                fill: rgba(0, 230, 118, 0.15);
+                fill: rgba(255, 165, 0, 0.06);
             }
             100% {
                 stroke-dashoffset: 0;
-                fill: #00E676;
+                fill: #FFA500;
             }
         }
         .draw-path {
             stroke-dasharray: 2500;
             stroke-dashoffset: 2500;
-            fill: rgba(0, 230, 118, 0);
+            fill: rgba(255, 165, 0, 0);
             animation: drawPath 2.0s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
         /* Logo Hover Drawing Animation */
@@ -174,25 +163,25 @@
         }
         .logo-container:hover svg path,
         .logo-container:hover svg polygon {
-            stroke: #00E676;
+            stroke: #FFA500;
             stroke-width: 12px;
             stroke-dasharray: 2500;
             stroke-dashoffset: 2500;
-            fill: rgba(0, 230, 118, 0);
+            fill: rgba(255, 165, 0, 0);
             animation: drawPathHover 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
         @keyframes drawPathHover {
             0% {
                 stroke-dashoffset: 2500;
-                fill: rgba(0, 230, 118, 0);
+                fill: rgba(255, 165, 0, 0);
             }
             55% {
                 stroke-dashoffset: 900;
-                fill: rgba(0, 230, 118, 0.22);
+                fill: rgba(255, 165, 0, 0.22);
             }
             100% {
                 stroke-dashoffset: 0;
-                fill: #00E676;
+                fill: #FFA500;
             }
         }
         /* Loader 3D Tilt Animation */
@@ -244,8 +233,8 @@
             top: 0;
             width: 100%;
             height: 3px;
-            background: linear-gradient(to right, transparent, #00E676, transparent);
-            box-shadow: 0 0 10px #00E676, 0 0 4px #00E676;
+            background: linear-gradient(to right, transparent, #FFA500, transparent);
+            box-shadow: 0 0 10px #FFA500, 0 0 4px #FFA500;
             opacity: 0;
             pointer-events: none;
             z-index: 50;
@@ -262,12 +251,12 @@
             0% {
                 transform: scale(0.97) translate(0, 0);
                 opacity: 0.22;
-                filter: drop-shadow(0 0 20px rgba(0, 230, 118, 0.01));
+                filter: drop-shadow(0 0 20px rgba(255, 165, 0, 0.01));
             }
             100% {
                 transform: scale(1.03) translate(0, 0);
                 opacity: 0.45;
-                filter: drop-shadow(0 0 60px rgba(0, 230, 118, 0.08));
+                filter: drop-shadow(0 0 60px rgba(255, 165, 0, 0.04));
             }
         }
         /* Responsive Canvas Scaling for Mobile/Tablet Viewports */
@@ -299,7 +288,7 @@
         }
     </style>
 </head>
-<body class="bg-brand-void text-brand-pure font-sans antialiased selection:bg-brand-emerald selection:text-brand-void overflow-x-hidden linear-grid">
+<body class="bg-brand-void text-brand-pure font-sans antialiased selection:bg-brand-amber selection:text-brand-void overflow-x-hidden">
 
     <!-- Viewport Entrance Loader Overlay -->
     <div id="entrance-loader" class="fixed inset-0 z-[100] bg-[#08080A] flex flex-col items-center justify-center transition-all duration-[1200ms] cubic-bezier(0.85, 0, 0.15, 1) pointer-events-auto overflow-hidden">
@@ -309,7 +298,7 @@
         <div class="flex flex-col items-center max-w-sm w-full px-6 relative z-10">
             <!-- Animated SVG Logo -->
             <div id="loader-logo-wrap" class="relative mb-8 transition-transform duration-[1200ms] cubic-bezier(0.85, 0, 0.15, 1) transform">
-                <svg id="loader-logo" class="w-24 h-16 text-brand-emerald" viewBox="0 0 1024 652" fill="none" stroke="#00E676" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="loader-logo" class="w-24 h-16 text-brand-amber" viewBox="0 0 1024 652" fill="none" stroke="#FFA500" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
                     <!-- Shape 1: Left C-loop -->
                     <path class="draw-path" d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
                     <!-- Shape 2: Top-middle triangle -->
@@ -333,10 +322,10 @@
             <!-- Percentage Loader Bar -->
             <div class="w-full flex items-center justify-between font-mono text-[9px] mb-2 text-brand-muted">
                 <span>CONVEX_INIT_SEQUENCE</span>
-                <span id="load-pct" class="text-brand-emerald font-bold">00%</span>
+                <span id="load-pct" class="text-brand-amber font-bold">00%</span>
             </div>
             <div class="w-full h-px bg-brand-precision relative overflow-hidden rounded">
-                <div id="load-progress" class="absolute top-0 bottom-0 left-0 w-0 bg-brand-emerald transition-all duration-[30ms] ease-out shadow-[0_0_8px_#00E676]"></div>
+                <div id="load-progress" class="absolute top-0 bottom-0 left-0 w-0 bg-brand-amber transition-all duration-[30ms] ease-out shadow-[0_0_8px_#FFA500]"></div>
             </div>
         </div>
     </div>
@@ -344,7 +333,7 @@
     <header class="border-b border-brand-precision sticky top-0 bg-brand-void/80 backdrop-blur-md z-50">
         <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
             <div class="flex items-center space-x-3 logo-container cursor-pointer">
-                <svg class="w-6 h-4 text-brand-emerald" viewBox="0 0 1024 652" fill="currentColor">
+                <svg class="w-6 h-4 text-brand-amber" viewBox="0 0 1024 652" fill="currentColor">
                     <!-- Shape 1: Left C-loop -->
                     <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
                     <!-- Shape 2: Top-middle triangle -->
@@ -375,8 +364,8 @@
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] ambient-glow blur-[80px] pointer-events-none z-0"></div>
         
         <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
-            <div class="inline-flex items-center space-x-2 bg-brand-elevate border border-brand-precision px-3 py-1 rounded mb-8 shadow-[0_0_15px_rgba(0,230,118,0.1)]">
-                <span class="w-1.5 h-1.5 bg-brand-emerald rounded-full animate-pulse"></span>
+            <div class="inline-flex items-center space-x-2 bg-brand-elevate border border-brand-precision px-3 py-1 rounded mb-8 shadow-[0_0_15px_rgba(255,165,0,0.1)]">
+                <span class="w-1.5 h-1.5 bg-brand-amber rounded-full animate-pulse"></span>
                 <span class="font-mono text-[10px] tracking-wider text-brand-muted uppercase">ENGINE_PHASE_1: WAITLIST</span>
             </div>
             
@@ -384,8 +373,8 @@
                 Precision Infrastructure <br>
                 <span class="sm:whitespace-nowrap">for 
                     <span class="relative inline-block pb-1 align-bottom select-none">
-                        <span class="text-brand-emerald drop-shadow-[0_0_25px_rgba(0,230,118,0.3)]">Option Quants.</span>
-                        <span id="scramble-indicator" class="absolute bottom-0 left-0 h-[1.5px] bg-[#00E676] opacity-55 shadow-[0_0_8px_#00E676] w-0"></span>
+                        <span class="text-brand-amber drop-shadow-[0_0_25px_rgba(255,165,0,0.3)]">Option Quants.</span>
+                        <span id="scramble-indicator" class="absolute bottom-0 left-0 h-[1.5px] bg-[#FFA500] opacity-55 shadow-[0_0_8px_#FFA500] w-0"></span>
                     </span>
                 </span>
             </h1>
@@ -397,7 +386,7 @@
             <div class="max-w-md mx-auto relative z-10">
                 <form id="hero-waitlist-form" onsubmit="event.preventDefault(); handleWaitlistSubmit('hero')" class="flex flex-col sm:flex-row items-stretch gap-2 p-1 bg-brand-elevate border border-brand-precision rounded">
                     <input id="hero-waitlist-email" type="email" placeholder="Enter option quant credentials (email)..." required class="flex-1 bg-transparent border-none text-xs font-mono text-brand-pure focus:outline-none px-3 py-2.5">
-                    <button type="submit" class="bg-brand-emerald text-brand-void text-xs font-mono font-bold px-5 py-2.5 rounded hover:bg-white transition-colors uppercase">
+                    <button type="submit" class="bg-brand-amber text-brand-void text-xs font-mono font-bold px-5 py-2.5 rounded hover:bg-white transition-colors uppercase">
                         JOIN WAITLIST
                     </button>
                 </form>
@@ -410,7 +399,7 @@
     <section id="market-feed" class="scroll-reveal py-16 border-b border-brand-precision bg-transparent relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-12">
-                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-2">LIVE DATA FEED // STAGE 1</span>
+                <span class="font-mono text-xs text-brand-amber uppercase tracking-wider block mb-2">LIVE DATA FEED // STAGE 1</span>
                 <h2 class="font-display text-2xl md:text-3xl font-normal tracking-tight text-white mb-3">Institutional Option Chain & Real-Time IV Surface</h2>
                 <p class="text-brand-muted text-xs max-w-lg mx-auto font-sans leading-relaxed">
                     Watch direct ticks stream dynamically from the exchange. Trace real-time Implied Volatility and Greeks without approximations.
@@ -423,7 +412,7 @@
                     <div>
                         <div class="flex justify-between items-center border-b border-brand-precision pb-2 mb-3">
                             <span class="text-white font-bold uppercase tracking-wider">NIFTY Option Chain (Weekly Expiry)</span>
-                            <span class="text-brand-dim flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-brand-emerald mr-1.5 animate-pulse"></span>FEED_OK // 9:15-15:30</span>
+                            <span class="text-brand-dim flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-brand-amber mr-1.5 animate-pulse"></span>FEED_OK // 9:15-15:30</span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
@@ -455,21 +444,21 @@
                     <div>
                         <div class="flex justify-between items-center border-b border-brand-precision pb-2 mb-4 font-mono text-[10px]">
                             <span class="text-white font-bold uppercase tracking-wider">Implied Volatility Smile</span>
-                            <span class="text-brand-emerald">[ LIVE SURFACE ]</span>
+                            <span class="text-brand-amber">[ LIVE SURFACE ]</span>
                         </div>
                         <div class="h-44 w-full relative flex items-center justify-center">
                             <!-- SVG Volatility Curve -->
-                            <svg class="w-full h-full overflow-visible" stroke="#00E676" stroke-width="1.5" fill="none" viewBox="0 0 200 120">
+                            <svg class="w-full h-full overflow-visible" stroke="#FFA500" stroke-width="1.5" fill="none" viewBox="0 0 200 120">
                                 <!-- Grids -->
                                 <line x1="0" y1="100" x2="200" y2="100" stroke="#1C1C21" stroke-width="1" />
                                 <line x1="100" y1="0" x2="100" y2="110" stroke="#1C1C21" stroke-width="1" stroke-dasharray="2 2" />
                                 <text x="105" y="115" fill="#48484A" font-family="monospace" font-size="8">ATM</text>
                                 
                                 <!-- Curve Path with CSS transition -->
-                                <path id="vol-smile-path" d="M 10,20 Q 100,95 190,20" class="transition-all duration-1000 ease-in-out drop-shadow-[0_0_8px_rgba(0,230,118,0.4)]" />
+                                <path id="vol-smile-path" d="M 10,20 Q 100,95 190,20" class="transition-all duration-1000 ease-in-out drop-shadow-[0_0_8px_rgba(255,165,0,0.4)]" />
                                 
                                 <!-- ATM Dot -->
-                                <circle id="vol-smile-dot" cx="100" cy="95" r="3" fill="#00E676" stroke="#08080A" stroke-width="1.5" />
+                                <circle id="vol-smile-dot" cx="100" cy="95" r="3" fill="#FFA500" stroke="#08080A" stroke-width="1.5" />
                             </svg>
                         </div>
                     </div>
@@ -485,14 +474,14 @@
     <section id="builder" class="scroll-reveal py-20 border-b border-brand-precision bg-transparent relative">
         <div class="max-w-7xl mx-auto px-6">
             <div class="max-w-3xl mb-12 relative z-10">
-                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">1.0 CO-PILOT WORKSPACE // STEP 01: DRAFT & COMPILE</span>
+                <span class="font-mono text-xs text-brand-amber uppercase tracking-wider block mb-3">1.0 CO-PILOT WORKSPACE // STEP 01: DRAFT & COMPILE</span>
                 <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white mb-4">Passive AI Researcher: Echo</h2>
                 <p class="text-brand-muted text-sm max-w-2xl font-sans leading-relaxed">
                     Echo is a passive AI quantitative researcher. It never suggests trades or initiates positions. Propose a strategic options hypothesis, and Echo instantly compiles the model, runs the backtest, and highlights risk-hedging layers (like delta-neutral overlays) you can add to secure your downside.
                 </p>
             </div>
 
-            <div class="bg-brand-elevate border border-brand-precision rounded overflow-hidden transition-all duration-300 hover:border-brand-emerald/30 hover:shadow-[0_10px_40px_-10px_rgba(0,230,118,0.12)] relative z-10">
+            <div class="bg-brand-elevate border border-brand-precision rounded overflow-hidden transition-all duration-300 hover:border-brand-amber/30 hover:shadow-[0_10px_40px_-10px_rgba(255,165,0,0.12)] relative z-10">
                 <!-- Top controls toolbar -->
                 <div class="bg-[#0B0A0D] px-6 py-4 border-b border-brand-precision flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-brand-muted gap-4">
                     <div class="flex items-center space-x-2">
@@ -502,13 +491,13 @@
                     </div>
                     <div class="flex items-center space-x-3">
                         <div class="flex border border-brand-precision rounded overflow-hidden">
-                            <button class="bg-[#0B1C11] text-[#00E676] px-3 py-1 font-bold text-[10px] hover:bg-[#0E2F1C]">COLLAPSED</button>
+                            <button class="bg-[#1A1200] text-[#FFA500] px-3 py-1 font-bold text-[10px] hover:bg-[#0E2F1C]">COLLAPSED</button>
                             <button class="bg-[#1C1C21] text-brand-muted px-3 py-1 text-[10px] hover:text-white border-l border-brand-precision">EXPANDED</button>
                         </div>
                         <span class="text-brand-dim">|</span>
                         <button class="text-brand-muted hover:text-white text-[10px]">VIEW PYTHON</button>
                         <button class="border border-brand-precision px-3 py-1 rounded hover:bg-brand-precision text-[10px]">SAVE</button>
-                        <button class="bg-[#00E676] text-brand-void font-bold px-4 py-1 rounded hover:bg-white hover:shadow-[0_0_15px_rgba(0,230,118,0.4)] transition-all text-[10px]">▶ RUN</button>
+                        <button class="bg-[#FFA500] text-brand-void font-bold px-4 py-1 rounded hover:bg-white hover:shadow-[0_0_15px_rgba(255,165,0,0.4)] transition-all text-[10px]">▶ RUN</button>
                     </div>
                 </div>
 
@@ -516,7 +505,7 @@
                     <!-- Canvas graph container -->
                     <div class="lg:col-span-9 p-0 bg-brand-void relative overflow-hidden border-r border-brand-precision flex flex-col justify-between">
                         <div class="canvas-wrapper relative w-full overflow-hidden bg-brand-void h-[600px]">
-                            <div id="canvas-container" class="relative w-full h-[600px] bg-brand-void math-grid select-none overflow-hidden">
+                            <div id="canvas-container" class="relative w-full h-[600px] bg-brand-void select-none overflow-hidden">
                             <!-- Centered Background Logo Backdrop -->
                             <div id="canvas-logo-backdrop" class="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 transition-all duration-[1200ms] ease-out opacity-100 scale-100 glowing">
                                 <svg class="w-80 h-48 text-[#1C1C21]/60 transition-colors duration-[1200ms]" viewBox="0 0 1024 652" fill="currentColor">
@@ -545,18 +534,18 @@
                                 <path id="path-sign-exit" stroke="#1C1C21" stroke-width="1.5" fill="none" />
 
                                 <!-- Active neon glow lines (animated) -->
-                                <path id="glow-inst-struct" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
-                                <path id="glow-struct-sign" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
-                                <path id="glow-sign-entry" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
-                                <path id="glow-sign-exit" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
-                                <path id="glow-sign-hedge" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-0 transition-opacity duration-500" />
-                                <path id="glow-hedge-exit" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-0 transition-opacity duration-500" />
+                                <path id="glow-inst-struct" stroke="#FFA500" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-struct-sign" stroke="#FFA500" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-sign-entry" stroke="#FFA500" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-sign-exit" stroke="#FFA500" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-sign-hedge" stroke="#FFA500" stroke-width="1.5" fill="none" class="glow-line opacity-0 transition-opacity duration-500" />
+                                <path id="glow-hedge-exit" stroke="#FFA500" stroke-width="1.5" fill="none" class="glow-line opacity-0 transition-opacity duration-500" />
                             </svg>
 
                             <!-- Node 1: Instrument -->
-                            <div id="node-instrument" class="node-card absolute top-[5%] left-[50%] -translate-x-1/2 z-20 w-56 bg-[#08080A]/90 border border-[#00E676] rounded shadow-lg p-3 text-center">
+                            <div id="node-instrument" class="node-card absolute top-[5%] left-[50%] -translate-x-1/2 z-20 w-56 bg-[#08080A]/90 border border-[#FFA500] rounded shadow-lg p-3 text-center">
                                 <div class="text-[9px] font-mono text-brand-dim uppercase tracking-wider mb-1">Root Ingest</div>
-                                <div class="text-xs font-mono text-[#00E676] font-bold">INSTRUMENT / DATA12 +</div>
+                                <div class="text-xs font-mono text-[#FFA500] font-bold">INSTRUMENT / DATA12 +</div>
                             </div>
 
                             <!-- Node 2: Features (Inactive) -->
@@ -567,39 +556,39 @@
                             </div>
 
                             <!-- Node 3: Structures -->
-                            <div id="node-structures" class="node-card absolute top-[26%] left-[72%] -translate-x-1/2 z-20 w-64 bg-[#08080A]/90 border border-[#00E676] p-3 rounded shadow-[0_0_15px_rgba(0,230,118,0.15)] font-mono">
-                                <div class="flex justify-between items-center text-[9px] text-[#00E676] mb-1.5 font-bold">
+                            <div id="node-structures" class="node-card absolute top-[26%] left-[72%] -translate-x-1/2 z-20 w-64 bg-[#08080A]/90 border border-[#FFA500] p-3 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] font-mono">
+                                <div class="flex justify-between items-center text-[9px] text-[#FFA500] mb-1.5 font-bold">
                                     <span>STRUCTURES</span>
-                                    <span class="bg-[#0B1C11] text-[#00E676] text-[8px] px-1 rounded">1 *</span>
+                                    <span class="bg-[#1A1200] text-[#FFA500] text-[8px] px-1 rounded">1 *</span>
                                 </div>
                                 <div class="text-xs text-white font-medium mb-2">strangle <span class="text-brand-dim">L111-119</span></div>
                                 <div class="flex flex-wrap gap-1">
                                     <span class="bg-[#1C1C21] text-brand-pure text-[8px] px-1.5 py-0.5 rounded border border-brand-precision">SHORT</span>
-                                    <span class="bg-[#0B1C11] text-[#00E676] text-[8px] px-1.5 py-0.5 rounded border border-[#00E676]/20">SELL CE</span>
-                                    <span class="bg-[#0B1C11] text-[#00E676] text-[8px] px-1.5 py-0.5 rounded border border-[#00E676]/20">SELL PE</span>
+                                    <span class="bg-[#1A1200] text-[#FFA500] text-[8px] px-1.5 py-0.5 rounded border border-[#FFA500]/20">SELL CE</span>
+                                    <span class="bg-[#1A1200] text-[#FFA500] text-[8px] px-1.5 py-0.5 rounded border border-[#FFA500]/20">SELL PE</span>
                                 </div>
                             </div>
 
                             <!-- Node 4: Signals -->
-                            <div id="node-signals" class="node-card absolute top-[48%] left-[50%] -translate-x-1/2 z-20 w-56 bg-[#08080A]/90 border border-[#00E676] px-3 py-2 rounded shadow-[0_0_15px_rgba(0,230,118,0.15)] text-center">
+                            <div id="node-signals" class="node-card absolute top-[48%] left-[50%] -translate-x-1/2 z-20 w-56 bg-[#08080A]/90 border border-[#FFA500] px-3 py-2 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] text-center">
                                 <div class="text-[9px] font-mono text-brand-dim uppercase tracking-wider mb-0.5">Control Gate</div>
-                                <div class="text-xs font-mono text-[#00E676] font-bold">SIGNALS / CONDITIONS</div>
+                                <div class="text-xs font-mono text-[#FFA500] font-bold">SIGNALS / CONDITIONS</div>
                             </div>
 
                             <!-- Node 5: Entry Signals -->
-                            <div id="node-entry" class="node-card absolute top-[68%] left-[15%] -translate-x-1/2 z-20 w-64 bg-[#08080A]/90 border border-[#00E676] p-3 rounded shadow-[0_0_15px_rgba(0,230,118,0.15)] font-mono text-[10px]">
-                                <div class="flex justify-between items-center text-[9px] text-[#00E676] mb-2 font-bold">
+                            <div id="node-entry" class="node-card absolute top-[68%] left-[15%] -translate-x-1/2 z-20 w-64 bg-[#08080A]/90 border border-[#FFA500] p-3 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] font-mono text-[10px]">
+                                <div class="flex justify-between items-center text-[9px] text-[#FFA500] mb-2 font-bold">
                                     <span>ENTRY SIGNALS</span>
-                                    <span class="bg-[#0B1C11] text-[#00E676] text-[8px] px-1 rounded">2 *</span>
+                                    <span class="bg-[#1A1200] text-[#FFA500] text-[8px] px-1 rounded">2 *</span>
                                 </div>
                                 <div class="space-y-2">
                                     <div>
                                         <div class="text-white font-medium">premium-target-entry <span class="text-brand-dim text-[9px]">L205-217</span></div>
-                                        <div class="text-[#00E676] text-[9px] mt-0.5">if ce and pe -> ENTRY</div>
+                                        <div class="text-[#FFA500] text-[9px] mt-0.5">if ce and pe -> ENTRY</div>
                                     </div>
                                     <div class="border-t border-brand-precision pt-1.5">
                                         <div class="text-white font-medium">premium-target-re-entry <span class="text-brand-dim text-[9px]">L205-217</span></div>
-                                        <div class="text-[#00E676] text-[9px] mt-0.5">if ce and pe -> ENTRY</div>
+                                        <div class="text-[#FFA500] text-[9px] mt-0.5">if ce and pe -> ENTRY</div>
                                     </div>
                                 </div>
                             </div>
@@ -615,24 +604,24 @@
                             <div id="node-hedging" class="node-card inactive absolute top-[68%] left-[60%] -translate-x-1/2 z-20 w-44 bg-[#121215]/30 border border-brand-precision px-3 py-2 rounded text-brand-dim text-center">
                                 <div class="text-[9px] font-mono uppercase tracking-wider mb-0.5">Hedging Node</div>
                                 <div class="text-[10px] font-mono font-medium">DELTA_NEUTRAL_HEDGE</div>
-                                <div class="text-[8px] font-mono text-brand-emerald mt-1 hidden" id="hedge-active-txt">active (L280)</div>
+                                <div class="text-[8px] font-mono text-brand-amber mt-1 hidden" id="hedge-active-txt">active (L280)</div>
                                 <div class="text-[8px] font-mono text-brand-dim mt-1" id="hedge-inactive-txt">optional - unused</div>
                             </div>
 
                             <!-- Node 8: Exit Signals -->
-                            <div id="node-exit" class="node-card absolute top-[72%] left-[82%] -translate-x-1/2 z-20 w-72 bg-[#08080A]/90 border border-[#00E676] p-3 rounded shadow-[0_0_15px_rgba(0,230,118,0.15)] font-mono text-[10px]">
-                                <div class="flex justify-between items-center text-[9px] text-[#00E676] mb-2 font-bold">
+                            <div id="node-exit" class="node-card absolute top-[72%] left-[82%] -translate-x-1/2 z-20 w-72 bg-[#08080A]/90 border border-[#FFA500] p-3 rounded shadow-[0_0_15px_rgba(255,165,0,0.15)] font-mono text-[10px]">
+                                <div class="flex justify-between items-center text-[9px] text-[#FFA500] mb-2 font-bold">
                                     <span>EXIT SIGNALS</span>
-                                    <span class="bg-[#0B1C11] text-[#00E676] text-[8px] px-1 rounded">2 *</span>
+                                    <span class="bg-[#1A1200] text-[#FFA500] text-[8px] px-1 rounded">2 *</span>
                                 </div>
                                 <div class="space-y-2">
                                     <div>
                                         <div class="text-white font-medium flex justify-between"><span>time-exit</span><span class="text-brand-dim text-[9px]">L136-141</span></div>
-                                        <div class="text-[#00E676] text-[9px] mt-0.5">if ctx.positions and ctx.time >= <span id="exit-time-val" class="text-white font-bold transition-all duration-300">14:30</span> -> EXIT</div>
+                                        <div class="text-[#FFA500] text-[9px] mt-0.5">if ctx.positions and ctx.time >= <span id="exit-time-val" class="text-white font-bold transition-all duration-300">14:30</span> -> EXIT</div>
                                     </div>
                                     <div class="border-t border-brand-precision pt-1.5">
                                         <div class="text-white font-medium">premium-sl <span class="text-brand-dim text-[9px]">L166-171</span></div>
-                                        <div class="text-[#00E676] text-[9px] mt-0.5">if ce_hit or pe_hit -> EXIT</div>
+                                        <div class="text-[#FFA500] text-[9px] mt-0.5">if ce_hit or pe_hit -> EXIT</div>
                                     </div>
                                 </div>
                             </div>
@@ -648,7 +637,7 @@
                             <!-- Messages container -->
                             <div id="chat-history" class="flex-1 overflow-y-auto space-y-4 pr-1 text-brand-pure leading-relaxed">
                                 <div class="bg-brand-void/50 p-3 rounded border border-brand-precision">
-                                    <span class="text-[#00E676] font-bold">ECHO:</span> Hello, I have mapped your strangle strategy topology. Describe a change or use the suggestions below.
+                                    <span class="text-[#FFA500] font-bold">ECHO:</span> Hello, I have mapped your strangle strategy topology. Describe a change or use the suggestions below.
                                 </div>
                             </div>
 
@@ -656,13 +645,13 @@
                             <div class="space-y-2">
                                 <div class="text-[9px] text-brand-dim uppercase tracking-wider">SUGGESTIONS</div>
                                 <div class="flex flex-col space-y-1">
-                                    <button onclick="handleSuggestion('change the exit time to 14:38', '14:38')" class="text-left bg-brand-void hover:bg-[#0B1C11] border border-brand-precision hover:border-[#00E676]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#00E676] transition-all">
+                                    <button onclick="handleSuggestion('change the exit time to 14:38', '14:38')" class="text-left bg-brand-void hover:bg-[#1A1200] border border-brand-precision hover:border-[#FFA500]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#FFA500] transition-all">
                                         &gt; change the exit time to 14:38
                                     </button>
-                                    <button onclick="handleSuggestion('change the exit time to 14:50', '14:50')" class="text-left bg-brand-void hover:bg-[#0B1C11] border border-brand-precision hover:border-[#00E676]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#00E676] transition-all">
+                                    <button onclick="handleSuggestion('change the exit time to 14:50', '14:50')" class="text-left bg-brand-void hover:bg-[#1A1200] border border-brand-precision hover:border-[#FFA500]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#FFA500] transition-all">
                                         &gt; change the exit time to 14:50
                                     </button>
-                                    <button onclick="handleSuggestion('add delta hedge protection', 'hedge')" class="text-left bg-brand-void hover:bg-[#0B1C11] border border-brand-precision hover:border-[#00E676]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#00E676] transition-all">
+                                    <button onclick="handleSuggestion('add delta hedge protection', 'hedge')" class="text-left bg-brand-void hover:bg-[#1A1200] border border-brand-precision hover:border-[#FFA500]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#FFA500] transition-all">
                                         &gt; add delta hedge protection
                                     </button>
                                 </div>
@@ -672,7 +661,7 @@
                             <div class="pt-3 border-t border-brand-precision">
                                 <div class="flex items-center space-x-2 bg-brand-void p-1 rounded border border-brand-precision">
                                     <input id="chat-input" type="text" placeholder="Describe a change..." class="w-full bg-transparent border-none text-[10px] text-brand-pure focus:outline-none px-2 py-1">
-                                    <button onclick="sendChatMessage()" class="bg-[#00E676] text-brand-void px-3 py-1 rounded text-[10px] font-bold hover:bg-white transition-all">SEND</button>
+                                    <button onclick="sendChatMessage()" class="bg-[#FFA500] text-brand-void px-3 py-1 rounded text-[10px] font-bold hover:bg-white transition-all">SEND</button>
                                 </div>
                             </div>
                         </div>
@@ -685,7 +674,7 @@
     <section id="engine" class="scroll-reveal py-24 bg-transparent border-b border-brand-precision">
         <div class="max-w-7xl mx-auto px-6">
             <div class="mb-12">
-                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">2.0 ENGINE // STEP 02: HISTORICAL SIMULATION</span>
+                <span class="font-mono text-xs text-brand-amber uppercase tracking-wider block mb-3">2.0 ENGINE // STEP 02: HISTORICAL SIMULATION</span>
                 <h3 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white mb-4">Test on actual option price logs</h3>
                 <p class="text-brand-muted text-sm max-w-xl font-sans mt-3">
                     Plan and navigate from hypothesis to validation. Run with full high-beams: test option strategies with exchange-accurate margin rules, dynamic lot adjustments, and realistic slippages.
@@ -693,16 +682,16 @@
             </div>
             
             <!-- Dashboard Card Container -->
-            <div class="bg-brand-elevate border border-brand-precision rounded overflow-hidden transition-all duration-300 hover:border-brand-emerald/30 hover:shadow-[0_10px_40px_-10px_rgba(0,230,118,0.12)]">
+            <div class="bg-brand-elevate border border-brand-precision rounded overflow-hidden transition-all duration-300 hover:border-brand-amber/30 hover:shadow-[0_10px_40px_-10px_rgba(255,165,0,0.12)]">
                 <!-- Dashboard Top Bar: Name + Date -->
                 <div class="bg-[#0B0A0D] px-6 py-4 border-b border-brand-precision flex flex-col md:flex-row items-center justify-between text-xs font-mono text-brand-muted gap-4">
                     <div class="flex items-center space-x-3">
-                        <span class="text-[#00E676] font-bold">← BACKTEST RESULTS</span>
+                        <span class="text-[#FFA500] font-bold">← BACKTEST RESULTS</span>
                         <span class="text-brand-dim">/</span>
                         <span class="text-white uppercase font-bold text-[10px]">DAILY_STRADDLE_V1 [HYPOTHETICAL HISTORICAL SIMULATION]</span>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <button class="bg-[#0B1C11] text-[#00E676] px-3 py-1 rounded border border-[#00E676]/20 hover:bg-[#0E2F1C]">RUN HISTORY (1)</button>
+                        <button class="bg-[#1A1200] text-[#FFA500] px-3 py-1 rounded border border-[#FFA500]/20 hover:bg-[#0E2F1C]">RUN HISTORY (1)</button>
                         <button class="bg-[#1C1C21] text-brand-pure px-3 py-1 rounded border border-brand-precision hover:bg-brand-precision">PARAMS *</button>
                     </div>
                 </div>
@@ -712,13 +701,13 @@
                     <!-- Net P&L -->
                     <div class="p-4 border-r border-b lg:border-b-0 border-brand-precision">
                         <span class="text-[9px] font-mono text-brand-dim block uppercase">Net P&L</span>
-                        <span class="text-lg font-mono text-brand-emerald font-semibold block mt-1">+51.96%</span>
+                        <span class="text-lg font-mono text-brand-amber font-semibold block mt-1">+51.96%</span>
                         <span class="text-[10px] font-mono text-brand-muted block mt-0.5">+₹51,95,633.16</span>
                     </div>
                     <!-- Annualised -->
                     <div class="p-4 border-r border-b lg:border-b-0 border-brand-precision">
                         <span class="text-[9px] font-mono text-brand-dim block uppercase">Annualised</span>
-                        <span class="text-lg font-mono text-brand-emerald font-semibold block mt-1">+26.61%</span>
+                        <span class="text-lg font-mono text-brand-amber font-semibold block mt-1">+26.61%</span>
                         <span class="text-[10px] font-mono text-brand-muted block mt-0.5">capital track</span>
                     </div>
                     <!-- Max Drawdown -->
@@ -758,7 +747,7 @@
                     <!-- Tab Headers -->
                     <div class="px-6 py-2 border-b border-brand-precision bg-[#0B0A0D] flex items-center justify-between text-xs font-mono">
                         <div class="flex space-x-6">
-                            <span class="text-[#00E676] border-b-2 border-[#00E676] py-2 font-bold cursor-pointer">OVERVIEW</span>
+                            <span class="text-[#FFA500] border-b-2 border-[#FFA500] py-2 font-bold cursor-pointer">OVERVIEW</span>
                             <span class="text-brand-muted py-2 hover:text-white cursor-pointer transition-colors">DAYLOG</span>
                             <span class="text-brand-muted py-2 hover:text-white cursor-pointer transition-colors">TRADES</span>
                             <span class="text-brand-muted py-2 hover:text-white cursor-pointer transition-colors">DIAGNOSTICS</span>
@@ -772,7 +761,7 @@
                         <div class="lg:col-span-8 p-6 border-r border-brand-precision flex flex-col justify-between">
                             <div class="flex justify-between items-center text-[10px] font-mono text-brand-muted mb-4">
                                 <div class="flex items-center space-x-4">
-                                    <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-[#00E676] mr-1.5"></span>EQUITY (₹1,00,00,000 ANCHOR)</span>
+                                    <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-[#FFA500] mr-1.5"></span>EQUITY (₹1,00,00,000 ANCHOR)</span>
                                     <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-red-950/80 border border-red-500/30 mr-1.5"></span>DRAWDOWN</span>
                                 </div>
                                 <div>Hover to inspect points</div>
@@ -789,11 +778,11 @@
                                     <path id="drawdown-line" stroke="#991b1b" stroke-width="1" fill="none" opacity="0.8" />
                                     
                                     <!-- Equity Line -->
-                                    <path id="equity-line" stroke="#00E676" stroke-width="2.5" fill="none" class="drop-shadow-[0_0_12px_rgba(0,230,118,0.75)]" />
+                                    <path id="equity-line" stroke="#FFA500" stroke-width="2.5" fill="none" class="drop-shadow-[0_0_12px_rgba(255,165,0,0.75)]" />
                                     
                                     <!-- Tooltip Line / Markers -->
-                                    <line id="tooltip-line" x1="0" y1="0" x2="0" y2="320" stroke="#00E676" stroke-width="1" stroke-dasharray="2 2" opacity="0" />
-                                    <circle id="tooltip-dot" r="4" fill="#00E676" stroke="#08080A" stroke-width="1.5" opacity="0" />
+                                    <line id="tooltip-line" x1="0" y1="0" x2="0" y2="320" stroke="#FFA500" stroke-width="1" stroke-dasharray="2 2" opacity="0" />
+                                    <circle id="tooltip-dot" r="4" fill="#FFA500" stroke="#08080A" stroke-width="1.5" opacity="0" />
                                     
                                     <!-- Defs for Gradient -->
                                     <defs>
@@ -806,7 +795,7 @@
                                 
                                 <!-- Floating Tooltip HTML -->
                                 <div id="chart-tooltip" class="absolute hidden bg-brand-elevate border border-brand-precision p-3 rounded font-mono text-[10px] shadow-2xl z-30 pointer-events-none text-white w-48">
-                                    <div class="text-[#00E676] font-bold mb-1" id="tooltip-date">Aug 2025</div>
+                                    <div class="text-[#FFA500] font-bold mb-1" id="tooltip-date">Aug 2025</div>
                                     <div class="flex justify-between">
                                         <span class="text-brand-muted">Equity:</span>
                                         <span class="font-bold" id="tooltip-eq">₹15,195,633.16</span>
@@ -825,9 +814,9 @@
                                 <div>
                                     <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-wider text-[9px] mb-3">RETURNS</div>
                                     <div class="space-y-2">
-                                        <div class="flex justify-between"><span class="text-brand-muted">TOTAL P&L</span><span class="text-brand-emerald font-semibold">+₹51,95,633.16</span></div>
-                                        <div class="flex justify-between"><span class="text-brand-muted">TOTAL RETURN</span><span class="text-brand-emerald font-semibold">+51.96%</span></div>
-                                        <div class="flex justify-between"><span class="text-brand-muted">ANNUALISED RETURN</span><span class="text-brand-emerald font-semibold">+26.61%</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">TOTAL P&L</span><span class="text-brand-amber font-semibold">+₹51,95,633.16</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">TOTAL RETURN</span><span class="text-brand-amber font-semibold">+51.96%</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">ANNUALISED RETURN</span><span class="text-brand-amber font-semibold">+26.61%</span></div>
                                         <div class="flex justify-between"><span class="text-brand-muted">AVG DAILY RETURN</span><span class="text-white">+0.11%</span></div>
                                         <div class="flex justify-between"><span class="text-brand-muted">AVG WEEKLY RETURN</span><span class="text-white">+0.49%</span></div>
                                     </div>
@@ -854,13 +843,13 @@
                 <!-- KDE Card -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-5 flex flex-col justify-between min-h-[180px]">
                     <div>
-                        <div class="font-mono text-[9px] text-[#00E676] mb-3 uppercase">[ KDE RETURNS DISTRIBUTION ]</div>
+                        <div class="font-mono text-[9px] text-[#FFA500] mb-3 uppercase">[ KDE RETURNS DISTRIBUTION ]</div>
                         <div class="h-20 w-full relative">
                             <!-- SVG KDE curve -->
-                            <svg class="w-full h-full overflow-visible" stroke="#00E676" stroke-width="1.5" fill="none">
-                                <path d="M 0,60 Q 40,60 80,56 T 120,40 T 160,8 T 200,48 T 240,56 T 280,60" class="drop-shadow-[0_0_4px_rgba(0,230,118,0.3)]" />
+                            <svg class="w-full h-full overflow-visible" stroke="#FFA500" stroke-width="1.5" fill="none">
+                                <path d="M 0,60 Q 40,60 80,56 T 120,40 T 160,8 T 200,48 T 240,56 T 280,60" class="drop-shadow-[0_0_4px_rgba(255,165,0,0.3)]" />
                                 <line x1="0" y1="60" x2="280" y2="60" stroke="#1C1C21" stroke-width="1" />
-                                <line x1="160" y1="0" x2="160" y2="64" stroke="#0B1C11" stroke-width="1" stroke-dasharray="2 2" />
+                                <line x1="160" y1="0" x2="160" y2="64" stroke="#1A1200" stroke-width="1" stroke-dasharray="2 2" />
                             </svg>
                         </div>
                     </div>
@@ -873,9 +862,9 @@
                 <!-- Day Extremes Card -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-5 flex flex-col justify-between min-h-[180px]">
                     <div>
-                        <div class="font-mono text-[9px] text-[#00E676] mb-3 uppercase">[ DAY EXTREMES ]</div>
+                        <div class="font-mono text-[9px] text-[#FFA500] mb-3 uppercase">[ DAY EXTREMES ]</div>
                         <div class="space-y-2 text-xs font-mono">
-                            <div class="flex justify-between"><span class="text-brand-muted">Max Gain:</span><span class="text-brand-emerald">+₹2,45,210.00</span></div>
+                            <div class="flex justify-between"><span class="text-brand-muted">Max Gain:</span><span class="text-brand-amber">+₹2,45,210.00</span></div>
                             <div class="flex justify-between"><span class="text-brand-muted">Max Loss:</span><span class="text-red-400">-₹1,84,330.00</span></div>
                             <div class="flex justify-between"><span class="text-brand-muted">Avg Win:</span><span class="text-white">+₹32,150.00</span></div>
                             <div class="flex justify-between"><span class="text-brand-muted">Avg Loss:</span><span class="text-white">-₹28,420.00</span></div>
@@ -886,10 +875,10 @@
                 <!-- Activity / Diagnostics -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-5 flex flex-col justify-between min-h-[180px]">
                     <div>
-                        <div class="font-mono text-[9px] text-[#00E676] mb-3 uppercase">[ ENGINE STATUS ]</div>
+                        <div class="font-mono text-[9px] text-[#FFA500] mb-3 uppercase">[ ENGINE STATUS ]</div>
                         <div class="text-xs font-mono space-y-2">
                             <div class="flex justify-between"><span class="text-brand-muted">Simulation Nodes:</span><span class="text-white">Active (24)</span></div>
-                            <div class="flex justify-between"><span class="text-brand-muted">Precision Tolerance:</span><span class="text-brand-emerald">Pass</span></div>
+                            <div class="flex justify-between"><span class="text-brand-muted">Precision Tolerance:</span><span class="text-brand-amber">Pass</span></div>
                             <div class="flex justify-between"><span class="text-brand-muted">Execution Model:</span><span class="text-white">Continuous v3.1</span></div>
                         </div>
                     </div>
@@ -902,7 +891,7 @@
     <section id="metrics" class="scroll-reveal py-24 border-b border-brand-precision bg-transparent">
         <div class="max-w-7xl mx-auto px-6">
             <div class="max-w-xl mb-16">
-                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">02 // INTEGRITY PERFORMANCE</span>
+                <span class="font-mono text-xs text-brand-amber uppercase tracking-wider block mb-3">02 // INTEGRITY PERFORMANCE</span>
                 <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white">Eliminating Approximation Variance</h2>
             </div>
 
@@ -910,7 +899,7 @@
                 <!-- Card 1: Stop Testing Live -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-6 bento-glow flex flex-col justify-between min-h-[220px]">
                     <div>
-                        <div class="font-mono text-[10px] text-brand-emerald mb-4">[ TICK OBSERVABILITY ]</div>
+                        <div class="font-mono text-[10px] text-brand-amber mb-4">[ TICK OBSERVABILITY ]</div>
                         <h4 class="font-display text-lg font-medium text-white mb-2 tracking-tight">Stop Testing in Live Markets</h4>
                         <p class="text-brand-muted text-xs leading-relaxed font-sans">
                             Sensibull forces you to wait for patterns to form in the live market, risking real capital to verify a strategy. Convex replays your multi-leg ideas across actual historical option tick data instantly, ensuring you don't trade on hope.
@@ -922,7 +911,7 @@
                 <!-- Card 2: Margin correctness -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-6 bento-glow flex flex-col justify-between min-h-[220px]">
                     <div>
-                        <div class="font-mono text-[10px] text-brand-emerald mb-4">[ RISK FOOTPRINT ]</div>
+                        <div class="font-mono text-[10px] text-brand-amber mb-4">[ RISK FOOTPRINT ]</div>
                         <h4 class="font-display text-lg font-medium text-white mb-2 tracking-tight">Real Capital Denominators</h4>
                         <p class="text-brand-muted text-xs leading-relaxed font-sans">
                             Aspiring quants blow up accounts because they estimate drawdowns on flat margin metrics. Convex computes dynamic SPAN margins per-tick, giving you absolute mathematical honesty of your capital requirement.
@@ -934,7 +923,7 @@
                 <!-- Card 3: Python detour -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-6 bento-glow flex flex-col justify-between min-h-[220px]">
                     <div>
-                        <div class="font-mono text-[10px] text-brand-emerald mb-4">[ SPEED ADVANTAGE ]</div>
+                        <div class="font-mono text-[10px] text-brand-amber mb-4">[ SPEED ADVANTAGE ]</div>
                         <h4 class="font-display text-lg font-medium text-white mb-2 tracking-tight">Python is a Six-Month Detour</h4>
                         <p class="text-brand-muted text-xs leading-relaxed font-sans">
                             Coding a backtest engine in Python is a detour that kills momentum. Convex translates plain English strategies into executable, validated options models in seconds. Move from hypothesis to verification tonight.
@@ -949,25 +938,25 @@
     <!-- Volume & Trader Longevity Callout Section -->
     <section class="scroll-reveal py-20 border-b border-brand-precision bg-transparent relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="bg-brand-elevate border border-[#00E676]/30 rounded p-12 relative overflow-hidden shadow-[0_0_50px_-20px_rgba(0,230,118,0.15)]">
+            <div class="bg-brand-elevate border border-[#FFA500]/30 rounded p-12 relative overflow-hidden shadow-[0_0_50px_-20px_rgba(255,165,0,0.15)]">
                 <!-- Radial background spotlight -->
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-emerald/5 blur-[80px] pointer-events-none"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-amber/5 blur-[80px] pointer-events-none"></div>
                 
                 <div class="max-w-3xl relative z-10">
-                    <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-4">[ ACCELERATING SYSTEMATIC VOLUME ]</span>
+                    <span class="font-mono text-xs text-brand-amber uppercase tracking-wider block mb-4">[ ACCELERATING SYSTEMATIC VOLUME ]</span>
                     <h2 class="font-display text-2xl sm:text-3xl md:text-5xl font-normal tracking-tight text-white mb-6 leading-tight">
                         Traders lose capital because they don't test. Convex equips them to trade safely.
                     </h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans text-xs mt-8 pt-8 border-t border-brand-precision/50">
                         <div>
-                            <div class="font-mono text-brand-emerald mb-2">// FOR BROKERS & PLATFORMS</div>
+                            <div class="font-mono text-brand-amber mb-2">// FOR BROKERS & PLATFORMS</div>
                             <p class="text-brand-muted leading-relaxed">
                                 Equipping your clients with an institutional-grade backtesting co-pilot drives systematic longevity. Retail traders trade longer and scale up their size safely, directly increasing your platform's transaction volumes.
                             </p>
                         </div>
                         <div>
-                            <div class="font-mono text-brand-emerald mb-2">// FOR ASPIRING QUANTS</div>
+                            <div class="font-mono text-brand-amber mb-2">// FOR ASPIRING QUANTS</div>
                             <p class="text-brand-muted leading-relaxed">
                                 Stop trading on approximations. Transition from retail platforms to clinical, exchange-accurate derivative math. Hardcode your volatility strategies into verified execution code.
                             </p>
@@ -981,20 +970,20 @@
     <section id="topology" class="scroll-reveal py-24 border-b border-brand-precision bg-transparent relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div>
-                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">3.0 GAMMA OBSERVABILITY // STEP 03: TAIL ANALYSIS</span>
+                <span class="font-mono text-xs text-brand-amber uppercase tracking-wider block mb-3">3.0 GAMMA OBSERVABILITY // STEP 03: TAIL ANALYSIS</span>
                 <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white mb-6">Track the Market-Wide Gamma Flip</h2>
                 <p class="text-brand-muted text-sm leading-relaxed mb-6 font-sans">
                     Calibrate your exit gates by monitoring market-maker hedging thresholds. Convex extracts call/put walls and calculates the net Gamma Exposure (GEX) zero-crossing level. Identify when the market shifts from a stabilizing long-gamma regime to an explosive, high-volatility short-gamma regime to adjust your model's limits.
                 </p>
                 <ul class="font-mono text-xs text-brand-muted space-y-3 border-l border-brand-precision pl-4">
-                    <li><span class="text-brand-emerald drop-shadow-[0_0_5px_rgba(0,230,118,0.5)]">[X1]</span> Real-time Gamma Flip zero-crossing calculations</li>
-                    <li><span class="text-brand-emerald drop-shadow-[0_0_5px_rgba(0,230,118,0.5)]">[X2]</span> Instant call/put wall resistance maps</li>
-                    <li><span class="text-brand-emerald drop-shadow-[0_0_5px_rgba(0,230,118,0.5)]">[X3]</span> Net Gamma Exposure (GEX) tick indicators</li>
+                    <li><span class="text-brand-amber drop-shadow-[0_0_5px_rgba(255,165,0,0.5)]">[X1]</span> Real-time Gamma Flip zero-crossing calculations</li>
+                    <li><span class="text-brand-amber drop-shadow-[0_0_5px_rgba(255,165,0,0.5)]">[X2]</span> Instant call/put wall resistance maps</li>
+                    <li><span class="text-brand-amber drop-shadow-[0_0_5px_rgba(255,165,0,0.5)]">[X3]</span> Net Gamma Exposure (GEX) tick indicators</li>
                 </ul>
             </div>
             
-            <div class="bg-brand-elevate border border-brand-precision rounded p-10 math-grid relative flex items-center justify-center min-h-[400px] overflow-hidden">
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-emerald/10 blur-[60px] rounded-full pointer-events-none"></div>
+            <div class="bg-brand-elevate border border-brand-precision rounded p-10 relative flex items-center justify-center min-h-[400px] overflow-hidden">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-amber/10 blur-[60px] rounded-full pointer-events-none"></div>
                 <div class="absolute top-4 left-4 font-mono text-[9px] text-brand-dim">RENDER: NET_GAMMA_EXPOSURE_GEX.sh</div>
                 
                 <!-- GEX Custom Chart SVG -->
@@ -1005,16 +994,16 @@
                     <!-- Strike Level Lines and GEX Horizontal Bars -->
                     <!-- 21,700 Strike (Long GEX) -->
                     <text x="5" y="20" fill="#48484A" font-family="monospace" font-size="6">21,700</text>
-                    <rect x="50" y="16" width="30" height="6" fill="#00E676" opacity="0.8" />
+                    <rect x="50" y="16" width="30" height="6" fill="#FFA500" opacity="0.8" />
                     
                     <!-- 21,600 Strike (Long GEX) -->
                     <text x="5" y="38" fill="#48484A" font-family="monospace" font-size="6">21,600</text>
-                    <rect x="50" y="34" width="40" height="6" fill="#00E676" opacity="0.8" />
+                    <rect x="50" y="34" width="40" height="6" fill="#FFA500" opacity="0.8" />
                     
                     <!-- 21,500 Strike (Gamma Flip Crossing) -->
-                    <text x="5" y="56" fill="#00E676" font-family="monospace" font-weight="bold" font-size="6">21,500</text>
-                    <circle cx="50" cy="53" r="2.5" fill="#08080A" stroke="#00E676" stroke-width="1" />
-                    <line x1="5" y1="53" x2="95" y2="53" stroke="#00E676" stroke-width="0.5" stroke-dasharray="2 2" />
+                    <text x="5" y="56" fill="#FFA500" font-family="monospace" font-weight="bold" font-size="6">21,500</text>
+                    <circle cx="50" cy="53" r="2.5" fill="#08080A" stroke="#FFA500" stroke-width="1" />
+                    <line x1="5" y1="53" x2="95" y2="53" stroke="#FFA500" stroke-width="0.5" stroke-dasharray="2 2" />
                     
                     <!-- 21,400 Strike (Short GEX) -->
                     <text x="5" y="74" fill="#48484A" font-family="monospace" font-size="6">21,400</text>
@@ -1025,7 +1014,7 @@
                     <rect x="15" y="88" width="35" height="6" fill="#F87171" opacity="0.8" />
                 </svg>
 
-                <div class="absolute bottom-6 right-6 font-mono text-[8px] text-brand-emerald bg-brand-void px-1.5 py-0.5 border border-brand-emerald/40 shadow-[0_0_10px_rgba(0,230,118,0.2)]">GAMMA_FLIP: 21,500</div>
+                <div class="absolute bottom-6 right-6 font-mono text-[8px] text-brand-amber bg-brand-void px-1.5 py-0.5 border border-brand-amber/40 shadow-[0_0_10px_rgba(255,165,0,0.2)]">GAMMA_FLIP: 21,500</div>
                 <div class="absolute bottom-6 left-6 font-mono text-[8px] text-brand-muted bg-brand-void px-1.5 py-0.5 border border-brand-precision">GEX_PROFILE</div>
             </div>
         </div>
@@ -1033,7 +1022,7 @@
 
     <section id="routing" class="scroll-reveal py-24 border-b border-brand-precision bg-transparent">
         <div class="max-w-7xl mx-auto px-6 text-center mb-16">
-            <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">04 // PIPELINE LOGIC</span>
+            <span class="font-mono text-xs text-brand-amber uppercase tracking-wider block mb-3">04 // PIPELINE LOGIC</span>
             <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white">Algorithmic Routing Structures</h2>
         </div>
 
@@ -1060,16 +1049,16 @@
                 </div>
 
                 <div class="w-16 h-px node-line relative">
-                    <div class="absolute inset-0 bg-brand-emerald/20 blur-[2px]"></div>
+                    <div class="absolute inset-0 bg-brand-amber/20 blur-[2px]"></div>
                 </div>
 
-                <div class="bg-brand-elevate border border-brand-emerald rounded w-48 p-4 z-10 relative node-aura bg-brand-emerald/5">
+                <div class="bg-brand-elevate border border-brand-amber rounded w-48 p-4 z-10 relative node-aura bg-brand-amber/5">
                     <div class="flex justify-between items-center mb-3">
-                        <span class="w-2 h-2 rounded-full bg-brand-emerald animate-pulse shadow-[0_0_8px_rgba(0,230,118,0.8)]"></span>
-                        <span class="font-mono text-[9px] text-brand-emerald drop-shadow-[0_0_2px_rgba(0,230,118,0.8)]">EXECUTION</span>
+                        <span class="w-2 h-2 rounded-full bg-brand-amber animate-pulse shadow-[0_0_8px_rgba(255,165,0,0.8)]"></span>
+                        <span class="font-mono text-[9px] text-brand-amber drop-shadow-[0_0_2px_rgba(255,165,0,0.8)]">EXECUTION</span>
                     </div>
                     <div class="font-sans text-[11px] text-white">Dynamic Hedging</div>
-                    <div class="font-mono text-[9px] text-brand-emerald/70 mt-1">Target: Capital Preserv.</div>
+                    <div class="font-mono text-[9px] text-brand-amber/70 mt-1">Target: Capital Preserv.</div>
                 </div>
             </div>
         </div>
@@ -1081,16 +1070,16 @@
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex justify-between items-end mb-8">
                 <div>
-                    <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-2">4.0 GREEKS // STEP 04: RISK SKEW ANALYSIS</span>
+                    <span class="font-mono text-xs text-brand-amber uppercase tracking-wider block mb-2">4.0 GREEKS // STEP 04: RISK SKEW ANALYSIS</span>
                     <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white">Observe Implied Volatility and Greek skew</h2>
                 </div>
-                <div class="font-mono text-[10px] text-brand-emerald flex items-center space-x-2">
-                    <span class="w-1.5 h-1.5 bg-brand-emerald rounded-full animate-pulse shadow-[0_0_5px_rgba(0,230,118,0.8)]"></span>
+                <div class="font-mono text-[10px] text-brand-amber flex items-center space-x-2">
+                    <span class="w-1.5 h-1.5 bg-brand-amber rounded-full animate-pulse shadow-[0_0_5px_rgba(255,165,0,0.8)]"></span>
                     <span>LIVE_SOCKET_CONNECTED</span>
                 </div>
             </div>
 
-            <div class="bg-brand-elevate border border-brand-precision rounded overflow-x-auto shadow-[0_0_30px_-15px_rgba(0,230,118,0.1)]">
+            <div class="bg-brand-elevate border border-brand-precision rounded overflow-x-auto shadow-[0_0_30px_-15px_rgba(255,165,0,0.1)]">
                 <table class="w-full text-left font-mono text-[11px] whitespace-nowrap">
                     <thead>
                         <tr class="text-brand-dim bg-brand-void/50">
@@ -1111,18 +1100,18 @@
                             <td class="py-3 px-4">0.021</td>
                             <td class="py-3 px-4 text-right text-brand-dim">TRACKING</td>
                         </tr>
-                        <tr class="bg-brand-emerald/10 hover:bg-brand-emerald/20 transition-colors shadow-[inset_0_0_20px_rgba(0,230,118,0.05)]">
-                            <td class="py-3 px-4 text-white">21,500 <span class="text-brand-emerald ml-1 animate-pulse">*</span></td>
-                            <td class="py-3 px-4 text-brand-emerald font-medium">185.20</td>
+                        <tr class="bg-brand-amber/10 hover:bg-brand-amber/20 transition-colors shadow-[inset_0_0_20px_rgba(255,165,0,0.05)]">
+                            <td class="py-3 px-4 text-white">21,500 <span class="text-brand-amber ml-1 animate-pulse">*</span></td>
+                            <td class="py-3 px-4 text-brand-amber font-medium">185.20</td>
                             <td class="py-3 px-4 text-brand-pure">0.52</td>
                             <td class="py-3 px-4 text-brand-pure">19.2%</td>
                             <td class="py-3 px-4 text-brand-pure">0.045</td>
-                            <td class="py-3 px-4 text-right text-brand-emerald font-medium drop-shadow-[0_0_5px_rgba(0,230,118,0.4)]">ACTIVE_HEDGE</td>
+                            <td class="py-3 px-4 text-right text-brand-amber font-medium drop-shadow-[0_0_5px_rgba(255,165,0,0.4)]">ACTIVE_HEDGE</td>
                         </tr>
                         <tr class="hover:bg-brand-precision/20 transition-colors">
                             <td class="py-3 px-4 text-white">21,600</td>
                             <td class="py-3 px-4">245.80</td>
-                            <td class="py-3 px-4 text-brand-emerald">+0.81</td>
+                            <td class="py-3 px-4 text-brand-amber">+0.81</td>
                             <td class="py-3 px-4">21.1%</td>
                             <td class="py-3 px-4">0.018</td>
                             <td class="py-3 px-4 text-right text-brand-dim">TRACKING</td>
@@ -1130,7 +1119,7 @@
                         <tr class="hover:bg-brand-precision/20 transition-colors">
                             <td class="py-3 px-4 text-white">21,700</td>
                             <td class="py-3 px-4">310.15</td>
-                            <td class="py-3 px-4 text-brand-emerald">+0.94</td>
+                            <td class="py-3 px-4 text-brand-amber">+0.94</td>
                             <td class="py-3 px-4">22.8%</td>
                             <td class="py-3 px-4">0.005</td>
                             <td class="py-3 px-4 text-right text-brand-dim">OOTM</td>
@@ -1145,7 +1134,7 @@
     <section id="founders" class="scroll-reveal py-24 border-b border-brand-precision bg-transparent relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16">
-                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">5.0 SPECIFICATIONS // STEP 05: ENTERPRISE INFRASTRUCTURE</span>
+                <span class="font-mono text-xs text-brand-amber uppercase tracking-wider block mb-3">5.0 SPECIFICATIONS // STEP 05: ENTERPRISE INFRASTRUCTURE</span>
                 <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white mb-4">Enterprise Quant Infrastructure</h2>
                 <p class="text-brand-muted text-xs max-w-lg mx-auto font-sans leading-relaxed">
                     Convex interfaces seamlessly with institutional desks. Run complex options backtests, optimize margin capital, and route execution pipelines via low-latency gateways.
@@ -1156,7 +1145,7 @@
                 <!-- Spec 1 -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-6 flex flex-col justify-between min-h-[160px]">
                     <div>
-                        <div class="text-brand-emerald text-[10px] mb-3">[ MARGIN MATH ]</div>
+                        <div class="text-brand-amber text-[10px] mb-3">[ MARGIN MATH ]</div>
                         <h4 class="text-white font-bold text-sm mb-2">NSE/NIFTY SPAN Engine</h4>
                         <p class="text-brand-muted text-[10px] leading-relaxed">
                             Simulate margin envelopes cached dynamically from historical NSE/NIFTY parameters to compute realistic capital utilization.
@@ -1167,7 +1156,7 @@
                 <!-- Spec 2 -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-6 flex flex-col justify-between min-h-[160px]">
                     <div>
-                        <div class="text-brand-emerald text-[10px] mb-3">[ IN-BROWSER PARQUET ]</div>
+                        <div class="text-brand-amber text-[10px] mb-3">[ IN-BROWSER PARQUET ]</div>
                         <h4 class="text-white font-bold text-sm mb-2">Client WASM Engine</h4>
                         <p class="text-brand-muted text-[10px] leading-relaxed">
                             Zero server database queries for logs. Equity curves and drawdowns are computed directly in the browser via DuckDB-WASM.
@@ -1178,7 +1167,7 @@
                 <!-- Spec 3 -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-6 flex flex-col justify-between min-h-[160px]">
                     <div>
-                        <div class="text-brand-emerald text-[10px] mb-3">[ OPTION PRICE TICKING ]</div>
+                        <div class="text-brand-amber text-[10px] mb-3">[ OPTION PRICE TICKING ]</div>
                         <h4 class="text-white font-bold text-sm mb-2">1-Minute Resolution</h4>
                         <p class="text-brand-muted text-[10px] leading-relaxed">
                             Backtest multi-leg structures over actual historical 1-minute option contracts, not index approximations.
@@ -1189,7 +1178,7 @@
                 <!-- Spec 4 -->
                 <div class="bg-brand-elevate border border-brand-precision rounded p-6 flex flex-col justify-between min-h-[160px]">
                     <div>
-                        <div class="text-brand-emerald text-[10px] mb-3">[ AST VALIDATION ]</div>
+                        <div class="text-brand-amber text-[10px] mb-3">[ AST VALIDATION ]</div>
                         <h4 class="text-white font-bold text-sm mb-2">4-Stage Code Gate</h4>
                         <p class="text-brand-muted text-[10px] leading-relaxed">
                             Echo validates models securely through a compiler gate checking AST parsing, imports allowlists, static types, and dry runs.
@@ -1205,7 +1194,7 @@
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] ambient-glow blur-[90px] pointer-events-none z-0"></div>
         
         <div class="max-w-3xl mx-auto px-6 text-center relative z-10">
-            <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">6.0 ACCESS PROTOCOL // STEP 06: INITIALIZE GATEWAY</span>
+            <span class="font-mono text-xs text-brand-amber uppercase tracking-wider block mb-3">6.0 ACCESS PROTOCOL // STEP 06: INITIALIZE GATEWAY</span>
             <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-white mb-6">Initialize Priority Access</h2>
             <p class="text-brand-muted text-sm max-w-lg mx-auto font-sans mb-12 leading-relaxed">
                 We are launch-integrating with 4 major brokers. Access is strictly limited to serious derivative quants who require mathematical integrity.
@@ -1214,7 +1203,7 @@
             <div class="max-w-md mx-auto">
                 <form id="footer-waitlist-form" onsubmit="event.preventDefault(); handleWaitlistSubmit('footer')" class="flex flex-col sm:flex-row items-stretch gap-2 p-1 bg-brand-elevate border border-brand-precision rounded">
                     <input id="footer-waitlist-email" type="email" placeholder="Enter option quant credentials..." required class="flex-1 bg-transparent border-none text-xs font-mono text-brand-pure focus:outline-none px-3 py-2.5">
-                    <button type="submit" class="bg-brand-emerald text-brand-void text-xs font-mono font-bold px-5 py-2.5 rounded hover:bg-white transition-colors uppercase">
+                    <button type="submit" class="bg-brand-amber text-brand-void text-xs font-mono font-bold px-5 py-2.5 rounded hover:bg-white transition-colors uppercase">
                         INITIALIZE ACCESS
                     </button>
                 </form>
@@ -1241,9 +1230,9 @@
             <!-- "TO THE TOP" Button -->
             <div class="flex flex-col items-center mb-16">
                 <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="group flex flex-col items-center space-y-3 focus:outline-none">
-                    <span class="font-mono text-[9px] text-brand-muted tracking-widest uppercase group-hover:text-brand-emerald transition-colors">TO THE TOP</span>
-                    <div class="w-8 h-8 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-emerald transition-colors">
-                        <svg class="w-3.5 h-3.5 text-brand-muted group-hover:text-brand-emerald transition-colors transform group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <span class="font-mono text-[9px] text-brand-muted tracking-widest uppercase group-hover:text-brand-amber transition-colors">TO THE TOP</span>
+                    <div class="w-8 h-8 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-amber transition-colors">
+                        <svg class="w-3.5 h-3.5 text-brand-muted group-hover:text-brand-amber transition-colors transform group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
                         </svg>
                     </div>
@@ -1252,7 +1241,7 @@
 
             <!-- Massive Brand Wordmark -->
             <div class="w-full flex flex-col items-center justify-center mb-16 select-none overflow-hidden logo-container cursor-pointer">
-                <svg class="w-14 h-9 text-brand-emerald mb-6 hover:scale-105 transition-transform duration-300" viewBox="0 0 1024 652" fill="currentColor">
+                <svg class="w-14 h-9 text-brand-amber mb-6 hover:scale-105 transition-transform duration-300" viewBox="0 0 1024 652" fill="currentColor">
                     <!-- Shape 1: Left C-loop -->
                     <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
                     <!-- Shape 2: Top-middle triangle -->
@@ -1264,7 +1253,7 @@
                     <!-- Shape 5: Bottom-right loop -->
                     <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
                 </svg>
-                <h2 class="text-[5vw] font-display font-black tracking-tighter text-white leading-none uppercase opacity-[0.85] hover:text-brand-emerald transition-colors duration-500 whitespace-nowrap" style="font-size: clamp(28px, 5vw, 96px);">
+                <h2 class="text-[5vw] font-display font-black tracking-tighter text-white leading-none uppercase opacity-[0.85] hover:text-brand-amber transition-colors duration-500 whitespace-nowrap" style="font-size: clamp(28px, 5vw, 96px);">
                     convex hedge
                 </h2>
             </div>
@@ -1279,7 +1268,7 @@
                     <a href="#" class="hover:text-brand-pure transition-colors">Privacy Policy</a>
                 </div>
                 <div>
-                    <span class="text-brand-emerald">DEVSHELL_RUNNING // INITIALIZE_HANDSHAKE -></span>
+                    <span class="text-brand-amber">DEVSHELL_RUNNING // INITIALIZE_HANDSHAKE -></span>
                 </div>
             </div>
         </div>
@@ -1391,14 +1380,14 @@
             // Simulate thinking
             const thinkingMsg = document.createElement('div');
             thinkingMsg.className = 'bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse';
-            thinkingMsg.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Evaluating instruction...`;
+            thinkingMsg.innerHTML = `<span class="text-[#FFA500] font-bold">ECHO:</span> Evaluating instruction...`;
             history.appendChild(thinkingMsg);
             history.scrollTop = history.scrollHeight;
 
             setTimeout(() => {
                 history.removeChild(thinkingMsg);
                 const response = document.createElement('div');
-                response.className = 'bg-brand-void/50 p-3 rounded border border-[#00E676]/20';
+                response.className = 'bg-brand-void/50 p-3 rounded border border-[#FFA500]/20';
                 
                 if (valUpdate === 'hedge' || text.toLowerCase().includes('hedge')) {
                     // Activate Hedging Node!
@@ -1420,7 +1409,7 @@
                     // Redraw paths
                     drawStrategyLines();
 
-                    response.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Dynamic Hedging rules compiled successfully. Added <code>delta_neutral_hedge</code> at L280. Re-routed execution flow through HEDGING node.`;
+                    response.innerHTML = `<span class="text-[#FFA500] font-bold">ECHO:</span> Dynamic Hedging rules compiled successfully. Added <code>delta_neutral_hedge</code> at L280. Re-routed execution flow through HEDGING node.`;
                 } else if (valUpdate && valUpdate !== 'hedge') {
                     // Trigger exit-time visual update
                     const exitVal = document.getElementById('exit-time-val');
@@ -1428,7 +1417,7 @@
                     exitVal.innerText = valUpdate;
                     
                     // Flash effect
-                    exitVal.className = 'text-black bg-[#00E676] px-1 rounded font-bold';
+                    exitVal.className = 'text-black bg-[#FFA500] px-1 rounded font-bold';
                     setTimeout(() => {
                         exitVal.className = 'text-white font-bold transition-all duration-300';
                     }, 1000);
@@ -1436,9 +1425,9 @@
                     // Redraw paths
                     drawStrategyLines();
 
-                    response.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Patched cell metadata. <code>exit_time</code> updated: <code>${oldVal}</code> → <code>${valUpdate}</code>. Recompiling strategy node... Done.`;
+                    response.innerHTML = `<span class="text-[#FFA500] font-bold">ECHO:</span> Patched cell metadata. <code>exit_time</code> updated: <code>${oldVal}</code> → <code>${valUpdate}</code>. Recompiling strategy node... Done.`;
                 } else {
-                    response.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Parameter update logged. Node instructions compiled successfully. No anomalies detected.`;
+                    response.innerHTML = `<span class="text-[#FFA500] font-bold">ECHO:</span> Parameter update logged. Node instructions compiled successfully. No anomalies detected.`;
                 }
                 history.appendChild(response);
                 history.scrollTop = history.scrollHeight;
@@ -1592,7 +1581,7 @@
                 
                 const iv = (15 + (Math.abs(strike - 21500) / 100) * 1.5 + Math.sin(ticksReceived / 10) * 0.5).toFixed(1);
                 
-                const pulseClass = Math.random() > 0.8 ? 'text-brand-emerald animate-pulse font-medium' : '';
+                const pulseClass = Math.random() > 0.8 ? 'text-brand-amber animate-pulse font-medium' : '';
                 
                 html += `
                     <tr class="hover:bg-brand-precision/10 transition-colors">
@@ -1671,12 +1660,12 @@
             if (!emailInput || !feedback) return;
 
             const email = emailInput.value;
-            feedback.innerHTML = `<span class="text-brand-emerald animate-pulse">&gt; VERIFYING QUANT CREDENTIALS...</span>`;
+            feedback.innerHTML = `<span class="text-brand-amber animate-pulse">&gt; VERIFYING QUANT CREDENTIALS...</span>`;
             
             setTimeout(() => {
                 const randomId = Math.floor(1000 + Math.random() * 9000);
                 feedback.innerHTML = `
-                    <span class="text-brand-emerald font-bold">
+                    <span class="text-brand-amber font-bold">
                         [SUCCESS] ACCESS_GRANTED // ID: CH-${randomId} REGISTERED
                     </span>
                     <span class="text-brand-dim block mt-0.5">&gt; Priority list position #1,${randomId} // Email: ${email}</span>
@@ -1709,7 +1698,7 @@
             function resetDemoState() {
                 chatHistory.innerHTML = `
                     <div class="bg-brand-void/50 p-3 rounded border border-brand-precision transition-all duration-300">
-                        <span class="text-[#00E676] font-bold">ECHO:</span> Hello, I have mapped your strangle strategy topology. Describe a change or use the suggestions below.
+                        <span class="text-[#FFA500] font-bold">ECHO:</span> Hello, I have mapped your strangle strategy topology. Describe a change or use the suggestions below.
                     </div>
                 `;
                 nodes.forEach(node => {
@@ -1754,7 +1743,7 @@
 
                 if (exitTimeVal) {
                     exitTimeVal.innerText = '14:30';
-                    exitTimeVal.classList.remove('text-[#00E676]');
+                    exitTimeVal.classList.remove('text-[#FFA500]');
                 }
 
                 // Reset backdrop logo to full glowing visibility
@@ -1776,7 +1765,7 @@
                     : "bg-brand-precision/30 p-2.5 rounded text-brand-muted text-right transition-all duration-300";
                 
                 div.innerHTML = isEcho 
-                    ? `<span class="text-[#00E676] font-bold">ECHO:</span> ${text}`
+                    ? `<span class="text-[#FFA500] font-bold">ECHO:</span> ${text}`
                     : `<span class="text-white font-medium">YOU:</span> ${text}`;
                 
                 chatHistory.appendChild(div);
@@ -1815,7 +1804,7 @@
 
                         const thinking = document.createElement('div');
                         thinking.className = "bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse";
-                        thinking.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Compiling strangle parameters...`;
+                        thinking.innerHTML = `<span class="text-[#FFA500] font-bold">ECHO:</span> Compiling strangle parameters...`;
                         chatHistory.appendChild(thinking);
                         chatHistory.scrollTop = chatHistory.scrollHeight;
 
@@ -1886,7 +1875,7 @@
 
                     const thinking = document.createElement('div');
                     thinking.className = "bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse";
-                    thinking.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Appending hedging overlay...`;
+                    thinking.innerHTML = `<span class="text-[#FFA500] font-bold">ECHO:</span> Appending hedging overlay...`;
                     chatHistory.appendChild(thinking);
                     chatHistory.scrollTop = chatHistory.scrollHeight;
 
@@ -1938,7 +1927,7 @@
 
                     const thinking = document.createElement('div');
                     thinking.className = "bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse";
-                    thinking.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Updating exit parameter...`;
+                    thinking.innerHTML = `<span class="text-[#FFA500] font-bold">ECHO:</span> Updating exit parameter...`;
                     chatHistory.appendChild(thinking);
                     chatHistory.scrollTop = chatHistory.scrollHeight;
 
@@ -1948,8 +1937,8 @@
 
                         if (exitTimeVal) {
                             exitTimeVal.innerText = '14:38';
-                            exitTimeVal.classList.add('text-[#00E676]');
-                            setTimeout(() => exitTimeVal.classList.remove('text-[#00E676]'), 1500);
+                            exitTimeVal.classList.add('text-[#FFA500]');
+                            setTimeout(() => exitTimeVal.classList.remove('text-[#FFA500]'), 1500);
                         }
 
                         setTimeout(step1, 6500);
@@ -2028,7 +2017,7 @@
                 } else {
                     // Complete loading
                     if (logo) {
-                        logo.setAttribute('fill', '#00E676');
+                        logo.setAttribute('fill', '#FFA500');
                         logo.style.transition = 'fill 0.4s ease';
                     }
 
@@ -2133,7 +2122,7 @@
 
                 // Draw Connecting Lines
                 ctx.lineWidth = 0.7;
-                ctx.strokeStyle = 'rgba(0, 230, 118, 0.14)';
+                ctx.strokeStyle = 'rgba(255, 165, 0, 0.14)';
 
                 for (let r = 0; r < rows; r++) {
                     for (let c = 0; c < cols; c++) {
@@ -2158,7 +2147,7 @@
                 }
 
                 // Draw Intersection Dots
-                ctx.fillStyle = 'rgba(0, 230, 118, 0.32)';
+                ctx.fillStyle = 'rgba(255, 165, 0, 0.32)';
                 for (let r = 0; r < rows; r++) {
                     for (let c = 0; c < cols; c++) {
                         const p = projectedGrid[r][c];
@@ -2174,7 +2163,7 @@
 
         // Mathematical Text Scrambler (Option Quants <-> Derivative Traders) - Calm & Subtle
         function initHeroTextScrambler() {
-            const el = document.querySelector('h1 span.text-brand-emerald');
+            const el = document.querySelector('h1 span.text-brand-amber');
             const indicator = document.getElementById('scramble-indicator');
             if (!el) return;
 
@@ -2292,7 +2281,7 @@
             setTimeout(() => {
                 try { animateVolatilitySmile(); } catch(e) {}
                 setInterval(() => { try { animateVolatilitySmile(); } catch(e) {} }, 3000);
-                try { initSideCandles(); } catch(e) {}
+                
                 try { initQuantHUD(); } catch(e) {}
                 try { initHeroTextScrambler(); } catch(e) {}
             }, 100);
@@ -2367,202 +2356,7 @@
             }, 1500);
         }
 
-        // Full-viewport live Bloomberg terminal background
-        function initSideCandles() {
-            const canvas = document.getElementById('bg-chart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            function resizeCanvas() {
-                canvas.width  = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-
-            // ── OHLC data ────────────────────────────────────────────────────
-            const TOTAL = 300;
-            const candles = [];
-            let p = 21500;
-            for (let i = 0; i < TOTAL; i++) {
-                const o = p;
-                const c = p + (Math.random() - 0.48) * 80;
-                const h = Math.max(o, c) + Math.random() * 38;
-                const l = Math.min(o, c) - Math.random() * 38;
-                candles.push({ o, c, h, l });
-                p = c;
-            }
-
-            // ── State ────────────────────────────────────────────────────────
-            const VISIBLE   = 60;                        // candles visible
-            let targetOffset = TOTAL - VISIBLE - 5;     // where we want to be
-            let smoothOffset = targetOffset;             // lerped display offset
-            let momentum     = 0;
-            let lastScrollY  = window.scrollY;
-
-            // Smooth price range (avoid Y-axis jumping)
-            let smoothPMin = 0, smoothPMax = 0;
-            let firstFrame = true;
-
-            // HUD stats — computed once per second, not every frame
-            let hudVol = '1.42M', hudIV = '13.21%', hudTs = '--:--:--';
-            setInterval(() => {
-                hudVol = `${(Math.random() * 0.5 + 1.1).toFixed(2)}M`;
-                hudIV  = `${(Math.random() * 2   + 12).toFixed(2)}%`;
-                const n = new Date();
-                hudTs  = `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
-            }, 1000);
-
-            // Scroll -> gentle momentum
-            window.addEventListener('scroll', () => {
-                const delta = window.scrollY - lastScrollY;
-                lastScrollY  = window.scrollY;
-                momentum     = delta * 0.04;   // very gentle scaling
-            });
-
-            // Live price tick: tiny move, slow interval
-            setInterval(() => {
-                const last = candles[candles.length - 1];
-                last.c += (Math.random() - 0.48) * 6;  // ±6 pts max
-                last.h  = Math.max(last.h, last.c);
-                last.l  = Math.min(last.l, last.c);
-                // rarely close a candle
-                if (Math.random() < 0.04) {
-                    candles.push({ o: last.c, c: last.c + (Math.random()-0.5)*10,
-                                   h: last.c + Math.random()*20, l: last.c - Math.random()*20 });
-                    if (candles.length > TOTAL + 60) candles.shift();
-                }
-            }, 1800);
-
-            // ── Render loop ──────────────────────────────────────────────────
-            function draw() {
-                requestAnimationFrame(draw);
-
-                const W = canvas.width;
-                const H = canvas.height;
-
-                // Apply momentum with slow decay (smooth glide)
-                if (Math.abs(momentum) > 0.005) {
-                    targetOffset += momentum;
-                    momentum     *= 0.95;   // slow friction = smooth coast
-                } else {
-                    // Slow, automatic live market drift (smooth pan leftward)
-                    targetOffset += 0.008;
-                }
-
-                // Dynamically grow candles array if we approach the end
-                if (targetOffset > candles.length - VISIBLE - 25) {
-                    let lastP = candles[candles.length - 1].c;
-                    for (let k = 0; k < 60; k++) {
-                        const o = lastP;
-                        const c = lastP + (Math.random() - 0.48) * 80;
-                        const h = Math.max(o, c) + Math.random() * 38;
-                        const l = Math.min(o, c) - Math.random() * 38;
-                        candles.push({ o, c, h, l });
-                        lastP = c;
-                    }
-                }
-                
-                targetOffset = Math.max(0, Math.min(targetOffset, candles.length - VISIBLE));
-
-                // Lerp display offset toward target (silky smooth pan)
-                smoothOffset += (targetOffset - smoothOffset) * 0.08;
-
-                // Layout
-                const ML = 0, MR = 64, MT = 36, MB = 28;
-                const CW = W - ML - MR;
-                const CH = H - MT - MB;
-                const cw = CW / VISIBLE;
-
-                const si   = Math.floor(smoothOffset);
-                const frac = smoothOffset - si;
-
-                // Compute raw price range for visible window
-                let rMin = Infinity, rMax = -Infinity;
-                for (let i = si; i < si + VISIBLE + 1 && i < candles.length; i++) {
-                    rMin = Math.min(rMin, candles[i].l);
-                    rMax = Math.max(rMax, candles[i].h);
-                }
-                const padPct = (rMax - rMin) * 0.15;
-                rMin -= padPct; rMax += padPct;
-
-                // Smooth price range interpolation (no Y-axis snapping)
-                if (firstFrame) { smoothPMin = rMin; smoothPMax = rMax; firstFrame = false; }
-                smoothPMin += (rMin - smoothPMin) * 0.04;
-                smoothPMax += (rMax - smoothPMax) * 0.04;
-
-                const toY = (pr) => MT + CH - ((pr - smoothPMin) / (smoothPMax - smoothPMin)) * CH;
-
-                ctx.clearRect(0, 0, W, H);
-
-
-
-                // ── Candles ───────────────────────────────────────────────────
-                for (let i = -1; i < VISIBLE + 2; i++) {
-                    const ci = si + i;
-                    if (ci < 0 || ci >= candles.length) continue;
-                    const cd = candles[ci];
-                    const isGreen = cd.c >= cd.o;
-
-                    const cx    = ML + (i - frac) * cw + cw / 2;
-                    if (cx < -cw || cx > W + cw) continue;
-
-                    const openY  = toY(cd.o);
-                    const closeY = toY(cd.c);
-                    const highY  = toY(cd.h);
-                    const lowY   = toY(cd.l);
-                    const bTop   = Math.min(openY, closeY);
-                    const bH     = Math.max(1, Math.abs(openY - closeY));
-                    const bW     = Math.max(2.5, cw * 0.58);
-
-                    // Wick — brighter
-                    ctx.strokeStyle = isGreen ? 'rgba(0,220,100,0.45)' : 'rgba(230,80,80,0.45)';
-                    ctx.lineWidth   = 0.9;
-                    ctx.beginPath();
-                    ctx.moveTo(cx, highY);
-                    ctx.lineTo(cx, lowY);
-                    ctx.stroke();
-
-                    // Body — brighter
-                    ctx.fillStyle = isGreen ? 'rgba(0,220,100,0.55)' : 'rgba(230,80,80,0.55)';
-                    ctx.beginPath();
-                    ctx.roundRect(cx - bW / 2, bTop, bW, bH, 1);
-                    ctx.fill();
-                }
-
-                // ── Current price line ────────────────────────────────────────
-                const lastC = candles[candles.length - 1];
-                const curY  = toY(lastC.c);
-                ctx.strokeStyle = 'rgba(0,180,90,0.3)';
-                ctx.lineWidth   = 0.7;
-                ctx.setLineDash([4, 8]);
-                ctx.beginPath();
-                ctx.moveTo(ML, curY);
-                ctx.lineTo(W - MR, curY);
-                ctx.stroke();
-                ctx.setLineDash([]);
-
-                // Price badge
-                ctx.fillStyle = 'rgba(0,180,90,0.45)';
-                ctx.beginPath();
-                ctx.roundRect(W - MR + 1, curY - 7, MR - 2, 14, 2);
-                ctx.fill();
-                ctx.fillStyle = 'rgba(8,8,10,0.9)';
-                ctx.font      = '8px JetBrains Mono, monospace';
-                ctx.textAlign = 'center';
-                ctx.fillText(Math.round(lastC.c).toLocaleString(), W - MR + 1 + (MR - 2) / 2, curY + 3);
-
-                // ── Faint terminal info ───────────────────────────────────────
-                ctx.fillStyle = 'rgba(55,55,60,0.55)';
-                ctx.font      = '7.5px JetBrains Mono, monospace';
-                ctx.textAlign = 'left';
-                ctx.fillText(`NIFTY50  1-MIN  |  VOL: ${hudVol}  |  IV: ${hudIV}`, ML + 8, MT - 16);
-                ctx.textAlign = 'right';
-                ctx.fillText(hudTs + '  IST', W - MR - 8, MT - 16);
-            }
-
-            draw();
-        }
+        
 
 
         // Chat send key listener
@@ -2577,7 +2371,7 @@
     </script>
 
     <!-- Floating Quant HUD Cursor Overlay -->
-    <div id="quant-hud" class="fixed pointer-events-none z-50 font-mono text-[7px] text-[#00E676] opacity-0 transition-opacity duration-200 bg-[#08080A]/95 border border-[#1C1C21] px-1.5 py-0.5 rounded shadow-[0_0_15px_rgba(0,230,118,0.08)]">
+    <div id="quant-hud" class="fixed pointer-events-none z-50 font-mono text-[7px] text-[#FFA500] opacity-0 transition-opacity duration-200 bg-[#08080A]/95 border border-[#1C1C21] px-1.5 py-0.5 rounded shadow-[0_0_15px_rgba(255,165,0,0.08)]">
         X: <span id="hud-x">0</span> Y: <span id="hud-y">0</span> <span class="text-brand-dim">/</span> δ: <span id="hud-delta">0.00</span> <span class="text-brand-dim">/</span> IV: <span id="hud-iv">12.0%</span>
     </div>
 
@@ -2585,13 +2379,13 @@
     <div class="fixed inset-0 pointer-events-none z-40 select-none overflow-hidden font-mono text-[7px] text-brand-muted opacity-50 hidden md:block">
         <!-- Top Left telemetry block -->
         <div class="absolute top-4 left-4 flex flex-col items-start leading-relaxed">
-            <span class="text-brand-emerald font-bold">┌ CONVEX_TERMINAL_v3.2</span>
+            <span class="text-brand-amber font-bold">┌ CONVEX_TERMINAL_v3.2</span>
             <span>│ PORT: 8000 // HOST: LOCALHOST</span>
             <span>│ DATA_FEED: ACTIVE // TELEMETRY: ON</span>
         </div>
         <!-- Top Right telemetry block -->
         <div class="absolute top-4 right-4 flex flex-col items-end leading-relaxed">
-            <span class="text-brand-emerald font-bold">SYS_MODE: COMPUTE_ENGINE ┐</span>
+            <span class="text-brand-amber font-bold">SYS_MODE: COMPUTE_ENGINE ┐</span>
             <span>INDEX_REF: NIFTY50_STREAM │</span>
             <span>LATENCY: <span id="hud-latency">1.1</span>ms │</span>
         </div>
@@ -2599,13 +2393,13 @@
         <div class="absolute bottom-4 left-4 flex flex-col items-start leading-relaxed">
             <span>│ SYS_MEM: [124.6 MB] // THREADS: [8]</span>
             <span>│ SCROLL_Y: <span id="hud-scroll-y">0</span>px</span>
-            <span class="text-brand-emerald font-bold">└ CONTEXT_STATE: VERIFIED</span>
+            <span class="text-brand-amber font-bold">└ CONTEXT_STATE: VERIFIED</span>
         </div>
         <!-- Bottom Right telemetry block -->
         <div class="absolute bottom-4 right-4 flex flex-col items-end leading-relaxed">
             <span>SYS_INTEGRITY: 100.00% │</span>
             <span>EST_FPS: 60.0 │</span>
-            <span class="text-brand-emerald font-bold">SECURE_CHANNEL_READY ┘</span>
+            <span class="text-brand-amber font-bold">SECURE_CHANNEL_READY ┘</span>
         </div>
 
         <!-- Viewport Margin Rulers -->
@@ -2633,15 +2427,12 @@
         </div>
 
         <!-- Dynamic Tracking Crosshairs -->
-        <div id="hud-crosshair-h" class="absolute left-0 right-0 h-px bg-brand-emerald/10" style="top: -100px; transition: top 0.04s linear;"></div>
-        <div id="hud-crosshair-v" class="absolute top-0 bottom-0 w-px bg-brand-emerald/10" style="left: -100px; transition: left 0.04s linear;"></div>
+        <div id="hud-crosshair-h" class="absolute left-0 right-0 h-px bg-brand-amber/10" style="top: -100px; transition: top 0.04s linear;"></div>
+        <div id="hud-crosshair-v" class="absolute top-0 bottom-0 w-px bg-brand-amber/10" style="left: -100px; transition: left 0.04s linear;"></div>
     </div>
 
     <!-- Ambient Mouse Glow (fixed background flashlight) -->
-    <div id="mouse-glow" style="position:fixed;width:400px;height:400px;background:radial-gradient(circle, rgba(0, 230, 118, 0.08) 0%, transparent 70%);transform:translate(-50%,-50%);pointer-events:none;z-index:-1;opacity:0;transition:opacity 0.25s ease;"></div>
-
-    <!-- Full-viewport live Bloomberg terminal canvas background -->
-    <canvas id="bg-chart" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-2;opacity:0.15;pointer-events:none;"></canvas>
+    <div id="mouse-glow" style="position:fixed;width:400px;height:400px;background:radial-gradient(circle, rgba(255, 165, 0, 0.04) 0%, transparent 70%);transform:translate(-50%,-50%);pointer-events:none;z-index:-1;opacity:0;transition:opacity 0.25s ease;"></div>
 </body>
 </html>
 
