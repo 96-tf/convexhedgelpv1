@@ -1,7 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
+    <!-- 
+        ========================================================================
+        A/B TESTING CONFIGURATION: INITIAL THEME LOADER
+        ========================================================================
+        To lock in a single brand identity and remove the A/B testing systems:
+        1. Replace the entire theme initialization script block below with a static style declaration:
+           /* CSS Style declaration */
+               :root {
+                   --brand-accent: #C6FF33;         /* Your final chosen hex */
+                   --brand-accent-dim: #131F02;     /* Final accent dim background */
+                   --brand-accent-rgb: 198, 255, 51;/* Final accent RGB coordinates */
+               }
+           /* end of CSS Style */
+        2. Set the window variables statically or remove window references.
+        ========================================================================
+    -->
+    <script id="sys-theme-init">
         (function initTheme() {
             const activeTheme = localStorage.getItem('convex-theme') || 'lime';
             let accentColor = '#C6FF33';
@@ -84,6 +100,7 @@
                             void: '#08080A',
                             elevate: '#121215',
                             precision: '#1C1C21',
+                            /* A/B TESTING NOTE: Once theme is finalized, replace with static hex strings (e.g. '#C6FF33') */
                             accent: window.themeAccent || '#C6FF33',
                             pure: '#F5F5F7',
                             muted: '#8E8E93',
@@ -2613,6 +2630,16 @@
     </script>
 
 
+    <!-- 
+        ========================================================================
+        A/B TESTING CONFIGURATION: THEME SELECTOR WIDGET
+        ========================================================================
+        To lock in the theme color and clean up the code:
+        1. Simply delete this entire div block, its contents, and the script block directly below it.
+        2. No other modifications are needed; all page elements will reference
+           the CSS variables and Tailwind classes.
+        ========================================================================
+    -->
     <!-- Floating Identity Theme Toggle Banner (Monospace/Terminal Style) -->
     <div id="theme-banner" class="fixed bottom-8 right-8 z-50 font-mono text-[11px] bg-[#08080A]/95 border border-[#1C1C21] p-5 rounded shadow-[0_0_24px_rgba(198,255,51,0.12)] text-white w-60 leading-relaxed transition-all duration-300">
         <div class="text-brand-accent font-bold mb-2.5 flex items-center justify-between text-xs">
