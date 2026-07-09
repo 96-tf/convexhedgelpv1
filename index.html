@@ -86,6 +86,15 @@
             100% { box-shadow: 0 0 30px -5px rgba(255, 165, 0, 0.06); }
         }
 
+        /* Breathing animation for background logo halftone dots */
+        @keyframes halftone-breath {
+            0%, 100% { opacity: 0.07; }
+            50% { opacity: 0.035; }
+        }
+        .halftone-breathing {
+            animation: halftone-breath 9.5s ease-in-out infinite;
+        }
+
         .node-line {
             background: repeating-linear-gradient(90deg, #48484A, #48484A 4px, transparent 4px, transparent 8px);
         }
@@ -2445,7 +2454,8 @@
         svg.setAttribute('aria-hidden', 'true');
         svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
         svg.setAttribute('preserveAspectRatio', 'none');
-        svg.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;opacity:0.08;';
+        svg.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;';
+        svg.classList.add('halftone-breathing');
 
         // Build all defs
         var defsHTML = ''
@@ -2497,10 +2507,10 @@
 
         document.body.appendChild(svg);
 
-        // Scroll parallax: SVG viewBox moves at 0.88× scroll speed
+        // Scroll parallax: SVG viewBox moves at 0.45× scroll speed (pronounced, smooth layered depth)
         var raf = null;
         function tick() {
-            var py = window.scrollY * 0.88;
+            var py = window.scrollY * 0.45;
             svg.setAttribute('viewBox', '0 ' + py + ' ' + VW + ' ' + VH);
             raf = null;
         }
