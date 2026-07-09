@@ -32,6 +32,10 @@
                 accentColor = '#763DE6';
                 accentDim = '#120925';
                 glowRgb = '118, 61, 230';
+            } else if (activeTheme === 'yellow') {
+                accentColor = '#F1FF0A';
+                accentDim = '#1D1F01';
+                glowRgb = '241, 255, 10';
             }
             
             // Inject CSS variables to propagate theme color dynamically to all SVG vector assets
@@ -68,7 +72,7 @@
             // Set Favicon color based on theme
             const favicon = document.querySelector('link[rel="icon"]');
             if (favicon) {
-                const fillHex = activeTheme === 'amber' ? 'FFA500' : (activeTheme === 'orchid' ? '763DE6' : 'C6FF33');
+                const fillHex = activeTheme === 'amber' ? 'FFA500' : (activeTheme === 'orchid' ? '763DE6' : (activeTheme === 'yellow' ? 'F1FF0A' : 'C6FF33'));
                 favicon.href = favicon.href.replace(/fill='%23[0-9a-fA-F]{6}'/, `fill='%23${fillHex}'`);
             }
 
@@ -2670,6 +2674,13 @@
                     <span class="w-2 h-2 rounded-full bg-brand-accent hidden" id="dot-orchid"></span>
                 </span>
                 <span class="group-hover:text-brand-accent">PURPLE_CORE (#763DE6)</span>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer group">
+                <input type="radio" name="sys-theme" value="yellow" class="hidden" onchange="switchTheme('yellow')">
+                <span class="w-3.5 h-3.5 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-accent" id="opt-yellow">
+                    <span class="w-2 h-2 rounded-full bg-brand-accent hidden" id="dot-yellow"></span>
+                </span>
+                <span class="group-hover:text-brand-accent">YELLOW_CORE (#F1FF0A)</span>
             </label>
         </div>
         <div class="text-[8.5px] text-brand-dim mt-2.5 pt-2.5 border-t border-brand-precision flex justify-between">
