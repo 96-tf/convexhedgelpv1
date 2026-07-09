@@ -2424,6 +2424,202 @@
             <span>- 70%</span>
             <span>- 80%</span>
         <!-- Dynamic Tracking Crosshairs -->
+                                currentText += item.char;
+                            } else if (frame >= item.greekAt) {
+                                currentText += charGreekMap[i];
+                            } else {
+                                currentText += item.original;
+                            }
+                        }
+                        el.innerText = currentText;
+                        requestAnimationFrame(animate);
+                    } else {
+                        el.innerText = targetWord;
+                        // Start indicator line fill again for next cycle
+                        if (indicator) {
+                            setTimeout(() => {
+                                indicator.style.transition = 'width 9.5s linear';
+                                indicator.style.width = '100%';
+                            }, 50);
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+
+            // Calm transition interval: every 9.5 seconds
+            setInterval(() => {
+                wordIdx = (wordIdx + 1) % words.length;
+                scrambleTransition(words[wordIdx]);
+            }, 9500);
+        }
+
+        // Initialize routines on window load
+        window.addEventListener('load', () => {
+            try { runLoader(); } catch(e) {}
+            try { initLoaderSurface(); } catch(e) {}
+            try { drawStrategyLines(); } catch(e) {}
+            try { drawBacktestChart(); } catch(e) {}
+            try { initChartInteractions(); } catch(e) {}
+            
+            // Start option chain feed and IV curve animations
+            try { updateOptionChain(); } catch(e) {}
+            setInterval(() => { try { updateOptionChain(); } catch(e) {} }, 250);
+
+            // Trigger visual node system assembly animation
+            try { runNodeIntroSequence(); } catch(e) {}
+
+            // Initialize scroll reveal animations
+            initScrollReveal();
+
+            // Delayed calls for functions defined later
+            setTimeout(() => {
+                try { animateVolatilitySmile(); } catch(e) {}
+                setInterval(() => { try { animateVolatilitySmile(); } catch(e) {} }, 3000);
+                
+                try { initQuantHUD(); } catch(e) {}
+                try { initHeroTextScrambler(); } catch(e) {}
+            }, 100);
+        });
+
+        window.addEventListener('resize', () => {
+            drawStrategyLines();
+            drawBacktestChart();
+        });
+
+        // Floating Quant HUD Follower
+        function initQuantHUD() {
+            const hud = document.getElementById('quant-hud');
+            const hudX = document.getElementById('hud-x');
+            const hudY = document.getElementById('hud-y');
+            const hudDelta = document.getElementById('hud-delta');
+            const hudIv = document.getElementById('hud-iv');
+            
+            // Viewport HUD Guides
+            const chH = document.getElementById('hud-crosshair-h');
+            const chV = document.getElementById('hud-crosshair-v');
+            const hudScrollY = document.getElementById('hud-scroll-y');
+            const hudLatency = document.getElementById('hud-latency');
+            const mouseGlow = document.getElementById('mouse-glow');
+            
+            if (!hud) return;
+
+            document.addEventListener('mousemove', (e) => {
+                hud.style.left = (e.clientX + 12) + 'px';
+                hud.style.top = (e.clientY + 12) + 'px';
+                hud.style.opacity = '0.35'; // faint HUD display
+
+                if (hudX) hudX.innerText = e.clientX;
+                if (hudY) hudY.innerText = e.clientY + window.scrollY;
+
+                // Guide guide positions
+                if (chH) chH.style.top = e.clientY + 'px';
+                if (chV) chV.style.left = e.clientX + 'px';
+
+                // Ambient mouse glow positions
+                if (mouseGlow) {
+                    mouseGlow.style.left = e.clientX + 'px';
+                    mouseGlow.style.top = e.clientY + 'px';
+                    mouseGlow.style.opacity = '1';
+                }
+
+                // Simulate option greek parameters based on screen alignment
+                const normalizedX = e.clientX / window.innerWidth;
+                const deltaVal = (normalizedX * 2 - 1).toFixed(2);
+                const ivVal = (12.0 + (e.clientY / window.innerHeight) * 8.5).toFixed(1);
+
+                if (hudDelta) hudDelta.innerText = deltaVal;
+                if (hudIv) hudIv.innerText = ivVal + '%';
+            });
+
+            document.addEventListener('mouseleave', () => {
+                hud.style.opacity = '0';
+                if (chH) chH.style.top = '-100px';
+                if (chV) chV.style.left = '-100px';
+                if (mouseGlow) mouseGlow.style.opacity = '0';
+            });
+
+            window.addEventListener('scroll', () => {
+                if (hudScrollY) hudScrollY.innerText = window.scrollY;
+            });
+
+            setInterval(() => {
+                if (hudLatency) {
+                    const latencyVal = (1.0 + Math.random() * 0.5).toFixed(1);
+                    hudLatency.innerText = latencyVal;
+                }
+            }, 1500);
+        }
+
+        
+
+
+        // Chat send key listener
+        const chatInput = document.getElementById('chat-input');
+        if (chatInput) {
+            chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+        }
+    </script>
+
+    <!-- Floating Quant HUD Cursor Overlay -->
+    <div id="quant-hud" class="fixed pointer-events-none z-50 font-mono text-[7px] text-[#FFA500] opacity-0 transition-opacity duration-200 bg-[#08080A]/95 border border-[#1C1C21] px-1.5 py-0.5 rounded shadow-[0_0_15px_rgba(255,165,0,0.08)]">
+        X: <span id="hud-x">0</span> Y: <span id="hud-y">0</span> <span class="text-brand-dim">/</span> δ: <span id="hud-delta">0.00</span> <span class="text-brand-dim">/</span> IV: <span id="hud-iv">12.0%</span>
+    </div>
+
+    <!-- Viewport Terminal UI HUD Overlay -->
+    <div class="fixed inset-0 pointer-events-none z-40 select-none overflow-hidden font-mono text-[7px] text-brand-muted opacity-50 hidden md:block">
+        <!-- Top Left telemetry block -->
+        <div class="absolute top-4 left-4 flex flex-col items-start leading-relaxed">
+            <span class="text-brand-amber font-bold">┌ CONVEX_TERMINAL_v3.2</span>
+            <span>│ PORT: 8000 // HOST: LOCALHOST</span>
+            <span>│ DATA_FEED: ACTIVE // TELEMETRY: ON</span>
+        </div>
+        <!-- Top Right telemetry block -->
+        <div class="absolute top-4 right-4 flex flex-col items-end leading-relaxed">
+            <span class="text-brand-amber font-bold">SYS_MODE: COMPUTE_ENGINE ┐</span>
+            <span>INDEX_REF: NIFTY50_STREAM │</span>
+            <span>LATENCY: <span id="hud-latency">1.1</span>ms │</span>
+        </div>
+        <!-- Bottom Left telemetry block -->
+        <div class="absolute bottom-4 left-4 flex flex-col items-start leading-relaxed">
+            <span>│ SYS_MEM: [124.6 MB] // THREADS: [8]</span>
+            <span>│ SCROLL_Y: <span id="hud-scroll-y">0</span>px</span>
+            <span class="text-brand-amber font-bold">└ CONTEXT_STATE: VERIFIED</span>
+        </div>
+        <!-- Bottom Right telemetry block -->
+        <div class="absolute bottom-4 right-4 flex flex-col items-end leading-relaxed">
+            <span>SYS_INTEGRITY: 100.00% │</span>
+            <span>EST_FPS: 60.0 │</span>
+            <span class="text-brand-amber font-bold">SECURE_CHANNEL_READY ┘</span>
+        </div>
+
+        <!-- Viewport Margin Rulers -->
+        <div class="absolute top-0 left-24 right-24 h-4 flex justify-between border-b border-[#1C1C21]/60 text-[6px] text-brand-dim items-center">
+            <span>+ 10%</span>
+            <span>+ 20%</span>
+            <span>+ 30%</span>
+            <span>+ 40%</span>
+            <span>+ 50%</span>
+            <span>+ 60%</span>
+            <span>+ 70%</span>
+            <span>+ 80%</span>
+            <span>+ 90%</span>
+        </div>
+        <div class="absolute bottom-0 left-24 right-24 h-4 flex justify-between border-t border-[#1C1C21]/60 text-[6px] text-brand-dim items-center">
+            <span>- 10%</span>
+            <span>- 20%</span>
+            <span>- 30%</span>
+            <span>- 40%</span>
+            <span>- 50%</span>
+            <span>- 60%</span>
+            <span>- 70%</span>
+            <span>- 80%</span>
+        </div>
+        <!-- Dynamic Tracking Crosshairs -->
         <div id="hud-crosshair-h" class="absolute left-0 right-0 h-px bg-brand-amber/10" style="top: -100px; transition: top 0.04s linear;"></div>
         <div id="hud-crosshair-v" class="absolute top-0 bottom-0 w-px bg-brand-amber/10" style="left: -100px; transition: left 0.04s linear;"></div>
     </div>
@@ -2431,52 +2627,131 @@
     <!-- Ambient Mouse Glow (fixed background flashlight) -->
     <div id="mouse-glow" style="position:fixed;width:400px;height:400px;background:radial-gradient(circle, rgba(255, 165, 0, 0.04) 0%, transparent 70%);transform:translate(-50%,-50%);pointer-events:none;z-index:-1;opacity:0;transition:opacity 0.25s ease;"></div>
 
-    <!-- ============================================================
-         Logo halftone dot repeating background pattern
-         Logo shape (1024×652 viewBox) tiled at 33% scale ≈ 340×216px
-         Dots: amber #FFA500, ~7px spacing, fade radially to transparent
-    ============================================================ -->
-    <svg id="logo-halftone-bg"
-         xmlns="http://www.w3.org/2000/svg"
-         aria-hidden="true"
-         style="position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;opacity:0.14;">
-      <defs>
-        <!-- Amber dot grid in native logo coord space (18u spacing → ~6px on screen at 0.332 scale) -->
-        <pattern id="hbdots" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
-          <circle cx="11" cy="11" r="4.5" fill="#FFA500"/>
-        </pattern>
-        <!-- Radial gradient: bright at logo centre, transparent at edges (blends into #08080A) -->
-        <radialGradient id="hbgrad" gradientUnits="userSpaceOnUse" cx="512" cy="326" r="490">
-          <stop offset="0%"   stop-color="white" stop-opacity="0.85"/>
-          <stop offset="42%"  stop-color="white" stop-opacity="0.45"/>
-          <stop offset="80%"  stop-color="white" stop-opacity="0.12"/>
-          <stop offset="100%" stop-color="white" stop-opacity="0"/>
-        </radialGradient>
-        <!-- Mask: radial fade applied to the whole logo tile -->
-        <mask id="hbmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="652">
-          <rect width="1024" height="652" fill="url(#hbgrad)"/>
-        </mask>
-        <!-- Logo silhouette clip path (1024×652 native coords) -->
-        <clipPath id="hbclip">
-          <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z"/>
-          <polygon points="336,165 618,165 483,0"/>
-          <polygon points="785,26 1023,26 493,645 389,452"/>
-          <polygon points="716,381 806,380 792,425 680,426"/>
-          <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z"/>
-        </clipPath>
-        <!-- Tile: one logo at 33.2% = 340 × 216 px per tile cell -->
-        <pattern id="hbtile" x="0" y="0" width="340" height="216" patternUnits="userSpaceOnUse">
-          <g transform="scale(0.332)">
-            <!-- Dots clipped to logo shape → then radially faded -->
-            <rect width="1024" height="652"
-                  fill="url(#hbdots)"
-                  clip-path="url(#hbclip)"
-                  mask="url(#hbmask)"/>
-          </g>
-        </pattern>
-      </defs>
-      <!-- Full-screen rect tiled with the logo halftone pattern -->
-      <rect width="100%" height="100%" fill="url(#hbtile)"/>
-    </svg>
+    <!-- Logo Halftone: JS-generated — one full logo per viewport, scroll-revealed variants -->
+    <script>
+    (function buildLogoHalftone() {
+        // Remove any previous static SVG
+        var old = document.getElementById('logo-halftone-bg');
+        if (old) old.remove();
+
+        var VW = window.innerWidth;
+        var VH = window.innerHeight;
+        var LW = 1024, LH = 652;   // logo native viewBox
+        var sx = VW / LW;           // scale to fill width
+        var sy = VH / LH;           // scale to fill height
+        var COUNT = 16;             // number of logo instances (scroll sections)
+        var NS = 'http://www.w3.org/2000/svg';
+
+        // Logo shape paths in 1024×652 space
+        var LOGO = '<path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z"/>'
+                 + '<polygon points="336,165 618,165 483,0"/>'
+                 + '<polygon points="785,26 1023,26 493,645 389,452"/>'
+                 + '<polygon points="716,381 806,380 792,425 680,426"/>'
+                 + '<path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z"/>';
+
+        // Variant definitions: [flipX, flipY]
+        // Creates the sequence: normal → mirrorH → mirrorV → 180° → repeat alternating
+        var VARIANTS = [
+            [false, false],  // 0 normal
+            [true,  false],  // 1 mirror horizontal
+            [false, true ],  // 2 mirror vertical
+            [true,  true ],  // 3 rotate 180°
+            [false, false],  // 4 normal
+            [true,  true ],  // 5 rotate 180°
+            [true,  false],  // 6 mirror horizontal
+            [false, true ],  // 7 mirror vertical
+        ];
+
+        var svg = document.createElementNS(NS, 'svg');
+        svg.id = 'logo-halftone-bg';
+        svg.setAttribute('aria-hidden', 'true');
+        svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
+        svg.setAttribute('preserveAspectRatio', 'none');
+        svg.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;opacity:0.15;';
+
+        // Build all defs
+        var defsHTML = ''
+            // Dot grid — 8px spacing, 1.7px radius, in screen pixel space
+            + '<pattern id="lhd" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">'
+            + '<circle cx="4" cy="4" r="1.7" fill="#FFA500"/>'
+            + '</pattern>';
+
+        for (var i = 0; i < COUNT; i++) {
+            var v      = VARIANTS[i % VARIANTS.length];
+            var flipX  = v[0], flipY = v[1];
+            // Scale signs
+            var scX    = flipX ? -sx :  sx;
+            var scY    = flipY ? -sy :  sy;
+            // Translate so the (possibly flipped) logo lands at row i
+            // Normal:  translate(0,   i*VH)     scale( sx,  sy)
+            // flipX:   translate(VW,  i*VH)     scale(-sx,  sy)
+            // flipY:   translate(0,  (i+1)*VH)  scale( sx, -sy)
+            // rot180:  translate(VW, (i+1)*VH)  scale(-sx, -sy)
+            var tX     = flipX ? VW : 0;
+            var tY     = flipY ? (i + 1) * VH : i * VH;
+
+            // Radial gradient centred in this viewport row (screen-pixel space)
+            var gcx    = VW * 0.5;
+            var gcy    = (i + 0.5) * VH;
+            var gr     = Math.max(VW, VH) * 0.56;
+
+            defsHTML +=
+                '<radialGradient id="lhg' + i + '" gradientUnits="userSpaceOnUse"'
+                + ' cx="' + gcx + '" cy="' + gcy + '" r="' + gr + '">'
+                + '<stop offset="0%"   stop-color="white" stop-opacity="0.9"/>'
+                + '<stop offset="40%"  stop-color="white" stop-opacity="0.48"/>'
+                + '<stop offset="80%"  stop-color="white" stop-opacity="0.07"/>'
+                + '<stop offset="100%" stop-color="white" stop-opacity="0"/>'
+                + '</radialGradient>'
+
+                + '<mask id="lhm' + i + '" maskUnits="userSpaceOnUse"'
+                + ' x="0" y="' + (i * VH) + '" width="' + VW + '" height="' + VH + '">'
+                + '<rect x="0" y="' + (i * VH) + '" width="' + VW + '" height="' + VH
+                + '" fill="url(#lhg' + i + ')"/>'
+                + '</mask>'
+
+                // clipPath: logo shapes transformed into screen-pixel space with the right variant
+                + '<clipPath id="lhc' + i + '" clipPathUnits="userSpaceOnUse">'
+                + '<g transform="translate(' + tX + ',' + tY + ') scale(' + scX + ',' + scY + ')">'
+                + LOGO
+                + '</g>'
+                + '</clipPath>';
+        }
+
+        var defs = document.createElementNS(NS, 'defs');
+        defs.innerHTML = defsHTML;
+        svg.appendChild(defs);
+
+        // One rect per logo instance
+        for (var j = 0; j < COUNT; j++) {
+            var r = document.createElementNS(NS, 'rect');
+            r.setAttribute('x', 0);
+            r.setAttribute('y', j * VH);
+            r.setAttribute('width', VW);
+            r.setAttribute('height', VH);
+            r.setAttribute('fill', 'url(#lhd)');
+            r.setAttribute('clip-path', 'url(#lhc' + j + ')');
+            r.setAttribute('mask', 'url(#lhm' + j + ')');
+            svg.appendChild(r);
+        }
+
+        document.body.appendChild(svg);
+
+        // Scroll parallax: SVG viewBox moves at 0.88× scroll speed
+        // so logos drift slightly slower than the page content
+        var raf = null;
+        function tick() {
+            var py = window.scrollY * 0.88;
+            svg.setAttribute('viewBox', '0 ' + py + ' ' + VW + ' ' + VH);
+            raf = null;
+        }
+        window.addEventListener('scroll', function() {
+            if (!raf) raf = requestAnimationFrame(tick);
+        }, { passive: true });
+
+        // Initial draw
+        tick();
+    })();
+    </script>
 </body>
 </html>
