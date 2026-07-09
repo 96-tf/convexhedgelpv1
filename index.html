@@ -2733,6 +2733,7 @@
 
         // Initialize UI indicators inside theme toggle widget
         (function initThemeIndicators() {
+            localStorage.setItem('convex-theme-banner-closed', 'false');
             const currentTheme = localStorage.getItem('convex-theme') || 'lime';
             
             // Check correct radio input and show indicator dot
