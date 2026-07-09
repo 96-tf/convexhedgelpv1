@@ -2609,31 +2609,31 @@
 
 
     <!-- Floating Identity Theme Toggle Banner (Monospace/Terminal Style) -->
-    <div id="theme-banner" class="fixed bottom-6 right-6 z-50 font-mono text-[9px] bg-[#08080A]/95 border border-[#1C1C21] p-3.5 rounded shadow-[0_0_20px_rgba(198,255,51,0.08)] text-white w-52 leading-relaxed transition-all duration-300">
-        <div class="text-brand-accent font-bold mb-2 flex items-center justify-between">
+    <div id="theme-banner" class="fixed bottom-8 right-8 z-50 font-mono text-[11px] bg-[#08080A]/95 border border-[#1C1C21] p-5 rounded shadow-[0_0_24px_rgba(198,255,51,0.12)] text-white w-60 leading-relaxed transition-all duration-300">
+        <div class="text-brand-accent font-bold mb-2.5 flex items-center justify-between text-xs">
             <span>┌ SYS_THEME_SELECT</span>
-            <button onclick="closeThemeBanner()" class="text-brand-muted hover:text-white font-sans text-xs flex items-center justify-center w-4 h-4 bg-brand-precision/50 hover:bg-brand-precision rounded">×</button>
+            <button onclick="closeThemeBanner()" class="text-brand-muted hover:text-white font-sans text-sm flex items-center justify-center w-5 h-5 bg-brand-precision/50 hover:bg-brand-precision rounded">×</button>
         </div>
-        <p class="text-brand-muted mb-3 leading-normal">
+        <p class="text-brand-muted mb-3.5 leading-relaxed">
             A/B testing active brand identities. Select system theme variant:
         </p>
-        <div class="space-y-2 mb-3">
-            <label class="flex items-center gap-2 cursor-pointer group">
+        <div class="space-y-2.5 mb-4">
+            <label class="flex items-center gap-2.5 cursor-pointer group">
                 <input type="radio" name="sys-theme" value="lime" class="hidden" onchange="switchTheme('lime')">
-                <span class="w-2.5 h-2.5 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-accent" id="opt-lime">
-                    <span class="w-1.5 h-1.5 rounded-full bg-brand-accent hidden" id="dot-lime"></span>
+                <span class="w-3.5 h-3.5 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-accent" id="opt-lime">
+                    <span class="w-2 h-2 rounded-full bg-brand-accent hidden" id="dot-lime"></span>
                 </span>
                 <span class="group-hover:text-brand-accent">LIME_CORE (#C6FF33)</span>
             </label>
-            <label class="flex items-center gap-2 cursor-pointer group">
+            <label class="flex items-center gap-2.5 cursor-pointer group">
                 <input type="radio" name="sys-theme" value="amber" class="hidden" onchange="switchTheme('amber')">
-                <span class="w-2.5 h-2.5 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-accent" id="opt-amber">
-                    <span class="w-1.5 h-1.5 rounded-full bg-brand-accent hidden" id="dot-amber"></span>
+                <span class="w-3.5 h-3.5 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-accent" id="opt-amber">
+                    <span class="w-2 h-2 rounded-full bg-brand-accent hidden" id="dot-amber"></span>
                 </span>
                 <span class="group-hover:text-brand-accent">AMBER_CORE (#FFA500)</span>
             </label>
         </div>
-        <div class="text-[7px] text-brand-dim mt-2 pt-2 border-t border-brand-precision flex justify-between">
+        <div class="text-[8.5px] text-brand-dim mt-2.5 pt-2.5 border-t border-brand-precision flex justify-between">
             <span>CONVEX_SYS_OS</span>
             <span>STATUS: READY</span>
         </div>
