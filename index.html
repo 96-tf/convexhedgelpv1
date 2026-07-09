@@ -1,0 +1,2647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 652' fill='%2300E676'%3E%3Cpath d='M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z'/%3E%3Cpolygon points='336,165 618,165 483,0'/%3E%3Cpolygon points='785,26 1023,26 493,645 389,452'/%3E%3Cpolygon points='716,381 806,380 792,425 680,426'/%3E%3Cpath d='M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z'/%3E%3C/svg%3E">
+    <title>Convex Hedge // Precision Infrastructure for Derivative Trading</title>
+    <script src="assets/tailwind.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            void: '#08080A',
+                            elevate: '#121215',
+                            precision: '#1C1C21',
+                            emerald: '#00E676',
+                            pure: '#F5F5F7',
+                            muted: '#8E8E93',
+                            dim: '#48484A',
+                            emeraldDim: '#0B1C11'
+                        }
+                    },
+                    fontFamily: {
+                        display: ['"PP Neue Machina"', 'system-ui', 'sans-serif'],
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'SFMono-Regular', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="assets/fonts.css" rel="stylesheet">
+    <style>
+        /* * IMPORTANT: IMPORT YOUR PP NEUE MACHINA FONT FILES HERE
+         * Update the src url to point to where you host your webfonts.
+         */
+        @font-face {
+            font-family: 'PP Neue Machina';
+            src: url('fonts/PPNeueMachina-PlainRegular.otf') format('opentype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'PP Neue Machina';
+            src: url('fonts/PPNeueMachina-PlainUltrabold.otf') format('opentype');
+            font-weight: 800;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        .linear-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, #121215 1px, transparent 1px),
+                linear-gradient(to bottom, #121215 1px, transparent 1px);
+        }
+        .math-grid {
+            background-size: 20px 20px;
+            background-image: 
+                linear-gradient(to right, rgba(28, 28, 33, 0.4) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(28, 28, 33, 0.4) 1px, transparent 1px);
+        }
+        
+        .bento-glow {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .bento-glow:hover {
+            border-color: rgba(0, 230, 118, 0.3);
+            box-shadow: 0 10px 40px -10px rgba(0, 230, 118, 0.12);
+            transform: translateY(-2px);
+            background-color: rgba(18, 18, 21, 0.8);
+        }
+
+        .ambient-glow {
+            background: radial-gradient(circle at center, rgba(0, 230, 118, 0.08) 0%, transparent 60%);
+        }
+        .node-aura {
+            box-shadow: 0 0 30px -5px rgba(0, 230, 118, 0.25);
+            animation: pulse-aura 3s infinite;
+        }
+        
+        @keyframes pulse-aura {
+            0% { box-shadow: 0 0 30px -5px rgba(0, 230, 118, 0.15); }
+            50% { box-shadow: 0 0 40px 0px rgba(0, 230, 118, 0.3); }
+            100% { box-shadow: 0 0 30px -5px rgba(0, 230, 118, 0.15); }
+        }
+
+        .node-line {
+            background: repeating-linear-gradient(90deg, #48484A, #48484A 4px, transparent 4px, transparent 8px);
+        }
+        
+        .node-card {
+            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            opacity: 1;
+            transform: scale(1);
+            backdrop-filter: blur(8px);
+            filter: blur(0px) contrast(1);
+        }
+        .node-card.inactive {
+            opacity: 0.15 !important;
+            transform: scale(0.96) !important;
+            border-style: dashed !important;
+            border-color: #1C1C21 !important;
+            box-shadow: none !important;
+        }
+        .node-card.glowing {
+            border-color: #00E676 !important;
+            box-shadow: 0 0 25px rgba(0, 230, 118, 0.25) !important;
+        }
+        
+        .glow-line {
+            stroke-dasharray: 6 10;
+            animation: flow-glow 1.5s linear infinite;
+        }
+        @keyframes flow-glow {
+            0% { stroke-dashoffset: 20; }
+            100% { stroke-dashoffset: 0; }
+        }
+        /* Hide scrollbar for clean terminal UI */
+        #chat-history::-webkit-scrollbar {
+            display: none;
+        }
+        #chat-history {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1.0s cubic-bezier(0.16, 1, 0.3, 1), transform 1.0s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Entrance Loader styles */
+        #loader-logo-wrap.zoom-in {
+            transform: scale(28);
+            opacity: 0;
+            filter: blur(12px);
+        }
+        #entrance-loader.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+        @keyframes drawPath {
+            0% {
+                stroke-dashoffset: 2500;
+                fill: rgba(0, 230, 118, 0);
+            }
+            55% {
+                stroke-dashoffset: 900;
+                fill: rgba(0, 230, 118, 0.15);
+            }
+            100% {
+                stroke-dashoffset: 0;
+                fill: #00E676;
+            }
+        }
+        .draw-path {
+            stroke-dasharray: 2500;
+            stroke-dashoffset: 2500;
+            fill: rgba(0, 230, 118, 0);
+            animation: drawPath 2.0s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        /* Logo Hover Drawing Animation */
+        .logo-container svg path,
+        .logo-container svg polygon {
+            transition: fill 0.4s ease, stroke 0.4s ease, stroke-width 0.4s ease;
+        }
+        .logo-container:hover svg path,
+        .logo-container:hover svg polygon {
+            stroke: #00E676;
+            stroke-width: 12px;
+            stroke-dasharray: 2500;
+            stroke-dashoffset: 2500;
+            fill: rgba(0, 230, 118, 0);
+            animation: drawPathHover 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes drawPathHover {
+            0% {
+                stroke-dashoffset: 2500;
+                fill: rgba(0, 230, 118, 0);
+            }
+            55% {
+                stroke-dashoffset: 900;
+                fill: rgba(0, 230, 118, 0.22);
+            }
+            100% {
+                stroke-dashoffset: 0;
+                fill: #00E676;
+            }
+        }
+        /* Loader 3D Tilt Animation */
+        #loader-logo {
+            animation: loader3DRotate 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite alternate;
+            transform-style: preserve-3d;
+        }
+        @keyframes loader3DRotate {
+            0% {
+                transform: perspective(500px) rotateX(24deg) rotateY(-20deg) rotateZ(-5deg);
+            }
+            100% {
+                transform: perspective(500px) rotateX(-14deg) rotateY(16deg) rotateZ(3deg);
+            }
+        }
+        /* Hover Logo 3D Tilt Transition */
+        .logo-container svg {
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+        }
+        .logo-container:hover svg {
+            transform: perspective(350px) rotateX(20deg) rotateY(-20deg) rotateZ(-3deg);
+        }
+
+        /* Scan-line Node Creation Animation */
+        @keyframes scanline {
+            0% {
+                top: 0%;
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+            }
+            85% {
+                opacity: 1;
+            }
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+        .node-card {
+            overflow: hidden !important;
+        }
+        .node-card::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #00E676, transparent);
+            box-shadow: 0 0 10px #00E676, 0 0 4px #00E676;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .node-card.glowing::after {
+            animation: scanline 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* Volumetric breathing background logo */
+        #canvas-logo-backdrop.glowing {
+            animation: backdrop-breathe 4s ease-in-out infinite alternate;
+        }
+        @keyframes backdrop-breathe {
+            0% {
+                transform: scale(0.97) translate(0, 0);
+                opacity: 0.22;
+                filter: drop-shadow(0 0 20px rgba(0, 230, 118, 0.01));
+            }
+            100% {
+                transform: scale(1.03) translate(0, 0);
+                opacity: 0.45;
+                filter: drop-shadow(0 0 60px rgba(0, 230, 118, 0.08));
+            }
+        }
+        /* Responsive Canvas Scaling for Mobile/Tablet Viewports */
+        @media (max-width: 1023px) and (min-width: 768px) {
+            #canvas-container {
+                transform: scale(0.72) !important;
+                transform-origin: top center !important;
+                width: 138.8% !important;
+                height: 600px !important;
+            }
+            .canvas-wrapper {
+                height: 432px !important; /* 600 * 0.72 */
+            }
+        }
+        @media (max-width: 767px) {
+            #canvas-container {
+                transform: scale(0.52) !important;
+                transform-origin: top center !important;
+                width: 192.3% !important;
+                height: 600px !important;
+            }
+            .canvas-wrapper {
+                height: 312px !important; /* 600 * 0.52 */
+            }
+        }
+        /* Fluid Responsive Hero Typography */
+        .hero-title {
+            font-size: clamp(26px, 7.5vw, 72px) !important;
+        }
+    </style>
+</head>
+<body class="bg-brand-void text-brand-pure font-sans antialiased selection:bg-brand-emerald selection:text-brand-void overflow-x-hidden linear-grid">
+
+    <!-- Viewport Entrance Loader Overlay -->
+    <div id="entrance-loader" class="fixed inset-0 z-[100] bg-[#08080A] flex flex-col items-center justify-center transition-all duration-[1200ms] cubic-bezier(0.85, 0, 0.15, 1) pointer-events-auto overflow-hidden">
+        <!-- 3D Volatility Surface Background Canvas (Slightly Softer) -->
+        <canvas id="loader-surface-canvas" class="absolute inset-0 w-full h-full z-0 pointer-events-none opacity-85"></canvas>
+        
+        <div class="flex flex-col items-center max-w-sm w-full px-6 relative z-10">
+            <!-- Animated SVG Logo -->
+            <div id="loader-logo-wrap" class="relative mb-8 transition-transform duration-[1200ms] cubic-bezier(0.85, 0, 0.15, 1) transform">
+                <svg id="loader-logo" class="w-24 h-16 text-brand-emerald" viewBox="0 0 1024 652" fill="none" stroke="#00E676" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Shape 1: Left C-loop -->
+                    <path class="draw-path" d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
+                    <!-- Shape 2: Top-middle triangle -->
+                    <polygon class="draw-path" points="336,165 618,165 483,0" />
+                    <!-- Shape 3: Main diagonal slash -->
+                    <polygon class="draw-path" points="785,26 1023,26 493,645 389,452" />
+                    <!-- Shape 4: Small middle folder -->
+                    <polygon class="draw-path" points="716,381 806,380 792,425 680,426" />
+                    <!-- Shape 5: Bottom-right loop -->
+                    <path class="draw-path" d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                </svg>
+            </div>
+            
+            <!-- Terminal Telemetry Boot Code -->
+            <div class="w-full font-mono text-[8px] text-brand-dim mb-4 leading-relaxed h-12 text-left border-l border-brand-precision pl-3">
+                <div id="boot-line-1">> SYS_INIT_HANDSHAKE: RUNNING...</div>
+                <div id="boot-line-2" class="opacity-0 transition-opacity duration-300">> MOUNTING_TOPOLOGICAL_ENGINE: OK</div>
+                <div id="boot-line-3" class="opacity-0 transition-opacity duration-300">> ESTABLISHING_LOW_LATENCY_FEED: OK</div>
+            </div>
+            
+            <!-- Percentage Loader Bar -->
+            <div class="w-full flex items-center justify-between font-mono text-[9px] mb-2 text-brand-muted">
+                <span>CONVEX_INIT_SEQUENCE</span>
+                <span id="load-pct" class="text-brand-emerald font-bold">00%</span>
+            </div>
+            <div class="w-full h-px bg-brand-precision relative overflow-hidden rounded">
+                <div id="load-progress" class="absolute top-0 bottom-0 left-0 w-0 bg-brand-emerald transition-all duration-[30ms] ease-out shadow-[0_0_8px_#00E676]"></div>
+            </div>
+        </div>
+    </div>
+
+    <header class="border-b border-brand-precision sticky top-0 bg-brand-void/80 backdrop-blur-md z-50">
+        <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+            <div class="flex items-center space-x-3 logo-container cursor-pointer">
+                <svg class="w-6 h-4 text-brand-emerald" viewBox="0 0 1024 652" fill="currentColor">
+                    <!-- Shape 1: Left C-loop -->
+                    <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
+                    <!-- Shape 2: Top-middle triangle -->
+                    <polygon points="336,165 618,165 483,0" />
+                    <!-- Shape 3: Main diagonal slash -->
+                    <polygon points="785,26 1023,26 493,645 389,452" />
+                    <!-- Shape 4: Small middle folder -->
+                    <polygon points="716,381 806,380 792,425 680,426" />
+                    <!-- Shape 5: Bottom-right loop -->
+                    <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                </svg>
+                <span class="font-display font-extrabold tracking-tight text-sm uppercase text-white">Convex Hedge</span>
+            </div>
+            <nav class="hidden lg:flex space-x-6 text-[10px] font-mono text-brand-muted">
+                <a href="#builder" class="hover:text-brand-pure transition-colors">1.0 BUILDER</a>
+                <a href="#engine" class="hover:text-brand-pure transition-colors">2.0 ENGINE</a>
+                <a href="#topology" class="hover:text-brand-pure transition-colors">3.0 GAMMA</a>
+                <a href="#greeks" class="hover:text-brand-pure transition-colors">4.0 GREEKS</a>
+                <a href="#founders" class="hover:text-brand-pure transition-colors">5.0 SPECS</a>
+            </nav>
+            <button onclick="scrollToWaitlist()" class="bg-brand-pure text-brand-void px-3 py-1.5 rounded text-xs font-mono font-medium hover:bg-neutral-200 transition-colors">
+                JOIN WAITLIST
+            </button>
+        </div>
+    </header>
+
+    <main class="relative pt-32 pb-24 border-b border-brand-precision overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] ambient-glow blur-[80px] pointer-events-none z-0"></div>
+        
+        <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+            <div class="inline-flex items-center space-x-2 bg-brand-elevate border border-brand-precision px-3 py-1 rounded mb-8 shadow-[0_0_15px_rgba(0,230,118,0.1)]">
+                <span class="w-1.5 h-1.5 bg-brand-emerald rounded-full animate-pulse"></span>
+                <span class="font-mono text-[10px] tracking-wider text-brand-muted uppercase">ENGINE_PHASE_1: WAITLIST</span>
+            </div>
+            
+            <h1 class="hero-title font-display font-normal tracking-tight max-w-5xl mx-auto leading-[1.08] mb-8 text-white relative">
+                Precision Infrastructure <br>
+                <span class="sm:whitespace-nowrap">for 
+                    <span class="relative inline-block pb-1 align-bottom select-none">
+                        <span class="text-brand-emerald drop-shadow-[0_0_25px_rgba(0,230,118,0.3)]">Option Quants.</span>
+                        <span id="scramble-indicator" class="absolute bottom-0 left-0 h-[1.5px] bg-[#00E676] opacity-55 shadow-[0_0_8px_#00E676] w-0"></span>
+                    </span>
+                </span>
+            </h1>
+            
+            <p class="text-brand-muted text-sm md:text-base max-w-2xl mx-auto font-sans mb-12 leading-relaxed">
+                Explain your derivatives strategy in plain English. Let <span class="text-white font-semibold">Echo</span> compile and backtest it with tick-accurate precision.
+            </p>
+
+            <div class="max-w-md mx-auto relative z-10">
+                <form id="hero-waitlist-form" onsubmit="event.preventDefault(); handleWaitlistSubmit('hero')" class="flex flex-col sm:flex-row items-stretch gap-2 p-1 bg-brand-elevate border border-brand-precision rounded">
+                    <input id="hero-waitlist-email" type="email" placeholder="Enter option quant credentials (email)..." required class="flex-1 bg-transparent border-none text-xs font-mono text-brand-pure focus:outline-none px-3 py-2.5">
+                    <button type="submit" class="bg-brand-emerald text-brand-void text-xs font-mono font-bold px-5 py-2.5 rounded hover:bg-white transition-colors uppercase">
+                        JOIN WAITLIST
+                    </button>
+                </form>
+                <div id="hero-waitlist-feedback" class="mt-3 font-mono text-[10px] text-brand-muted text-left min-h-[16px]"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- New Section: Live Market Feeds & Volatility Smile Animation -->
+    <section id="market-feed" class="scroll-reveal py-16 border-b border-brand-precision bg-transparent relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-2">LIVE DATA FEED // STAGE 1</span>
+                <h2 class="font-display text-2xl md:text-3xl font-normal tracking-tight text-white mb-3">Institutional Option Chain & Real-Time IV Surface</h2>
+                <p class="text-brand-muted text-xs max-w-lg mx-auto font-sans leading-relaxed">
+                    Watch direct ticks stream dynamically from the exchange. Trace real-time Implied Volatility and Greeks without approximations.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <!-- Live Option Chain Table (8 cols) -->
+                <div class="lg:col-span-8 bg-brand-elevate border border-brand-precision rounded p-4 font-mono text-[10px] flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center border-b border-brand-precision pb-2 mb-3">
+                            <span class="text-white font-bold uppercase tracking-wider">NIFTY Option Chain (Weekly Expiry)</span>
+                            <span class="text-brand-dim flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-brand-emerald mr-1.5 animate-pulse"></span>FEED_OK // 9:15-15:30</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-brand-muted">
+                                        <th class="py-1.5 font-normal">IV %</th>
+                                        <th class="py-1.5 font-normal">Delta</th>
+                                        <th class="py-1.5 font-normal">Bid Ce</th>
+                                        <th class="py-1.5 font-normal text-center bg-brand-void/50 text-white font-bold">Strike</th>
+                                        <th class="py-1.5 font-normal text-right">Bid Pe</th>
+                                        <th class="py-1.5 font-normal text-right">Delta</th>
+                                        <th class="py-1.5 font-normal text-right">IV %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="option-chain-body">
+                                    <!-- Dynamic rows generated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="text-brand-dim mt-4 text-[9px] flex justify-between">
+                        <span>Ticks received: <span id="tick-count" class="text-white">0</span></span>
+                        <span>Update rate: 250ms</span>
+                    </div>
+                </div>
+                
+                <!-- Volatility Smile Curve SVG (4 cols) -->
+                <div class="lg:col-span-4 bg-brand-elevate border border-brand-precision rounded p-4 flex flex-col justify-between min-h-[300px]">
+                    <div>
+                        <div class="flex justify-between items-center border-b border-brand-precision pb-2 mb-4 font-mono text-[10px]">
+                            <span class="text-white font-bold uppercase tracking-wider">Implied Volatility Smile</span>
+                            <span class="text-brand-emerald">[ LIVE SURFACE ]</span>
+                        </div>
+                        <div class="h-44 w-full relative flex items-center justify-center">
+                            <!-- SVG Volatility Curve -->
+                            <svg class="w-full h-full overflow-visible" stroke="#00E676" stroke-width="1.5" fill="none" viewBox="0 0 200 120">
+                                <!-- Grids -->
+                                <line x1="0" y1="100" x2="200" y2="100" stroke="#1C1C21" stroke-width="1" />
+                                <line x1="100" y1="0" x2="100" y2="110" stroke="#1C1C21" stroke-width="1" stroke-dasharray="2 2" />
+                                <text x="105" y="115" fill="#48484A" font-family="monospace" font-size="8">ATM</text>
+                                
+                                <!-- Curve Path with CSS transition -->
+                                <path id="vol-smile-path" d="M 10,20 Q 100,95 190,20" class="transition-all duration-1000 ease-in-out drop-shadow-[0_0_8px_rgba(0,230,118,0.4)]" />
+                                
+                                <!-- ATM Dot -->
+                                <circle id="vol-smile-dot" cx="100" cy="95" r="3" fill="#00E676" stroke="#08080A" stroke-width="1.5" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] font-mono text-brand-dim mt-4">
+                        <span>Skew: <span id="skew-val" class="text-white">Neutral</span></span>
+                        <span>ATM IV: <span id="atm-iv-val" class="text-white">12.45%</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="builder" class="scroll-reveal py-20 border-b border-brand-precision bg-transparent relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="max-w-3xl mb-12 relative z-10">
+                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">1.0 CO-PILOT WORKSPACE // STEP 01: DRAFT & COMPILE</span>
+                <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white mb-4">Passive AI Researcher: Echo</h2>
+                <p class="text-brand-muted text-sm max-w-2xl font-sans leading-relaxed">
+                    Echo is a passive AI quantitative researcher. It never suggests trades or initiates positions. Propose a strategic options hypothesis, and Echo instantly compiles the model, runs the backtest, and highlights risk-hedging layers (like delta-neutral overlays) you can add to secure your downside.
+                </p>
+            </div>
+
+            <div class="bg-brand-elevate border border-brand-precision rounded overflow-hidden transition-all duration-300 hover:border-brand-emerald/30 hover:shadow-[0_10px_40px_-10px_rgba(0,230,118,0.12)] relative z-10">
+                <!-- Top controls toolbar -->
+                <div class="bg-[#0B0A0D] px-6 py-4 border-b border-brand-precision flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-brand-muted gap-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-brand-precision"></span>
+                        <span class="text-white font-bold">DAILY_STRANGLE_PREMIUM_SL</span>
+                        <span class="text-brand-dim">/ canonical 100%</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="flex border border-brand-precision rounded overflow-hidden">
+                            <button class="bg-[#0B1C11] text-[#00E676] px-3 py-1 font-bold text-[10px] hover:bg-[#0E2F1C]">COLLAPSED</button>
+                            <button class="bg-[#1C1C21] text-brand-muted px-3 py-1 text-[10px] hover:text-white border-l border-brand-precision">EXPANDED</button>
+                        </div>
+                        <span class="text-brand-dim">|</span>
+                        <button class="text-brand-muted hover:text-white text-[10px]">VIEW PYTHON</button>
+                        <button class="border border-brand-precision px-3 py-1 rounded hover:bg-brand-precision text-[10px]">SAVE</button>
+                        <button class="bg-[#00E676] text-brand-void font-bold px-4 py-1 rounded hover:bg-white hover:shadow-[0_0_15px_rgba(0,230,118,0.4)] transition-all text-[10px]">▶ RUN</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 md:min-h-[600px] h-auto overflow-hidden">
+                    <!-- Canvas graph container -->
+                    <div class="lg:col-span-9 p-0 bg-brand-void relative overflow-hidden border-r border-brand-precision flex flex-col justify-between">
+                        <div class="canvas-wrapper relative w-full overflow-hidden bg-brand-void h-[600px]">
+                            <div id="canvas-container" class="relative w-full h-[600px] bg-brand-void math-grid select-none overflow-hidden">
+                            <!-- Centered Background Logo Backdrop -->
+                            <div id="canvas-logo-backdrop" class="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 transition-all duration-[1200ms] ease-out opacity-100 scale-100 glowing">
+                                <svg class="w-80 h-48 text-[#1C1C21]/60 transition-colors duration-[1200ms]" viewBox="0 0 1024 652" fill="currentColor">
+                                    <!-- Shape 1: Left C-loop -->
+                                    <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
+                                    <!-- Shape 2: Top-middle triangle -->
+                                    <polygon points="336,165 618,165 483,0" />
+                                    <!-- Shape 3: Main diagonal slash -->
+                                    <polygon points="785,26 1023,26 493,645 389,452" />
+                                    <!-- Shape 4: Small middle folder -->
+                                    <polygon points="716,381 806,380 792,425 680,426" />
+                                    <!-- Shape 5: Bottom-right loop -->
+                                    <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                                </svg>
+                            </div>
+
+                            <!-- SVG lines layer -->
+                            <svg class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 10;">
+                                <path id="path-inst-feat" stroke="#1C1C21" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
+                                <path id="path-inst-struct" stroke="#1C1C21" stroke-width="1.5" fill="none" />
+                                <path id="path-feat-sign" stroke="#1C1C21" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
+                                <path id="path-struct-sign" stroke="#1C1C21" stroke-width="1.5" fill="none" />
+                                <path id="path-sign-entry" stroke="#1C1C21" stroke-width="1.5" fill="none" />
+                                <path id="path-sign-adj" stroke="#1C1C21" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
+                                <path id="path-sign-hedge" stroke="#1C1C21" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
+                                <path id="path-sign-exit" stroke="#1C1C21" stroke-width="1.5" fill="none" />
+
+                                <!-- Active neon glow lines (animated) -->
+                                <path id="glow-inst-struct" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-struct-sign" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-sign-entry" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-sign-exit" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-100" />
+                                <path id="glow-sign-hedge" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-0 transition-opacity duration-500" />
+                                <path id="glow-hedge-exit" stroke="#00E676" stroke-width="1.5" fill="none" class="glow-line opacity-0 transition-opacity duration-500" />
+                            </svg>
+
+                            <!-- Node 1: Instrument -->
+                            <div id="node-instrument" class="node-card absolute top-[5%] left-[50%] -translate-x-1/2 z-20 w-56 bg-[#08080A]/90 border border-[#00E676] rounded shadow-lg p-3 text-center">
+                                <div class="text-[9px] font-mono text-brand-dim uppercase tracking-wider mb-1">Root Ingest</div>
+                                <div class="text-xs font-mono text-[#00E676] font-bold">INSTRUMENT / DATA12 +</div>
+                            </div>
+
+                            <!-- Node 2: Features (Inactive) -->
+                            <div id="node-features" class="node-card inactive absolute top-[28%] left-[28%] -translate-x-1/2 z-20 w-44 bg-[#121215]/30 border border-brand-precision px-3 py-2 rounded text-brand-dim text-center">
+                                <div class="text-[9px] font-mono uppercase tracking-wider mb-0.5">Indicators</div>
+                                <div class="text-[10px] font-mono font-medium">FEATURES / INDICATORS</div>
+                                <div class="text-[8px] font-mono text-brand-dim mt-1">optional - unused</div>
+                            </div>
+
+                            <!-- Node 3: Structures -->
+                            <div id="node-structures" class="node-card absolute top-[26%] left-[72%] -translate-x-1/2 z-20 w-64 bg-[#08080A]/90 border border-[#00E676] p-3 rounded shadow-[0_0_15px_rgba(0,230,118,0.15)] font-mono">
+                                <div class="flex justify-between items-center text-[9px] text-[#00E676] mb-1.5 font-bold">
+                                    <span>STRUCTURES</span>
+                                    <span class="bg-[#0B1C11] text-[#00E676] text-[8px] px-1 rounded">1 *</span>
+                                </div>
+                                <div class="text-xs text-white font-medium mb-2">strangle <span class="text-brand-dim">L111-119</span></div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-[#1C1C21] text-brand-pure text-[8px] px-1.5 py-0.5 rounded border border-brand-precision">SHORT</span>
+                                    <span class="bg-[#0B1C11] text-[#00E676] text-[8px] px-1.5 py-0.5 rounded border border-[#00E676]/20">SELL CE</span>
+                                    <span class="bg-[#0B1C11] text-[#00E676] text-[8px] px-1.5 py-0.5 rounded border border-[#00E676]/20">SELL PE</span>
+                                </div>
+                            </div>
+
+                            <!-- Node 4: Signals -->
+                            <div id="node-signals" class="node-card absolute top-[48%] left-[50%] -translate-x-1/2 z-20 w-56 bg-[#08080A]/90 border border-[#00E676] px-3 py-2 rounded shadow-[0_0_15px_rgba(0,230,118,0.15)] text-center">
+                                <div class="text-[9px] font-mono text-brand-dim uppercase tracking-wider mb-0.5">Control Gate</div>
+                                <div class="text-xs font-mono text-[#00E676] font-bold">SIGNALS / CONDITIONS</div>
+                            </div>
+
+                            <!-- Node 5: Entry Signals -->
+                            <div id="node-entry" class="node-card absolute top-[68%] left-[15%] -translate-x-1/2 z-20 w-64 bg-[#08080A]/90 border border-[#00E676] p-3 rounded shadow-[0_0_15px_rgba(0,230,118,0.15)] font-mono text-[10px]">
+                                <div class="flex justify-between items-center text-[9px] text-[#00E676] mb-2 font-bold">
+                                    <span>ENTRY SIGNALS</span>
+                                    <span class="bg-[#0B1C11] text-[#00E676] text-[8px] px-1 rounded">2 *</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div>
+                                        <div class="text-white font-medium">premium-target-entry <span class="text-brand-dim text-[9px]">L205-217</span></div>
+                                        <div class="text-[#00E676] text-[9px] mt-0.5">if ce and pe -> ENTRY</div>
+                                    </div>
+                                    <div class="border-t border-brand-precision pt-1.5">
+                                        <div class="text-white font-medium">premium-target-re-entry <span class="text-brand-dim text-[9px]">L205-217</span></div>
+                                        <div class="text-[#00E676] text-[9px] mt-0.5">if ce and pe -> ENTRY</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Node 6: Adjustments (Inactive) -->
+                            <div id="node-adjustments" class="node-card inactive absolute top-[68%] left-[44%] -translate-x-1/2 z-20 w-36 bg-[#121215]/30 border border-brand-precision px-3 py-2 rounded text-brand-dim text-center">
+                                <div class="text-[9px] font-mono uppercase tracking-wider mb-0.5">Adjustments</div>
+                                <div class="text-[10px] font-mono font-medium">ADJUSTMENTS</div>
+                                <div class="text-[8px] font-mono text-brand-dim mt-1">optional - unused</div>
+                            </div>
+
+                            <!-- Node 7: Hedging (Inactive) -->
+                            <div id="node-hedging" class="node-card inactive absolute top-[68%] left-[60%] -translate-x-1/2 z-20 w-44 bg-[#121215]/30 border border-brand-precision px-3 py-2 rounded text-brand-dim text-center">
+                                <div class="text-[9px] font-mono uppercase tracking-wider mb-0.5">Hedging Node</div>
+                                <div class="text-[10px] font-mono font-medium">DELTA_NEUTRAL_HEDGE</div>
+                                <div class="text-[8px] font-mono text-brand-emerald mt-1 hidden" id="hedge-active-txt">active (L280)</div>
+                                <div class="text-[8px] font-mono text-brand-dim mt-1" id="hedge-inactive-txt">optional - unused</div>
+                            </div>
+
+                            <!-- Node 8: Exit Signals -->
+                            <div id="node-exit" class="node-card absolute top-[72%] left-[82%] -translate-x-1/2 z-20 w-72 bg-[#08080A]/90 border border-[#00E676] p-3 rounded shadow-[0_0_15px_rgba(0,230,118,0.15)] font-mono text-[10px]">
+                                <div class="flex justify-between items-center text-[9px] text-[#00E676] mb-2 font-bold">
+                                    <span>EXIT SIGNALS</span>
+                                    <span class="bg-[#0B1C11] text-[#00E676] text-[8px] px-1 rounded">2 *</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div>
+                                        <div class="text-white font-medium flex justify-between"><span>time-exit</span><span class="text-brand-dim text-[9px]">L136-141</span></div>
+                                        <div class="text-[#00E676] text-[9px] mt-0.5">if ctx.positions and ctx.time >= <span id="exit-time-val" class="text-white font-bold transition-all duration-300">14:30</span> -> EXIT</div>
+                                    </div>
+                                    <div class="border-t border-brand-precision pt-1.5">
+                                        <div class="text-white font-medium">premium-sl <span class="text-brand-dim text-[9px]">L166-171</span></div>
+                                        <div class="text-[#00E676] text-[9px] mt-0.5">if ce_hit or pe_hit -> EXIT</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <!-- Side chat intelligence workspace panel -->
+                    <div class="lg:col-span-3 p-4 bg-brand-elevate flex flex-col justify-between font-mono text-[11px] h-[600px] overflow-hidden">
+                        <div class="flex flex-col h-full justify-between space-y-3 overflow-hidden">
+                            <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-wider text-[9px] flex-shrink-0">ECHO INTEL INTERFACE</div>
+                            
+                            <!-- Messages container -->
+                            <div id="chat-history" class="flex-1 overflow-y-auto space-y-4 pr-1 text-brand-pure leading-relaxed">
+                                <div class="bg-brand-void/50 p-3 rounded border border-brand-precision">
+                                    <span class="text-[#00E676] font-bold">ECHO:</span> Hello, I have mapped your strangle strategy topology. Describe a change or use the suggestions below.
+                                </div>
+                            </div>
+
+                            <!-- Suggestion chips -->
+                            <div class="space-y-2">
+                                <div class="text-[9px] text-brand-dim uppercase tracking-wider">SUGGESTIONS</div>
+                                <div class="flex flex-col space-y-1">
+                                    <button onclick="handleSuggestion('change the exit time to 14:38', '14:38')" class="text-left bg-brand-void hover:bg-[#0B1C11] border border-brand-precision hover:border-[#00E676]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#00E676] transition-all">
+                                        &gt; change the exit time to 14:38
+                                    </button>
+                                    <button onclick="handleSuggestion('change the exit time to 14:50', '14:50')" class="text-left bg-brand-void hover:bg-[#0B1C11] border border-brand-precision hover:border-[#00E676]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#00E676] transition-all">
+                                        &gt; change the exit time to 14:50
+                                    </button>
+                                    <button onclick="handleSuggestion('add delta hedge protection', 'hedge')" class="text-left bg-brand-void hover:bg-[#0B1C11] border border-brand-precision hover:border-[#00E676]/30 px-3 py-1.5 rounded text-[10px] text-brand-muted hover:text-[#00E676] transition-all">
+                                        &gt; add delta hedge protection
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Input bar -->
+                            <div class="pt-3 border-t border-brand-precision">
+                                <div class="flex items-center space-x-2 bg-brand-void p-1 rounded border border-brand-precision">
+                                    <input id="chat-input" type="text" placeholder="Describe a change..." class="w-full bg-transparent border-none text-[10px] text-brand-pure focus:outline-none px-2 py-1">
+                                    <button onclick="sendChatMessage()" class="bg-[#00E676] text-brand-void px-3 py-1 rounded text-[10px] font-bold hover:bg-white transition-all">SEND</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="engine" class="scroll-reveal py-24 bg-transparent border-b border-brand-precision">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="mb-12">
+                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">2.0 ENGINE // STEP 02: HISTORICAL SIMULATION</span>
+                <h3 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white mb-4">Test on actual option price logs</h3>
+                <p class="text-brand-muted text-sm max-w-xl font-sans mt-3">
+                    Plan and navigate from hypothesis to validation. Run with full high-beams: test option strategies with exchange-accurate margin rules, dynamic lot adjustments, and realistic slippages.
+                </p>
+            </div>
+            
+            <!-- Dashboard Card Container -->
+            <div class="bg-brand-elevate border border-brand-precision rounded overflow-hidden transition-all duration-300 hover:border-brand-emerald/30 hover:shadow-[0_10px_40px_-10px_rgba(0,230,118,0.12)]">
+                <!-- Dashboard Top Bar: Name + Date -->
+                <div class="bg-[#0B0A0D] px-6 py-4 border-b border-brand-precision flex flex-col md:flex-row items-center justify-between text-xs font-mono text-brand-muted gap-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-[#00E676] font-bold">← BACKTEST RESULTS</span>
+                        <span class="text-brand-dim">/</span>
+                        <span class="text-white uppercase font-bold text-[10px]">DAILY_STRADDLE_V1 [HYPOTHETICAL HISTORICAL SIMULATION]</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button class="bg-[#0B1C11] text-[#00E676] px-3 py-1 rounded border border-[#00E676]/20 hover:bg-[#0E2F1C]">RUN HISTORY (1)</button>
+                        <button class="bg-[#1C1C21] text-brand-pure px-3 py-1 rounded border border-brand-precision hover:bg-brand-precision">PARAMS *</button>
+                    </div>
+                </div>
+                
+                <!-- KPIs Grid Bar -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 border-b border-brand-precision bg-brand-void/40">
+                    <!-- Net P&L -->
+                    <div class="p-4 border-r border-b lg:border-b-0 border-brand-precision">
+                        <span class="text-[9px] font-mono text-brand-dim block uppercase">Net P&L</span>
+                        <span class="text-lg font-mono text-brand-emerald font-semibold block mt-1">+51.96%</span>
+                        <span class="text-[10px] font-mono text-brand-muted block mt-0.5">+₹51,95,633.16</span>
+                    </div>
+                    <!-- Annualised -->
+                    <div class="p-4 border-r border-b lg:border-b-0 border-brand-precision">
+                        <span class="text-[9px] font-mono text-brand-dim block uppercase">Annualised</span>
+                        <span class="text-lg font-mono text-brand-emerald font-semibold block mt-1">+26.61%</span>
+                        <span class="text-[10px] font-mono text-brand-muted block mt-0.5">capital track</span>
+                    </div>
+                    <!-- Max Drawdown -->
+                    <div class="p-4 border-r border-b lg:border-b-0 border-brand-precision">
+                        <span class="text-[9px] font-mono text-brand-dim block uppercase">Max Drawdown</span>
+                        <span class="text-lg font-mono text-red-400 font-semibold block mt-1">-15.61%</span>
+                        <span class="text-[10px] font-mono text-brand-muted block mt-0.5">-₹19,29,903.77</span>
+                    </div>
+                    <!-- Sharpe -->
+                    <div class="p-4 border-r border-b sm:border-b-0 border-brand-precision">
+                        <span class="text-[9px] font-mono text-brand-dim block uppercase">Sharpe</span>
+                        <span class="text-lg font-mono text-white font-semibold block mt-1">0.74</span>
+                        <span class="text-[10px] font-mono text-brand-muted block mt-0.5">daily, annualised</span>
+                    </div>
+                    <!-- Calmar -->
+                    <div class="p-4 border-r border-brand-precision">
+                        <span class="text-[9px] font-mono text-brand-dim block uppercase">Calmar</span>
+                        <span class="text-lg font-mono text-white font-semibold block mt-1">1.70</span>
+                        <span class="text-[10px] font-mono text-brand-muted block mt-0.5">ann ret / |MDD|</span>
+                    </div>
+                    <!-- Win Rate -->
+                    <div class="p-4 border-r border-brand-precision">
+                        <span class="text-[9px] font-mono text-brand-dim block uppercase">Win Rate</span>
+                        <span class="text-lg font-mono text-white font-semibold block mt-1">62.9%</span>
+                        <span class="text-[10px] font-mono text-brand-muted block mt-0.5">616 / 980 trades</span>
+                    </div>
+                    <!-- Profit Factor -->
+                    <div class="p-4">
+                        <span class="text-[9px] font-mono text-brand-dim block uppercase">Profit Factor</span>
+                        <span class="text-lg font-mono text-white font-semibold block mt-1">1.08</span>
+                        <span class="text-[10px] font-mono text-brand-muted block mt-0.5">wins / losses</span>
+                    </div>
+                </div>
+
+                <!-- Tabs + Content -->
+                <div class="bg-brand-void/20">
+                    <!-- Tab Headers -->
+                    <div class="px-6 py-2 border-b border-brand-precision bg-[#0B0A0D] flex items-center justify-between text-xs font-mono">
+                        <div class="flex space-x-6">
+                            <span class="text-[#00E676] border-b-2 border-[#00E676] py-2 font-bold cursor-pointer">OVERVIEW</span>
+                            <span class="text-brand-muted py-2 hover:text-white cursor-pointer transition-colors">DAYLOG</span>
+                            <span class="text-brand-muted py-2 hover:text-white cursor-pointer transition-colors">TRADES</span>
+                            <span class="text-brand-muted py-2 hover:text-white cursor-pointer transition-colors">DIAGNOSTICS</span>
+                        </div>
+                        <span class="text-brand-dim uppercase text-[10px]">PERFORMANCE - CAPITAL TRACK</span>
+                    </div>
+
+                    <!-- Main Chart Panel + Stats Sidebar -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12">
+                        <!-- Chart Area -->
+                        <div class="lg:col-span-8 p-6 border-r border-brand-precision flex flex-col justify-between">
+                            <div class="flex justify-between items-center text-[10px] font-mono text-brand-muted mb-4">
+                                <div class="flex items-center space-x-4">
+                                    <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-[#00E676] mr-1.5"></span>EQUITY (₹1,00,00,000 ANCHOR)</span>
+                                    <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-red-950/80 border border-red-500/30 mr-1.5"></span>DRAWDOWN</span>
+                                </div>
+                                <div>Hover to inspect points</div>
+                            </div>
+
+                            <!-- SVG Chart -->
+                            <div class="relative w-full h-[320px]" id="chart-wrapper">
+                                <svg id="backtest-chart" class="w-full h-full overflow-visible" style="z-index: 5;">
+                                    <!-- Grids -->
+                                    <g id="chart-grids" stroke="#121215" stroke-width="1"></g>
+                                    
+                                    <!-- Drawdown Area -->
+                                    <path id="drawdown-area" fill="url(#drawdown-gradient)" opacity="0.6" stroke="none" />
+                                    <path id="drawdown-line" stroke="#991b1b" stroke-width="1" fill="none" opacity="0.8" />
+                                    
+                                    <!-- Equity Line -->
+                                    <path id="equity-line" stroke="#00E676" stroke-width="2.5" fill="none" class="drop-shadow-[0_0_12px_rgba(0,230,118,0.75)]" />
+                                    
+                                    <!-- Tooltip Line / Markers -->
+                                    <line id="tooltip-line" x1="0" y1="0" x2="0" y2="320" stroke="#00E676" stroke-width="1" stroke-dasharray="2 2" opacity="0" />
+                                    <circle id="tooltip-dot" r="4" fill="#00E676" stroke="#08080A" stroke-width="1.5" opacity="0" />
+                                    
+                                    <!-- Defs for Gradient -->
+                                    <defs>
+                                        <linearGradient id="drawdown-gradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#991b1b" stop-opacity="0.1" />
+                                            <stop offset="100%" stop-color="#991b1b" stop-opacity="0.5" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                
+                                <!-- Floating Tooltip HTML -->
+                                <div id="chart-tooltip" class="absolute hidden bg-brand-elevate border border-brand-precision p-3 rounded font-mono text-[10px] shadow-2xl z-30 pointer-events-none text-white w-48">
+                                    <div class="text-[#00E676] font-bold mb-1" id="tooltip-date">Aug 2025</div>
+                                    <div class="flex justify-between">
+                                        <span class="text-brand-muted">Equity:</span>
+                                        <span class="font-bold" id="tooltip-eq">₹15,195,633.16</span>
+                                    </div>
+                                    <div class="flex justify-between mt-0.5">
+                                        <span class="text-brand-muted">Drawdown:</span>
+                                        <span class="text-red-400 font-bold" id="tooltip-dd">-7.38%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar Stats Table -->
+                        <div class="lg:col-span-4 p-6 bg-brand-elevate/30 flex flex-col justify-between text-xs font-mono">
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-wider text-[9px] mb-3">RETURNS</div>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between"><span class="text-brand-muted">TOTAL P&L</span><span class="text-brand-emerald font-semibold">+₹51,95,633.16</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">TOTAL RETURN</span><span class="text-brand-emerald font-semibold">+51.96%</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">ANNUALISED RETURN</span><span class="text-brand-emerald font-semibold">+26.61%</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">AVG DAILY RETURN</span><span class="text-white">+0.11%</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">AVG WEEKLY RETURN</span><span class="text-white">+0.49%</span></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-wider text-[9px] mb-3">RISK</div>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between"><span class="text-brand-muted">MAX DRAWDOWN</span><span class="text-red-400">-15.61%</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">MAX DD DURATION</span><span class="text-white">169 days</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">SHARPE RATIO</span><span class="text-white">0.74</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">SORTINO RATIO</span><span class="text-white">0.94</span></div>
+                                        <div class="flex justify-between"><span class="text-brand-muted">CALMAR RATIO</span><span class="text-white">1.70</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Diagnostics Row: KDE returns + details -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+                <!-- KDE Card -->
+                <div class="bg-brand-elevate border border-brand-precision rounded p-5 flex flex-col justify-between min-h-[180px]">
+                    <div>
+                        <div class="font-mono text-[9px] text-[#00E676] mb-3 uppercase">[ KDE RETURNS DISTRIBUTION ]</div>
+                        <div class="h-20 w-full relative">
+                            <!-- SVG KDE curve -->
+                            <svg class="w-full h-full overflow-visible" stroke="#00E676" stroke-width="1.5" fill="none">
+                                <path d="M 0,60 Q 40,60 80,56 T 120,40 T 160,8 T 200,48 T 240,56 T 280,60" class="drop-shadow-[0_0_4px_rgba(0,230,118,0.3)]" />
+                                <line x1="0" y1="60" x2="280" y2="60" stroke="#1C1C21" stroke-width="1" />
+                                <line x1="160" y1="0" x2="160" y2="64" stroke="#0B1C11" stroke-width="1" stroke-dasharray="2 2" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] font-mono text-brand-dim mt-4">
+                        <span>Daily Var: 2.73%</span>
+                        <span>CVaR: 4.73%</span>
+                    </div>
+                </div>
+                
+                <!-- Day Extremes Card -->
+                <div class="bg-brand-elevate border border-brand-precision rounded p-5 flex flex-col justify-between min-h-[180px]">
+                    <div>
+                        <div class="font-mono text-[9px] text-[#00E676] mb-3 uppercase">[ DAY EXTREMES ]</div>
+                        <div class="space-y-2 text-xs font-mono">
+                            <div class="flex justify-between"><span class="text-brand-muted">Max Gain:</span><span class="text-brand-emerald">+₹2,45,210.00</span></div>
+                            <div class="flex justify-between"><span class="text-brand-muted">Max Loss:</span><span class="text-red-400">-₹1,84,330.00</span></div>
+                            <div class="flex justify-between"><span class="text-brand-muted">Avg Win:</span><span class="text-white">+₹32,150.00</span></div>
+                            <div class="flex justify-between"><span class="text-brand-muted">Avg Loss:</span><span class="text-white">-₹28,420.00</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Activity / Diagnostics -->
+                <div class="bg-brand-elevate border border-brand-precision rounded p-5 flex flex-col justify-between min-h-[180px]">
+                    <div>
+                        <div class="font-mono text-[9px] text-[#00E676] mb-3 uppercase">[ ENGINE STATUS ]</div>
+                        <div class="text-xs font-mono space-y-2">
+                            <div class="flex justify-between"><span class="text-brand-muted">Simulation Nodes:</span><span class="text-white">Active (24)</span></div>
+                            <div class="flex justify-between"><span class="text-brand-muted">Precision Tolerance:</span><span class="text-brand-emerald">Pass</span></div>
+                            <div class="flex justify-between"><span class="text-brand-muted">Execution Model:</span><span class="text-white">Continuous v3.1</span></div>
+                        </div>
+                    </div>
+                    <div class="text-[9px] font-mono text-brand-dim mt-4">Compile status: READY // V8.1 PHASE 1</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="metrics" class="scroll-reveal py-24 border-b border-brand-precision bg-transparent">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="max-w-xl mb-16">
+                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">02 // INTEGRITY PERFORMANCE</span>
+                <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white">Eliminating Approximation Variance</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1: Stop Testing Live -->
+                <div class="bg-brand-elevate border border-brand-precision rounded p-6 bento-glow flex flex-col justify-between min-h-[220px]">
+                    <div>
+                        <div class="font-mono text-[10px] text-brand-emerald mb-4">[ TICK OBSERVABILITY ]</div>
+                        <h4 class="font-display text-lg font-medium text-white mb-2 tracking-tight">Stop Testing in Live Markets</h4>
+                        <p class="text-brand-muted text-xs leading-relaxed font-sans">
+                            Sensibull forces you to wait for patterns to form in the live market, risking real capital to verify a strategy. Convex replays your multi-leg ideas across actual historical option tick data instantly, ensuring you don't trade on hope.
+                        </p>
+                    </div>
+                    <div class="mt-8 font-mono text-xl text-brand-pure font-light">+26.61% <span class="text-[10px] block text-brand-dim">annualized tracking rate</span></div>
+                </div>
+
+                <!-- Card 2: Margin correctness -->
+                <div class="bg-brand-elevate border border-brand-precision rounded p-6 bento-glow flex flex-col justify-between min-h-[220px]">
+                    <div>
+                        <div class="font-mono text-[10px] text-brand-emerald mb-4">[ RISK FOOTPRINT ]</div>
+                        <h4 class="font-display text-lg font-medium text-white mb-2 tracking-tight">Real Capital Denominators</h4>
+                        <p class="text-brand-muted text-xs leading-relaxed font-sans">
+                            Aspiring quants blow up accounts because they estimate drawdowns on flat margin metrics. Convex computes dynamic SPAN margins per-tick, giving you absolute mathematical honesty of your capital requirement.
+                        </p>
+                    </div>
+                    <div class="mt-8 font-mono text-xl text-red-400 font-light">-15.61% <span class="text-[10px] block text-brand-dim">maximum verified drawdown</span></div>
+                </div>
+
+                <!-- Card 3: Python detour -->
+                <div class="bg-brand-elevate border border-brand-precision rounded p-6 bento-glow flex flex-col justify-between min-h-[220px]">
+                    <div>
+                        <div class="font-mono text-[10px] text-brand-emerald mb-4">[ SPEED ADVANTAGE ]</div>
+                        <h4 class="font-display text-lg font-medium text-white mb-2 tracking-tight">Python is a Six-Month Detour</h4>
+                        <p class="text-brand-muted text-xs leading-relaxed font-sans">
+                            Coding a backtest engine in Python is a detour that kills momentum. Convex translates plain English strategies into executable, validated options models in seconds. Move from hypothesis to verification tonight.
+                        </p>
+                    </div>
+                    <div class="mt-8 font-mono text-xl text-white font-light">0.74 <span class="text-[10px] block text-brand-dim">daily annualized sharpe ratio</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Volume & Trader Longevity Callout Section -->
+    <section class="scroll-reveal py-20 border-b border-brand-precision bg-transparent relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="bg-brand-elevate border border-[#00E676]/30 rounded p-12 relative overflow-hidden shadow-[0_0_50px_-20px_rgba(0,230,118,0.15)]">
+                <!-- Radial background spotlight -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-emerald/5 blur-[80px] pointer-events-none"></div>
+                
+                <div class="max-w-3xl relative z-10">
+                    <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-4">[ ACCELERATING SYSTEMATIC VOLUME ]</span>
+                    <h2 class="font-display text-2xl sm:text-3xl md:text-5xl font-normal tracking-tight text-white mb-6 leading-tight">
+                        Traders lose capital because they don't test. Convex equips them to trade safely.
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans text-xs mt-8 pt-8 border-t border-brand-precision/50">
+                        <div>
+                            <div class="font-mono text-brand-emerald mb-2">// FOR BROKERS & PLATFORMS</div>
+                            <p class="text-brand-muted leading-relaxed">
+                                Equipping your clients with an institutional-grade backtesting co-pilot drives systematic longevity. Retail traders trade longer and scale up their size safely, directly increasing your platform's transaction volumes.
+                            </p>
+                        </div>
+                        <div>
+                            <div class="font-mono text-brand-emerald mb-2">// FOR ASPIRING QUANTS</div>
+                            <p class="text-brand-muted leading-relaxed">
+                                Stop trading on approximations. Transition from retail platforms to clinical, exchange-accurate derivative math. Hardcode your volatility strategies into verified execution code.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="topology" class="scroll-reveal py-24 border-b border-brand-precision bg-transparent relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+            <div>
+                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">3.0 GAMMA OBSERVABILITY // STEP 03: TAIL ANALYSIS</span>
+                <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white mb-6">Track the Market-Wide Gamma Flip</h2>
+                <p class="text-brand-muted text-sm leading-relaxed mb-6 font-sans">
+                    Calibrate your exit gates by monitoring market-maker hedging thresholds. Convex extracts call/put walls and calculates the net Gamma Exposure (GEX) zero-crossing level. Identify when the market shifts from a stabilizing long-gamma regime to an explosive, high-volatility short-gamma regime to adjust your model's limits.
+                </p>
+                <ul class="font-mono text-xs text-brand-muted space-y-3 border-l border-brand-precision pl-4">
+                    <li><span class="text-brand-emerald drop-shadow-[0_0_5px_rgba(0,230,118,0.5)]">[X1]</span> Real-time Gamma Flip zero-crossing calculations</li>
+                    <li><span class="text-brand-emerald drop-shadow-[0_0_5px_rgba(0,230,118,0.5)]">[X2]</span> Instant call/put wall resistance maps</li>
+                    <li><span class="text-brand-emerald drop-shadow-[0_0_5px_rgba(0,230,118,0.5)]">[X3]</span> Net Gamma Exposure (GEX) tick indicators</li>
+                </ul>
+            </div>
+            
+            <div class="bg-brand-elevate border border-brand-precision rounded p-10 math-grid relative flex items-center justify-center min-h-[400px] overflow-hidden">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-emerald/10 blur-[60px] rounded-full pointer-events-none"></div>
+                <div class="absolute top-4 left-4 font-mono text-[9px] text-brand-dim">RENDER: NET_GAMMA_EXPOSURE_GEX.sh</div>
+                
+                <!-- GEX Custom Chart SVG -->
+                <svg class="w-64 h-64 text-brand-muted relative z-10" viewBox="0 0 100 100">
+                    <!-- Center alignment line -->
+                    <line x1="50" y1="5" x2="50" y2="95" stroke="#1C1C21" stroke-width="1.5" />
+                    
+                    <!-- Strike Level Lines and GEX Horizontal Bars -->
+                    <!-- 21,700 Strike (Long GEX) -->
+                    <text x="5" y="20" fill="#48484A" font-family="monospace" font-size="6">21,700</text>
+                    <rect x="50" y="16" width="30" height="6" fill="#00E676" opacity="0.8" />
+                    
+                    <!-- 21,600 Strike (Long GEX) -->
+                    <text x="5" y="38" fill="#48484A" font-family="monospace" font-size="6">21,600</text>
+                    <rect x="50" y="34" width="40" height="6" fill="#00E676" opacity="0.8" />
+                    
+                    <!-- 21,500 Strike (Gamma Flip Crossing) -->
+                    <text x="5" y="56" fill="#00E676" font-family="monospace" font-weight="bold" font-size="6">21,500</text>
+                    <circle cx="50" cy="53" r="2.5" fill="#08080A" stroke="#00E676" stroke-width="1" />
+                    <line x1="5" y1="53" x2="95" y2="53" stroke="#00E676" stroke-width="0.5" stroke-dasharray="2 2" />
+                    
+                    <!-- 21,400 Strike (Short GEX) -->
+                    <text x="5" y="74" fill="#48484A" font-family="monospace" font-size="6">21,400</text>
+                    <rect x="25" y="70" width="25" height="6" fill="#F87171" opacity="0.8" />
+                    
+                    <!-- 21,300 Strike (Short GEX) -->
+                    <text x="5" y="92" fill="#48484A" font-family="monospace" font-size="6">21,300</text>
+                    <rect x="15" y="88" width="35" height="6" fill="#F87171" opacity="0.8" />
+                </svg>
+
+                <div class="absolute bottom-6 right-6 font-mono text-[8px] text-brand-emerald bg-brand-void px-1.5 py-0.5 border border-brand-emerald/40 shadow-[0_0_10px_rgba(0,230,118,0.2)]">GAMMA_FLIP: 21,500</div>
+                <div class="absolute bottom-6 left-6 font-mono text-[8px] text-brand-muted bg-brand-void px-1.5 py-0.5 border border-brand-precision">GEX_PROFILE</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="routing" class="scroll-reveal py-24 border-b border-brand-precision bg-transparent">
+        <div class="max-w-7xl mx-auto px-6 text-center mb-16">
+            <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">04 // PIPELINE LOGIC</span>
+            <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white">Algorithmic Routing Structures</h2>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 overflow-x-auto pb-8">
+            <div class="flex items-center justify-start md:justify-center min-w-[800px] space-x-0 relative">
+                <div class="bg-brand-elevate border border-brand-precision rounded w-48 p-4 z-10 relative">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="w-2 h-2 rounded-full bg-white"></span>
+                        <span class="font-mono text-[9px] text-brand-muted">INGESTION</span>
+                    </div>
+                    <div class="font-sans text-[11px] text-white">Live Data Feed</div>
+                    <div class="font-mono text-[9px] text-brand-dim mt-1">IV > 45.00 || RANK > 80</div>
+                </div>
+
+                <div class="w-16 h-px node-line"></div>
+
+                <div class="bg-brand-elevate border border-brand-precision rounded w-48 p-4 z-10 relative">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="w-2 h-2 rounded-full bg-brand-dim"></span>
+                        <span class="font-mono text-[9px] text-brand-muted">FILTER_NODE</span>
+                    </div>
+                    <div class="font-sans text-[11px] text-white">Delta Neutral Lock</div>
+                    <div class="font-mono text-[9px] text-brand-dim mt-1">Tolerance ± 0.05Δ</div>
+                </div>
+
+                <div class="w-16 h-px node-line relative">
+                    <div class="absolute inset-0 bg-brand-emerald/20 blur-[2px]"></div>
+                </div>
+
+                <div class="bg-brand-elevate border border-brand-emerald rounded w-48 p-4 z-10 relative node-aura bg-brand-emerald/5">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="w-2 h-2 rounded-full bg-brand-emerald animate-pulse shadow-[0_0_8px_rgba(0,230,118,0.8)]"></span>
+                        <span class="font-mono text-[9px] text-brand-emerald drop-shadow-[0_0_2px_rgba(0,230,118,0.8)]">EXECUTION</span>
+                    </div>
+                    <div class="font-sans text-[11px] text-white">Dynamic Hedging</div>
+                    <div class="font-mono text-[9px] text-brand-emerald/70 mt-1">Target: Capital Preserv.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <section id="greeks" class="scroll-reveal py-24 border-b border-brand-precision bg-transparent">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-2">4.0 GREEKS // STEP 04: RISK SKEW ANALYSIS</span>
+                    <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white">Observe Implied Volatility and Greek skew</h2>
+                </div>
+                <div class="font-mono text-[10px] text-brand-emerald flex items-center space-x-2">
+                    <span class="w-1.5 h-1.5 bg-brand-emerald rounded-full animate-pulse shadow-[0_0_5px_rgba(0,230,118,0.8)]"></span>
+                    <span>LIVE_SOCKET_CONNECTED</span>
+                </div>
+            </div>
+
+            <div class="bg-brand-elevate border border-brand-precision rounded overflow-x-auto shadow-[0_0_30px_-15px_rgba(0,230,118,0.1)]">
+                <table class="w-full text-left font-mono text-[11px] whitespace-nowrap">
+                    <thead>
+                        <tr class="text-brand-dim bg-brand-void/50">
+                            <th class="py-3 px-4 font-normal">STRIKE</th>
+                            <th class="py-3 px-4 font-normal">LTP (CE)</th>
+                            <th class="py-3 px-4 font-normal">DELTA</th>
+                            <th class="py-3 px-4 font-normal">IMPLIED VOL</th>
+                            <th class="py-3 px-4 font-normal">GAMMA EXP</th>
+                            <th class="py-3 px-4 font-normal text-right">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-brand-muted">
+                        <tr class="hover:bg-brand-precision/20 transition-colors">
+                            <td class="py-3 px-4 text-white">21,400</td>
+                            <td class="py-3 px-4">124.50</td>
+                            <td class="py-3 px-4 text-red-400">-0.14</td>
+                            <td class="py-3 px-4">18.4%</td>
+                            <td class="py-3 px-4">0.021</td>
+                            <td class="py-3 px-4 text-right text-brand-dim">TRACKING</td>
+                        </tr>
+                        <tr class="bg-brand-emerald/10 hover:bg-brand-emerald/20 transition-colors shadow-[inset_0_0_20px_rgba(0,230,118,0.05)]">
+                            <td class="py-3 px-4 text-white">21,500 <span class="text-brand-emerald ml-1 animate-pulse">*</span></td>
+                            <td class="py-3 px-4 text-brand-emerald font-medium">185.20</td>
+                            <td class="py-3 px-4 text-brand-pure">0.52</td>
+                            <td class="py-3 px-4 text-brand-pure">19.2%</td>
+                            <td class="py-3 px-4 text-brand-pure">0.045</td>
+                            <td class="py-3 px-4 text-right text-brand-emerald font-medium drop-shadow-[0_0_5px_rgba(0,230,118,0.4)]">ACTIVE_HEDGE</td>
+                        </tr>
+                        <tr class="hover:bg-brand-precision/20 transition-colors">
+                            <td class="py-3 px-4 text-white">21,600</td>
+                            <td class="py-3 px-4">245.80</td>
+                            <td class="py-3 px-4 text-brand-emerald">+0.81</td>
+                            <td class="py-3 px-4">21.1%</td>
+                            <td class="py-3 px-4">0.018</td>
+                            <td class="py-3 px-4 text-right text-brand-dim">TRACKING</td>
+                        </tr>
+                        <tr class="hover:bg-brand-precision/20 transition-colors">
+                            <td class="py-3 px-4 text-white">21,700</td>
+                            <td class="py-3 px-4">310.15</td>
+                            <td class="py-3 px-4 text-brand-emerald">+0.94</td>
+                            <td class="py-3 px-4">22.8%</td>
+                            <td class="py-3 px-4">0.005</td>
+                            <td class="py-3 px-4 text-right text-brand-dim">OOTM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- B2B Technical Specs Section -->
+    <section id="founders" class="scroll-reveal py-24 border-b border-brand-precision bg-transparent relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">5.0 SPECIFICATIONS // STEP 05: ENTERPRISE INFRASTRUCTURE</span>
+                <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white mb-4">Enterprise Quant Infrastructure</h2>
+                <p class="text-brand-muted text-xs max-w-lg mx-auto font-sans leading-relaxed">
+                    Convex interfaces seamlessly with institutional desks. Run complex options backtests, optimize margin capital, and route execution pipelines via low-latency gateways.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-left font-mono">
+                <!-- Spec 1 -->
+                <div class="bg-brand-elevate border border-brand-precision rounded p-6 flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="text-brand-emerald text-[10px] mb-3">[ MARGIN MATH ]</div>
+                        <h4 class="text-white font-bold text-sm mb-2">NSE/NIFTY SPAN Engine</h4>
+                        <p class="text-brand-muted text-[10px] leading-relaxed">
+                            Simulate margin envelopes cached dynamically from historical NSE/NIFTY parameters to compute realistic capital utilization.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Spec 2 -->
+                <div class="bg-brand-elevate border border-brand-precision rounded p-6 flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="text-brand-emerald text-[10px] mb-3">[ IN-BROWSER PARQUET ]</div>
+                        <h4 class="text-white font-bold text-sm mb-2">Client WASM Engine</h4>
+                        <p class="text-brand-muted text-[10px] leading-relaxed">
+                            Zero server database queries for logs. Equity curves and drawdowns are computed directly in the browser via DuckDB-WASM.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Spec 3 -->
+                <div class="bg-brand-elevate border border-brand-precision rounded p-6 flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="text-brand-emerald text-[10px] mb-3">[ OPTION PRICE TICKING ]</div>
+                        <h4 class="text-white font-bold text-sm mb-2">1-Minute Resolution</h4>
+                        <p class="text-brand-muted text-[10px] leading-relaxed">
+                            Backtest multi-leg structures over actual historical 1-minute option contracts, not index approximations.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Spec 4 -->
+                <div class="bg-brand-elevate border border-brand-precision rounded p-6 flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="text-brand-emerald text-[10px] mb-3">[ AST VALIDATION ]</div>
+                        <h4 class="text-white font-bold text-sm mb-2">4-Stage Code Gate</h4>
+                        <p class="text-brand-muted text-[10px] leading-relaxed">
+                            Echo validates models securely through a compiler gate checking AST parsing, imports allowlists, static types, and dry runs.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom Waitlist Card -->
+    <section id="waitlist" class="scroll-reveal py-24 bg-transparent relative overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] ambient-glow blur-[90px] pointer-events-none z-0"></div>
+        
+        <div class="max-w-3xl mx-auto px-6 text-center relative z-10">
+            <span class="font-mono text-xs text-brand-emerald uppercase tracking-wider block mb-3">6.0 ACCESS PROTOCOL // STEP 06: INITIALIZE GATEWAY</span>
+            <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-white mb-6">Initialize Priority Access</h2>
+            <p class="text-brand-muted text-sm max-w-lg mx-auto font-sans mb-12 leading-relaxed">
+                We are launch-integrating with 4 major brokers. Access is strictly limited to serious derivative quants who require mathematical integrity.
+            </p>
+            
+            <div class="max-w-md mx-auto">
+                <form id="footer-waitlist-form" onsubmit="event.preventDefault(); handleWaitlistSubmit('footer')" class="flex flex-col sm:flex-row items-stretch gap-2 p-1 bg-brand-elevate border border-brand-precision rounded">
+                    <input id="footer-waitlist-email" type="email" placeholder="Enter option quant credentials..." required class="flex-1 bg-transparent border-none text-xs font-mono text-brand-pure focus:outline-none px-3 py-2.5">
+                    <button type="submit" class="bg-brand-emerald text-brand-void text-xs font-mono font-bold px-5 py-2.5 rounded hover:bg-white transition-colors uppercase">
+                        INITIALIZE ACCESS
+                    </button>
+                </form>
+                <div id="footer-waitlist-feedback" class="mt-3 font-mono text-[10px] text-brand-muted text-left min-h-[16px]"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEBI Compliance Disclaimer -->
+    <section class="scroll-reveal py-12 border-b border-brand-precision bg-transparent/50 font-mono text-[9px] text-brand-muted">
+        <div class="max-w-7xl mx-auto px-6 leading-relaxed space-y-2">
+            <div class="text-brand-dim font-bold uppercase tracking-wider">[ SEBI REGULATORY COMPLIANCE DISCLOSURE ]</div>
+            <p>
+                Convex is a B2B quantitative research and strategy backtesting simulation workspace. It does not provide trading tips, advisory, research reports, or recommendations regarding buying or selling securities. All strategy models, performance parameters, and charts rendered on this platform are hypothetical historical simulation runs based on back-traceable tick data logs, and are not indicative of future performance or live trading execution returns.
+            </p>
+            <p>
+                Under SEBI (Investment Advisers) Regulations, 2013 and SEBI (Research Analysts) Regulations, 2014, the passive co-pilot Echo acts solely as a model compiler for user-proposed strategies. It does not recommend, advise, or suggest specific investment actions. Users must double-check all compiled Python models, margin requirements, and risk parameters independently. Derivatives trading involves high leverage and substantial risk of loss.
+            </p>
+        </div>
+    </section>
+
+    <footer class="py-20 bg-brand-void/50 border-t border-brand-precision font-mono text-[9px] text-brand-muted relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <!-- "TO THE TOP" Button -->
+            <div class="flex flex-col items-center mb-16">
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="group flex flex-col items-center space-y-3 focus:outline-none">
+                    <span class="font-mono text-[9px] text-brand-muted tracking-widest uppercase group-hover:text-brand-emerald transition-colors">TO THE TOP</span>
+                    <div class="w-8 h-8 rounded-full border border-brand-precision flex items-center justify-center group-hover:border-brand-emerald transition-colors">
+                        <svg class="w-3.5 h-3.5 text-brand-muted group-hover:text-brand-emerald transition-colors transform group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                        </svg>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Massive Brand Wordmark -->
+            <div class="w-full flex flex-col items-center justify-center mb-16 select-none overflow-hidden logo-container cursor-pointer">
+                <svg class="w-14 h-9 text-brand-emerald mb-6 hover:scale-105 transition-transform duration-300" viewBox="0 0 1024 652" fill="currentColor">
+                    <!-- Shape 1: Left C-loop -->
+                    <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
+                    <!-- Shape 2: Top-middle triangle -->
+                    <polygon points="336,165 618,165 483,0" />
+                    <!-- Shape 3: Main diagonal slash -->
+                    <polygon points="785,26 1023,26 493,645 389,452" />
+                    <!-- Shape 4: Small middle folder -->
+                    <polygon points="716,381 806,380 792,425 680,426" />
+                    <!-- Shape 5: Bottom-right loop -->
+                    <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                </svg>
+                <h2 class="text-[5vw] font-display font-black tracking-tighter text-white leading-none uppercase opacity-[0.85] hover:text-brand-emerald transition-colors duration-500 whitespace-nowrap" style="font-size: clamp(28px, 5vw, 96px);">
+                    convex hedge
+                </h2>
+            </div>
+
+            <!-- Bottom Row: Copyright + Links -->
+            <div class="border-t border-brand-precision/50 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <span>© Copyright Convex Hedge Systems 2026. All Rights Reserved.</span>
+                </div>
+                <div class="flex space-x-8">
+                    <a href="#" class="hover:text-brand-pure transition-colors">Terms of Use</a>
+                    <a href="#" class="hover:text-brand-pure transition-colors">Privacy Policy</a>
+                </div>
+                <div>
+                    <span class="text-brand-emerald">DEVSHELL_RUNNING // INITIALIZE_HANDSHAKE -></span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Strategy node drawing routine
+        function drawStrategyLines() {
+            const container = document.getElementById('canvas-container');
+            if (!container) return;
+            const containerRect = container.getBoundingClientRect();
+
+            const connections = [
+                { from: 'node-instrument', to: 'node-features', path: 'path-inst-feat', glow: null },
+                { from: 'node-instrument', to: 'node-structures', path: 'path-inst-struct', glow: 'glow-inst-struct' },
+                { from: 'node-features', to: 'node-signals', path: 'path-feat-sign', glow: null },
+                { from: 'node-structures', to: 'node-signals', path: 'path-struct-sign', glow: 'glow-struct-sign' },
+                { from: 'node-signals', to: 'node-entry', path: 'path-sign-entry', glow: 'glow-sign-entry' },
+                { from: 'node-signals', to: 'node-adjustments', path: 'path-sign-adj', glow: null },
+                { from: 'node-signals', to: 'node-hedging', path: 'path-sign-hedge', glow: 'glow-sign-hedge' },
+                { from: 'node-signals', to: 'node-exit', path: 'path-sign-exit', glow: 'glow-sign-exit' },
+                { from: 'node-hedging', to: 'node-exit', path: null, glow: 'glow-hedge-exit' }
+            ];
+
+            connections.forEach(conn => {
+                const fromEl = document.getElementById(conn.from);
+                const toEl = document.getElementById(conn.to);
+                
+                if (fromEl && toEl) {
+                    const fromRect = fromEl.getBoundingClientRect();
+                    const toRect = toEl.getBoundingClientRect();
+
+                    const x1 = (fromRect.left + fromRect.width / 2) - containerRect.left;
+                    const y1 = fromRect.bottom - containerRect.top;
+                    const x2 = (toRect.left + toRect.width / 2) - containerRect.left;
+                    const y2 = toRect.top - containerRect.top;
+
+                    // Orthogonal 90-degree straight lines (Manhattan routing)
+                    const yMid = y1 + (y2 - y1) * 0.5;
+                    const d = `M ${x1},${y1} L ${x1},${yMid} L ${x2},${yMid} L ${x2},${y2}`;
+                    
+                    // Determine line visibility based on target node opacity & active state
+                    const toOpacity = toEl.style.opacity;
+                    const toInactive = toEl.classList.contains('inactive');
+                    const isVisible = (toOpacity !== '0' && toOpacity !== '');
+
+                    if (conn.path) {
+                        const pathEl = document.getElementById(conn.path);
+                        if (pathEl) {
+                            pathEl.setAttribute('d', d);
+                            // Hide connection paths if the target node is hidden or inactive
+                            if (!isVisible || toInactive) {
+                                pathEl.style.opacity = '0';
+                            } else {
+                                pathEl.style.opacity = '1';
+                            }
+                        }
+                    }
+                    if (conn.glow) {
+                        const glowEl = document.getElementById(conn.glow);
+                        if (glowEl) {
+                            glowEl.setAttribute('d', d);
+                            if (!isVisible || toInactive) {
+                                glowEl.style.opacity = '0';
+                            } else {
+                                // Manual toggle handling for optional hedging node routes
+                                if (conn.glow === 'glow-sign-hedge' || conn.glow === 'glow-hedge-exit') {
+                                    const hNode = document.getElementById('node-hedging');
+                                    if (hNode && !hNode.classList.contains('inactive')) {
+                                        glowEl.style.opacity = '1';
+                                    } else {
+                                        glowEl.style.opacity = '0';
+                                    }
+                                } else {
+                                    glowEl.style.opacity = '1';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Echo chat intelligence
+        function handleSuggestion(text, val) {
+            const input = document.getElementById('chat-input');
+            if (input) {
+                input.value = text;
+                sendChatMessage(val);
+            }
+        }
+
+        function sendChatMessage(valUpdate) {
+            const input = document.getElementById('chat-input');
+            if (!input || !input.value.trim()) return;
+
+            const text = input.value;
+            input.value = '';
+
+            const history = document.getElementById('chat-history');
+            
+            // Append user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'bg-[#1C1C21] p-3 rounded border border-brand-precision text-right';
+            userMsg.innerHTML = `<span class="text-brand-muted">YOU:</span> ${text}`;
+            history.appendChild(userMsg);
+            history.scrollTop = history.scrollHeight;
+
+            // Simulate thinking
+            const thinkingMsg = document.createElement('div');
+            thinkingMsg.className = 'bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse';
+            thinkingMsg.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Evaluating instruction...`;
+            history.appendChild(thinkingMsg);
+            history.scrollTop = history.scrollHeight;
+
+            setTimeout(() => {
+                history.removeChild(thinkingMsg);
+                const response = document.createElement('div');
+                response.className = 'bg-brand-void/50 p-3 rounded border border-[#00E676]/20';
+                
+                if (valUpdate === 'hedge' || text.toLowerCase().includes('hedge')) {
+                    // Activate Hedging Node!
+                    const hedgeNode = document.getElementById('node-hedging');
+                    const exitLine = document.getElementById('glow-sign-exit');
+                    const hedgeLine = document.getElementById('glow-sign-hedge');
+                    const hedgeExitLine = document.getElementById('glow-hedge-exit');
+                    
+                    hedgeNode.classList.remove('inactive');
+                    hedgeNode.classList.add('glowing');
+                    document.getElementById('hedge-inactive-txt').classList.add('hidden');
+                    document.getElementById('hedge-active-txt').classList.remove('hidden');
+                    
+                    // Route exit path through hedging node:
+                    if (exitLine) exitLine.classList.replace('opacity-100', 'opacity-0');
+                    if (hedgeLine) hedgeLine.classList.replace('opacity-0', 'opacity-100');
+                    if (hedgeExitLine) hedgeExitLine.classList.replace('opacity-0', 'opacity-100');
+                    
+                    // Redraw paths
+                    drawStrategyLines();
+
+                    response.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Dynamic Hedging rules compiled successfully. Added <code>delta_neutral_hedge</code> at L280. Re-routed execution flow through HEDGING node.`;
+                } else if (valUpdate && valUpdate !== 'hedge') {
+                    // Trigger exit-time visual update
+                    const exitVal = document.getElementById('exit-time-val');
+                    const oldVal = exitVal.innerText;
+                    exitVal.innerText = valUpdate;
+                    
+                    // Flash effect
+                    exitVal.className = 'text-black bg-[#00E676] px-1 rounded font-bold';
+                    setTimeout(() => {
+                        exitVal.className = 'text-white font-bold transition-all duration-300';
+                    }, 1000);
+
+                    // Redraw paths
+                    drawStrategyLines();
+
+                    response.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Patched cell metadata. <code>exit_time</code> updated: <code>${oldVal}</code> → <code>${valUpdate}</code>. Recompiling strategy node... Done.`;
+                } else {
+                    response.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Parameter update logged. Node instructions compiled successfully. No anomalies detected.`;
+                }
+                history.appendChild(response);
+                history.scrollTop = history.scrollHeight;
+            }, 1000);
+        }
+
+        // Backtest Detailed Interactive Chart
+        const backtestData = [
+            { date: "Apr 2024", eq: 10000000.00, dd: 0.00 },
+            { date: "May 2024", eq: 10250000.00, dd: -0.50 },
+            { date: "Jun 2024", eq: 9800000.00,  dd: -4.38 },
+            { date: "Jul 2024", eq: 9500000.00,  dd: -7.31 },
+            { date: "Aug 2024", eq: 9400000.00,  dd: -8.29 },
+            { date: "Sep 2024", eq: 10100000.00, dd: -1.46 },
+            { date: "Oct 2024", eq: 10600000.00, dd: 0.00 },
+            { date: "Nov 2024", eq: 10400000.00, dd: -1.89 },
+            { date: "Dec 2024", eq: 10900000.00, dd: 0.00 },
+            { date: "Jan 2025", eq: 11500000.00, dd: 0.00 },
+            { date: "Feb 2025", eq: 11100000.00, dd: -3.48 },
+            { date: "Mar 2025", eq: 11800000.00, dd: 0.00 },
+            { date: "Apr 2025", eq: 12200000.00, dd: 0.00 },
+            { date: "May 2025", eq: 12100000.00, dd: -0.82 },
+            { date: "Jun 2025", eq: 12600000.00, dd: 0.00 },
+            { date: "Jul 2025", eq: 13200000.00, dd: 0.00 },
+            { date: "Aug 2025", eq: 12900000.00, dd: -2.27 },
+            { date: "Sep 2025", eq: 13500000.00, dd: 0.00 },
+            { date: "Oct 2025", eq: 14100000.00, dd: 0.00 },
+            { date: "Nov 2025", eq: 13900000.00, dd: -1.42 },
+            { date: "Dec 2025", eq: 14600000.00, dd: 0.00 },
+            { date: "Jan 2026", eq: 15195633.16, dd: 0.00 }
+        ];
+
+        function drawBacktestChart() {
+            const svg = document.getElementById('backtest-chart');
+            if (!svg) return;
+
+            const width = svg.clientWidth;
+            const height = svg.clientHeight;
+
+            const minEq = 9000000.00;
+            const maxEq = 18000000.00;
+            const minDd = -16.00;
+            const maxDd = 0.00;
+
+            // Draw Grids
+            const gridsGroup = document.getElementById('chart-grids');
+            gridsGroup.innerHTML = '';
+
+            const yGridCount = 5;
+            for(let i=0; i<=yGridCount; i++) {
+                const ratio = i / yGridCount;
+                const y = ratio * height;
+
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", "0");
+                line.setAttribute("y1", y);
+                line.setAttribute("x2", width);
+                line.setAttribute("y2", y);
+                line.setAttribute("stroke", "#1C1C21");
+                line.setAttribute("stroke-width", "1");
+                gridsGroup.appendChild(line);
+            }
+
+            const pointsCount = backtestData.length;
+            let eqPoints = [];
+            let ddPoints = [];
+
+            backtestData.forEach((d, idx) => {
+                const x = (idx / (pointsCount - 1)) * width;
+                const yEq = height - ((d.eq - minEq) / (maxEq - minEq)) * height;
+                const yDd = ((d.dd - maxDd) / (minDd - maxDd)) * height;
+
+                eqPoints.push(`${x},${yEq}`);
+                ddPoints.push(`${x},${yDd}`);
+            });
+
+            // Set Paths
+            document.getElementById('equity-line').setAttribute("d", "M " + eqPoints.join(" L "));
+            document.getElementById('drawdown-line').setAttribute("d", "M " + ddPoints.join(" L "));
+            document.getElementById('drawdown-area').setAttribute("d", "M 0,0 L " + ddPoints.join(" L ") + ` L ${width},0 Z`);
+        }
+
+        // Setup chart interactions
+        function initChartInteractions() {
+            const svg = document.getElementById('backtest-chart');
+            if (!svg) return;
+
+            svg.addEventListener('mousemove', function(e) {
+                const rect = svg.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const width = svg.clientWidth;
+                const height = svg.clientHeight;
+
+                const ratio = x / width;
+                let idx = Math.round(ratio * (backtestData.length - 1));
+                idx = Math.max(0, Math.min(backtestData.length - 1, idx));
+
+                const point = backtestData[idx];
+                const ptX = (idx / (backtestData.length - 1)) * width;
+
+                const line = document.getElementById('tooltip-line');
+                const dot = document.getElementById('tooltip-dot');
+                const tooltip = document.getElementById('chart-tooltip');
+
+                line.setAttribute('x1', ptX);
+                line.setAttribute('x2', ptX);
+                line.setAttribute('opacity', '0.6');
+
+                const minEq = 9000000.00;
+                const maxEq = 18000000.00;
+                const ptY = height - ((point.eq - minEq) / (maxEq - minEq)) * height;
+                dot.setAttribute('cx', ptX);
+                dot.setAttribute('cy', ptY);
+                dot.setAttribute('opacity', '1');
+
+                document.getElementById('tooltip-date').innerText = point.date;
+                document.getElementById('tooltip-eq').innerText = "₹" + point.eq.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+                document.getElementById('tooltip-dd').innerText = point.dd.toFixed(2) + "%";
+
+                tooltip.style.left = (ptX + 15) + "px";
+                tooltip.style.top = (ptY - 50) + "px";
+                tooltip.classList.remove('hidden');
+            });
+
+            svg.addEventListener('mouseleave', function() {
+                document.getElementById('tooltip-line').setAttribute('opacity', '0');
+                document.getElementById('tooltip-dot').setAttribute('opacity', '0');
+                document.getElementById('chart-tooltip').classList.add('hidden');
+            });
+        }
+
+        // Options Chain Live Tick Simulation
+        const optionStrikes = [21200, 21300, 21400, 21500, 21600, 21700, 21800];
+        let ticksReceived = 0;
+
+        function updateOptionChain() {
+            const tbody = document.getElementById('option-chain-body');
+            if (!tbody) return;
+
+            let html = '';
+            optionStrikes.forEach((strike, idx) => {
+                const isAtm = strike === 21500;
+                const baseCe = (22000 - strike) * 0.9 + Math.random() * 2.5;
+                const basePe = (strike - 21000) * 0.9 + Math.random() * 2.5;
+                
+                const cePrice = Math.max(1, baseCe).toFixed(2);
+                const pePrice = Math.max(1, basePe).toFixed(2);
+                
+                const ceDelta = (1 - (idx / optionStrikes.length)).toFixed(2);
+                const peDelta = (-(idx / optionStrikes.length)).toFixed(2);
+                
+                const iv = (15 + (Math.abs(strike - 21500) / 100) * 1.5 + Math.sin(ticksReceived / 10) * 0.5).toFixed(1);
+                
+                const pulseClass = Math.random() > 0.8 ? 'text-brand-emerald animate-pulse font-medium' : '';
+                
+                html += `
+                    <tr class="hover:bg-brand-precision/10 transition-colors">
+                        <td class="py-1.5 text-brand-muted">${iv}%</td>
+                        <td class="py-1.5 text-brand-dim">${ceDelta}</td>
+                        <td class="py-1.5 font-mono ${pulseClass}">₹${cePrice}</td>
+                        <td class="py-1.5 text-center bg-brand-void/50 text-white font-bold">${strike.toLocaleString()}</td>
+                        <td class="py-1.5 text-right font-mono ${pulseClass}">₹${pePrice}</td>
+                        <td class="py-1.5 text-right text-brand-dim">${peDelta}</td>
+                        <td class="py-1.5 text-right text-brand-muted">${iv}%</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+            ticksReceived++;
+            document.getElementById('tick-count').innerText = ticksReceived;
+        }
+
+        // Implied Volatility Smile Shifting Animation
+        let skewState = 0; // 0: Neutral, 1: Put Skew, 2: Call Skew
+        function animateVolatilitySmile() {
+            const path = document.getElementById('vol-smile-path');
+            const dot = document.getElementById('vol-smile-dot');
+            const skewText = document.getElementById('skew-val');
+            const ivText = document.getElementById('atm-iv-val');
+            if (!path || !dot) return;
+
+            let pathD = '';
+            let dotX = 100;
+            let dotY = 95;
+            let skewDesc = 'Neutral';
+            let atmIv = '12.45%';
+
+            if (skewState === 0) {
+                pathD = "M 10,20 Q 100,95 190,20";
+                dotX = 100;
+                dotY = 95;
+                skewDesc = "Neutral";
+                atmIv = "12.45%";
+                skewState = 1;
+            } else if (skewState === 1) {
+                pathD = "M 10,10 Q 70,85 190,40";
+                dotX = 70;
+                dotY = 85;
+                skewDesc = "Put Skew // Bearish";
+                atmIv = "14.12%";
+                skewState = 2;
+            } else {
+                pathD = "M 10,40 Q 130,85 190,10";
+                dotX = 130;
+                dotY = 85;
+                skewDesc = "Call Skew // Bullish";
+                atmIv = "13.08%";
+                skewState = 0;
+            }
+
+            path.setAttribute('d', pathD);
+            dot.setAttribute('cx', dotX);
+            dot.setAttribute('cy', dotY);
+            skewText.innerText = skewDesc;
+            ivText.innerText = atmIv;
+        }
+
+        // Waitlist smooth scroll
+        function scrollToWaitlist() {
+            const section = document.getElementById('waitlist');
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Waitlist Submit Handler
+        function handleWaitlistSubmit(type) {
+            const emailInput = document.getElementById(`${type}-waitlist-email`);
+            const feedback = document.getElementById(`${type}-waitlist-feedback`);
+            if (!emailInput || !feedback) return;
+
+            const email = emailInput.value;
+            feedback.innerHTML = `<span class="text-brand-emerald animate-pulse">&gt; VERIFYING QUANT CREDENTIALS...</span>`;
+            
+            setTimeout(() => {
+                const randomId = Math.floor(1000 + Math.random() * 9000);
+                feedback.innerHTML = `
+                    <span class="text-brand-emerald font-bold">
+                        [SUCCESS] ACCESS_GRANTED // ID: CH-${randomId} REGISTERED
+                    </span>
+                    <span class="text-brand-dim block mt-0.5">&gt; Priority list position #1,${randomId} // Email: ${email}</span>
+                `;
+                emailInput.value = '';
+            }, 1200);
+        }
+
+        // Automated node introduction sequence
+        // Cyclical options backtesting simulation loop (Echo Chat & Node Editor)
+        let demoActive = true;
+        function runNodeIntroSequence() {
+            const input = document.getElementById('chat-input');
+            const chatHistory = document.getElementById('chat-history');
+            const hedgeNode = document.getElementById('node-hedging');
+            const hedgeActiveTxt = document.getElementById('hedge-active-txt');
+            const hedgeInactiveTxt = document.getElementById('hedge-inactive-txt');
+            const glowSignHedge = document.getElementById('glow-sign-hedge');
+            const glowHedgeExit = document.getElementById('glow-hedge-exit');
+            const exitTimeVal = document.getElementById('exit-time-val');
+            
+            const nodes = [
+                { id: 'node-instrument', glow: null },
+                { id: 'node-structures', glow: 'glow-inst-struct' },
+                { id: 'node-signals', glow: 'glow-struct-sign' },
+                { id: 'node-entry', glow: 'glow-sign-entry' },
+                { id: 'node-exit', glow: 'glow-sign-exit' }
+            ];
+
+            function resetDemoState() {
+                chatHistory.innerHTML = `
+                    <div class="bg-brand-void/50 p-3 rounded border border-brand-precision transition-all duration-300">
+                        <span class="text-[#00E676] font-bold">ECHO:</span> Hello, I have mapped your strangle strategy topology. Describe a change or use the suggestions below.
+                    </div>
+                `;
+                nodes.forEach(node => {
+                    const el = document.getElementById(node.id);
+                    if (el) {
+                        el.style.opacity = '0';
+                        el.style.transform = 'translate(-50%, 25px) scale(0.94)';
+                        el.style.filter = 'blur(14px) contrast(0.8)';
+                        el.style.transition = 'all 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
+                    }
+                    if (node.glow) {
+                        const line = document.getElementById(node.glow);
+                        if (line) line.classList.replace('opacity-100', 'opacity-0');
+                    }
+                });
+
+                // Reset default horizontal positions (compact strangle view)
+                const exitNode = document.getElementById('node-exit');
+                if (exitNode) {
+                    exitNode.style.left = '55%';
+                }
+
+                if (hedgeNode) {
+                    hedgeNode.classList.add('inactive');
+                    hedgeNode.classList.remove('glowing');
+                    hedgeNode.style.left = '50%';
+                    hedgeNode.style.opacity = '0';
+                    hedgeNode.style.transform = 'translate(-50%, 25px) scale(0.94)';
+                    hedgeNode.style.filter = 'blur(14px) contrast(0.8)';
+                    hedgeNode.style.transition = 'all 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
+                }
+                if (hedgeActiveTxt) hedgeActiveTxt.classList.add('hidden');
+                if (hedgeInactiveTxt) hedgeInactiveTxt.classList.remove('hidden');
+                if (glowSignHedge) {
+                    glowSignHedge.classList.add('opacity-0');
+                    glowSignHedge.classList.remove('opacity-100');
+                }
+                if (glowHedgeExit) {
+                    glowHedgeExit.classList.add('opacity-0');
+                    glowHedgeExit.classList.remove('opacity-100');
+                }
+
+                if (exitTimeVal) {
+                    exitTimeVal.innerText = '14:30';
+                    exitTimeVal.classList.remove('text-[#00E676]');
+                }
+
+                // Reset backdrop logo to full glowing visibility
+                const backdrop = document.getElementById('canvas-logo-backdrop');
+                if (backdrop) {
+                    backdrop.style.opacity = '1';
+                    backdrop.style.transform = 'scale(1)';
+                    backdrop.classList.add('glowing');
+                }
+
+                // Force line redraw to hide all routes initially and animate retraction
+                animateLines(1200);
+            }
+
+            function appendMsg(sender, text, isEcho = false) {
+                const div = document.createElement('div');
+                div.className = isEcho 
+                    ? "bg-brand-void/50 p-3 rounded border border-brand-precision transition-all duration-300"
+                    : "bg-brand-precision/30 p-2.5 rounded text-brand-muted text-right transition-all duration-300";
+                
+                div.innerHTML = isEcho 
+                    ? `<span class="text-[#00E676] font-bold">ECHO:</span> ${text}`
+                    : `<span class="text-white font-medium">YOU:</span> ${text}`;
+                
+                chatHistory.appendChild(div);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+
+            function typeText(targetText, callback) {
+                if (!input) return;
+                input.value = "";
+                input.placeholder = "";
+                let idx = 0;
+                
+                function type() {
+                    if (!demoActive) return;
+                    if (idx < targetText.length) {
+                        input.value = targetText.slice(0, idx + 1);
+                        idx++;
+                        setTimeout(type, 35);
+                    } else {
+                        setTimeout(callback, 500);
+                    }
+                }
+                type();
+            }
+
+            // Phase 1: Initialize strangle
+            function step1() {
+                if (!demoActive) return;
+                resetDemoState();
+                
+                setTimeout(() => {
+                    typeText("Initialize NIFTY Short Strangle strategy...", () => {
+                        appendMsg("YOU", "Initialize NIFTY Short Strangle strategy...");
+                        input.value = "";
+                        input.placeholder = "Describe a change...";
+
+                        const thinking = document.createElement('div');
+                        thinking.className = "bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse";
+                        thinking.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Compiling strangle parameters...`;
+                        chatHistory.appendChild(thinking);
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+
+                        setTimeout(() => {
+                            thinking.remove();
+                            appendMsg("ECHO", "Strangle compiled. Mapped short 21,500 CE and 21,500 PE option contracts. Instantiating visual logic nodes...", true);
+                            revealNodes(0);
+                        }, 1200);
+                    });
+                }, 800);
+            }
+
+            // Animate connector lines smoothly during horizontal card transitions
+            function animateLines(duration = 1200) {
+                const start = performance.now();
+                function run(now) {
+                    const elapsed = now - start;
+                    drawStrategyLines();
+                    if (elapsed < duration && demoActive) {
+                        requestAnimationFrame(run);
+                    }
+                }
+                requestAnimationFrame(run);
+            }
+
+            function revealNodes(idx) {
+                if (!demoActive) return;
+                if (idx >= nodes.length) {
+                    setTimeout(step2, 3500);
+                    return;
+                }
+
+                // Fade out/recede background logo as soon as compilation starts
+                if (idx === 0) {
+                    const backdrop = document.getElementById('canvas-logo-backdrop');
+                    if (backdrop) {
+                        backdrop.style.opacity = '0.04';
+                        backdrop.style.transform = 'scale(0.92)';
+                        backdrop.classList.remove('glowing');
+                    }
+                }
+
+                const node = nodes[idx];
+                const el = document.getElementById(node.id);
+                if (el) {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translate(-50%, 0) scale(1)';
+                    el.style.filter = 'blur(0px) contrast(1)';
+                    el.classList.add('glowing');
+                    // Draw orthogonal path dynamically on node reveal
+                    drawStrategyLines();
+                    setTimeout(() => el.classList.remove('glowing'), 1200);
+                }
+                if (node.glow) {
+                    const line = document.getElementById(node.glow);
+                    if (line) line.classList.replace('opacity-0', 'opacity-100');
+                }
+                setTimeout(() => revealNodes(idx + 1), 350);
+            }
+
+            // Phase 2: Add dynamic hedging
+            function step2() {
+                if (!demoActive) return;
+                typeText("add dynamic delta neutral hedge protection...", () => {
+                    appendMsg("YOU", "add dynamic delta neutral hedge protection...");
+                    input.value = "";
+                    input.placeholder = "Describe a change...";
+
+                    const thinking = document.createElement('div');
+                    thinking.className = "bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse";
+                    thinking.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Appending hedging overlay...`;
+                    chatHistory.appendChild(thinking);
+                    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+                    setTimeout(() => {
+                        thinking.remove();
+                        appendMsg("ECHO", "Hedging model compiled successfully. Injected <code>delta_neutral_hedge</code> loop at L280. Re-routing strategy pipeline.", true);
+                        
+                        // Slide Exit Node horizontally to the right to make space for Hedging Node
+                        const exitNode = document.getElementById('node-exit');
+                        if (exitNode) {
+                            exitNode.style.left = '82%';
+                        }
+
+                        // Animate connector lines continuously as cards slide
+                        animateLines(1200);
+
+                        // Fade in and resolve the Hedging Node at 50%
+                        if (hedgeNode) {
+                            hedgeNode.classList.remove('inactive');
+                            hedgeNode.style.opacity = '1';
+                            hedgeNode.style.transform = 'translate(-50%, 0) scale(1)';
+                            hedgeNode.style.filter = 'blur(0px) contrast(1)';
+                            hedgeNode.classList.add('glowing');
+                            setTimeout(() => hedgeNode.classList.remove('glowing'), 1200);
+                        }
+                        if (hedgeActiveTxt) hedgeActiveTxt.classList.remove('hidden');
+                        if (hedgeInactiveTxt) hedgeInactiveTxt.classList.add('hidden');
+                        if (glowSignHedge) {
+                            glowSignHedge.classList.remove('opacity-0');
+                            glowSignHedge.classList.add('opacity-100');
+                        }
+                        if (glowHedgeExit) {
+                            glowHedgeExit.classList.remove('opacity-0');
+                            glowHedgeExit.classList.add('opacity-100');
+                        }
+
+                        setTimeout(step3, 4000);
+                    }, 1200);
+                });
+            }
+
+            // Phase 3: Intraday tuning
+            function step3() {
+                if (!demoActive) return;
+                typeText("change the exit time to 14:38...", () => {
+                    appendMsg("YOU", "change the exit time to 14:38...");
+                    input.value = "";
+                    input.placeholder = "Describe a change...";
+
+                    const thinking = document.createElement('div');
+                    thinking.className = "bg-brand-void/50 p-3 rounded border border-brand-precision animate-pulse";
+                    thinking.innerHTML = `<span class="text-[#00E676] font-bold">ECHO:</span> Updating exit parameter...`;
+                    chatHistory.appendChild(thinking);
+                    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+                    setTimeout(() => {
+                        thinking.remove();
+                        appendMsg("ECHO", "Parameter patched. Strategy exit time moved: <code>14:30</code> → <code>14:38</code>. Recompiling dry run... OK.", true);
+
+                        if (exitTimeVal) {
+                            exitTimeVal.innerText = '14:38';
+                            exitTimeVal.classList.add('text-[#00E676]');
+                            setTimeout(() => exitTimeVal.classList.remove('text-[#00E676]'), 1500);
+                        }
+
+                        setTimeout(step1, 6500);
+                    }, 1200);
+                });
+            }
+
+            function stopDemo() {
+                demoActive = false;
+                if (input) {
+                    input.value = "";
+                    input.placeholder = "Describe a change...";
+                }
+            }
+            if (input) {
+                input.addEventListener('focus', stopDemo);
+                input.addEventListener('click', stopDemo);
+            }
+            const chips = document.querySelectorAll('#builder button');
+            chips.forEach(c => c.addEventListener('click', stopDemo));
+
+            step1();
+        }
+
+        // Scroll Reveal logic
+        function initScrollReveal() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const targets = document.querySelectorAll('.scroll-reveal');
+            targets.forEach(target => observer.observe(target));
+        }
+
+        // Entrance Loader Simulation with zoom reveal
+        function runLoader() {
+            const loader = document.getElementById('entrance-loader');
+            const logo = document.getElementById('loader-logo');
+            const logoWrap = document.getElementById('loader-logo-wrap');
+            const pct = document.getElementById('load-pct');
+            const progress = document.getElementById('load-progress');
+            const line2 = document.getElementById('boot-line-2');
+            const line3 = document.getElementById('boot-line-3');
+
+            if (!loader) return;
+
+            let count = 0;
+            const duration = 2000; // 2 seconds loader time
+            const startTime = performance.now();
+
+            function update() {
+                const now = performance.now();
+                const elapsed = now - startTime;
+                const progressRatio = Math.min(1, elapsed / duration);
+                
+                count = Math.floor(progressRatio * 100);
+                if (pct) pct.innerText = String(count).padStart(2, '0') + '%';
+                if (progress) progress.style.width = count + '%';
+
+                if (count > 30 && line2) line2.classList.remove('opacity-0');
+                if (count > 65 && line3) line3.classList.remove('opacity-0');
+
+                if (progressRatio < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    // Complete loading
+                    if (logo) {
+                        logo.setAttribute('fill', '#00E676');
+                        logo.style.transition = 'fill 0.4s ease';
+                    }
+
+                    setTimeout(() => {
+                        // Reveal webpage through logo zoom
+                        if (logoWrap) logoWrap.classList.add('zoom-in');
+                        if (loader) loader.classList.add('fade-out');
+
+                        // Trigger scroll reveal elements instantly for the top section
+                        setTimeout(() => {
+                            const reveals = document.querySelectorAll('.scroll-reveal');
+                            reveals.forEach((r, idx) => {
+                                if (idx < 2) {
+                                    r.classList.add('revealed');
+                                }
+                            });
+                        }, 200);
+
+                        // Remove loader div completely
+                        setTimeout(() => {
+                            try { loader.remove(); } catch(e) {}
+                        }, 1200);
+                    }, 450);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+        // 3D Volatility Surface Background Animation
+        function initLoaderSurface() {
+            const canvas = document.getElementById('loader-surface-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const cols = 22;
+            const rows = 22;
+            const spacing = 48;
+            let time = 0;
+            let active = true;
+
+            // Stop loop when loader elements are removed from DOM
+            const observer = new MutationObserver(() => {
+                if (!document.getElementById('loader-surface-canvas')) {
+                    active = false;
+                    observer.disconnect();
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+
+            function draw() {
+                if (!active) return;
+                requestAnimationFrame(draw);
+
+                ctx.clearRect(0, 0, width, height);
+                time += 0.012;
+
+                const cosRotX = Math.cos(0.95); // camera tilt
+                const sinRotX = Math.sin(0.95);
+                const cosRotZ = Math.cos(time * 0.12); // slow rotate
+                const sinRotZ = Math.sin(time * 0.12);
+
+                const projectedGrid = [];
+
+                for (let r = 0; r < rows; r++) {
+                    const rowPoints = [];
+                    for (let c = 0; c < cols; c++) {
+                        const x = (c - cols / 2) * spacing;
+                        const y = (r - rows / 2) * spacing;
+
+                        // Skew surface formula: center smile curve + dynamic ripple waves
+                        const dist = Math.sqrt(x * x + y * y);
+                        const z = Math.sin(dist * 0.024 - time * 2) * 26 + (x * x * 0.00075) + (y * y * 0.00035);
+
+                        // Rotate Z
+                        const rx1 = x * cosRotZ - y * sinRotZ;
+                        const ry1 = x * sinRotZ + y * cosRotZ;
+                        const rz1 = z;
+
+                        // Rotate X
+                        const rx2 = rx1;
+                        const ry2 = ry1 * cosRotX - rz1 * sinRotX;
+                        const rz2 = ry1 * sinRotX + rz1 * cosRotX;
+
+                        // Projection coordinates
+                        const distCamera = 520;
+                        const scale = 480 / (distCamera + ry2);
+                        const px = width / 2 + rx2 * scale;
+                        const py = height / 2 + rz2 * scale;
+
+                        rowPoints.push({ x: px, y: py });
+                    }
+                    projectedGrid.push(rowPoints);
+                }
+
+                // Draw Connecting Lines
+                ctx.lineWidth = 0.7;
+                ctx.strokeStyle = 'rgba(0, 230, 118, 0.14)';
+
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const p = projectedGrid[r][c];
+
+                        if (c < cols - 1) {
+                            const pRight = projectedGrid[r][c + 1];
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(pRight.x, pRight.y);
+                            ctx.stroke();
+                        }
+
+                        if (r < rows - 1) {
+                            const pDown = projectedGrid[r + 1][c];
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(pDown.x, pDown.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                // Draw Intersection Dots
+                ctx.fillStyle = 'rgba(0, 230, 118, 0.32)';
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const p = projectedGrid[r][c];
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 1.35, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+
+            draw();
+        }
+
+        // Mathematical Text Scrambler (Option Quants <-> Derivative Traders) - Calm & Subtle
+        function initHeroTextScrambler() {
+            const el = document.querySelector('h1 span.text-brand-emerald');
+            const indicator = document.getElementById('scramble-indicator');
+            if (!el) return;
+
+            const words = ["Option Quants.", "Derivative Traders."];
+            let wordIdx = 0;
+
+            const greeks = ["α", "β", "γ", "δ", "θ", "λ", "σ", "ρ", "μ", "ω", "Ξ", "Ψ", "Φ", "Ω", "Γ", "Δ", "Θ", "Λ", "Σ"];
+
+            // Start initial line fill
+            if (indicator) {
+                setTimeout(() => {
+                    indicator.style.transition = 'width 9.5s linear';
+                    indicator.style.width = '100%';
+                }, 100);
+            }
+
+            function scrambleTransition(targetWord) {
+                // Reset indicator line instantly
+                if (indicator) {
+                    indicator.style.transition = 'none';
+                    indicator.style.width = '0%';
+                    indicator.offsetHeight; // force repaint
+                }
+
+                const startWord = el.innerText;
+                const maxLen = Math.max(startWord.length, targetWord.length);
+                
+                const resolveFrames = [];
+                for (let i = 0; i < maxLen; i++) {
+                    resolveFrames.push({
+                        char: targetWord[i] || "",
+                        original: startWord[i] || "",
+                        resolveAt: Math.floor(Math.random() * 30) + 35,
+                        greekAt: Math.floor(Math.random() * 15) + 5
+                    });
+                }
+
+                let frame = 0;
+                const totalFrames = 80;
+
+                const charGreekMap = [];
+                for (let i = 0; i < maxLen; i++) {
+                    charGreekMap.push(greeks[Math.floor(Math.random() * greeks.length)]);
+                }
+
+                function animate() {
+                    frame++;
+                    if (frame <= totalFrames) {
+                        if (frame % 4 === 0) {
+                            for (let i = 0; i < maxLen; i++) {
+                                charGreekMap[i] = greeks[Math.floor(Math.random() * greeks.length)];
+                            }
+                        }
+
+                        let currentText = "";
+                        const progress = frame / totalFrames;
+                        // Clamp the render length strictly to targetWord's max length
+                        const maxAllowedLength = targetWord.length;
+                        const currentLength = Math.round(startWord.length + (targetWord.length - startWord.length) * progress);
+                        const renderLength = Math.min(currentLength, maxAllowedLength);
+                        
+                        for (let i = 0; i < renderLength; i++) {
+                            const item = resolveFrames[i];
+                            if (!item) continue;
+                            if (frame >= item.resolveAt) {
+                                currentText += item.char;
+                            } else if (frame >= item.greekAt) {
+                                currentText += charGreekMap[i];
+                            } else {
+                                currentText += item.original;
+                            }
+                        }
+                        el.innerText = currentText;
+                        requestAnimationFrame(animate);
+                    } else {
+                        el.innerText = targetWord;
+                        // Start indicator line fill again for next cycle
+                        if (indicator) {
+                            setTimeout(() => {
+                                indicator.style.transition = 'width 9.5s linear';
+                                indicator.style.width = '100%';
+                            }, 50);
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+
+            // Calm transition interval: every 9.5 seconds
+            setInterval(() => {
+                wordIdx = (wordIdx + 1) % words.length;
+                scrambleTransition(words[wordIdx]);
+            }, 9500);
+        }
+
+        // Initialize routines on window load
+        window.addEventListener('load', () => {
+            try { runLoader(); } catch(e) {}
+            try { initLoaderSurface(); } catch(e) {}
+            try { drawStrategyLines(); } catch(e) {}
+            try { drawBacktestChart(); } catch(e) {}
+            try { initChartInteractions(); } catch(e) {}
+            
+            // Start option chain feed and IV curve animations
+            try { updateOptionChain(); } catch(e) {}
+            setInterval(() => { try { updateOptionChain(); } catch(e) {} }, 250);
+
+            // Trigger visual node system assembly animation
+            try { runNodeIntroSequence(); } catch(e) {}
+
+            // Initialize scroll reveal animations
+            initScrollReveal();
+
+            // Delayed calls for functions defined later
+            setTimeout(() => {
+                try { animateVolatilitySmile(); } catch(e) {}
+                setInterval(() => { try { animateVolatilitySmile(); } catch(e) {} }, 3000);
+                try { initSideCandles(); } catch(e) {}
+                try { initQuantHUD(); } catch(e) {}
+                try { initHeroTextScrambler(); } catch(e) {}
+            }, 100);
+        });
+
+        window.addEventListener('resize', () => {
+            drawStrategyLines();
+            drawBacktestChart();
+        });
+
+        // Floating Quant HUD Follower
+        function initQuantHUD() {
+            const hud = document.getElementById('quant-hud');
+            const hudX = document.getElementById('hud-x');
+            const hudY = document.getElementById('hud-y');
+            const hudDelta = document.getElementById('hud-delta');
+            const hudIv = document.getElementById('hud-iv');
+            
+            // Viewport HUD Guides
+            const chH = document.getElementById('hud-crosshair-h');
+            const chV = document.getElementById('hud-crosshair-v');
+            const hudScrollY = document.getElementById('hud-scroll-y');
+            const hudLatency = document.getElementById('hud-latency');
+            const mouseGlow = document.getElementById('mouse-glow');
+            
+            if (!hud) return;
+
+            document.addEventListener('mousemove', (e) => {
+                hud.style.left = (e.clientX + 12) + 'px';
+                hud.style.top = (e.clientY + 12) + 'px';
+                hud.style.opacity = '0.35'; // faint HUD display
+
+                if (hudX) hudX.innerText = e.clientX;
+                if (hudY) hudY.innerText = e.clientY + window.scrollY;
+
+                // Guide guide positions
+                if (chH) chH.style.top = e.clientY + 'px';
+                if (chV) chV.style.left = e.clientX + 'px';
+
+                // Ambient mouse glow positions
+                if (mouseGlow) {
+                    mouseGlow.style.left = e.clientX + 'px';
+                    mouseGlow.style.top = e.clientY + 'px';
+                    mouseGlow.style.opacity = '1';
+                }
+
+                // Simulate option greek parameters based on screen alignment
+                const normalizedX = e.clientX / window.innerWidth;
+                const deltaVal = (normalizedX * 2 - 1).toFixed(2);
+                const ivVal = (12.0 + (e.clientY / window.innerHeight) * 8.5).toFixed(1);
+
+                if (hudDelta) hudDelta.innerText = deltaVal;
+                if (hudIv) hudIv.innerText = ivVal + '%';
+            });
+
+            document.addEventListener('mouseleave', () => {
+                hud.style.opacity = '0';
+                if (chH) chH.style.top = '-100px';
+                if (chV) chV.style.left = '-100px';
+                if (mouseGlow) mouseGlow.style.opacity = '0';
+            });
+
+            window.addEventListener('scroll', () => {
+                if (hudScrollY) hudScrollY.innerText = window.scrollY;
+            });
+
+            setInterval(() => {
+                if (hudLatency) {
+                    const latencyVal = (1.0 + Math.random() * 0.5).toFixed(1);
+                    hudLatency.innerText = latencyVal;
+                }
+            }, 1500);
+        }
+
+        // Full-viewport live Bloomberg terminal background
+        function initSideCandles() {
+            const canvas = document.getElementById('bg-chart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                canvas.width  = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // ── OHLC data ────────────────────────────────────────────────────
+            const TOTAL = 300;
+            const candles = [];
+            let p = 21500;
+            for (let i = 0; i < TOTAL; i++) {
+                const o = p;
+                const c = p + (Math.random() - 0.48) * 80;
+                const h = Math.max(o, c) + Math.random() * 38;
+                const l = Math.min(o, c) - Math.random() * 38;
+                candles.push({ o, c, h, l });
+                p = c;
+            }
+
+            // ── State ────────────────────────────────────────────────────────
+            const VISIBLE   = 60;                        // candles visible
+            let targetOffset = TOTAL - VISIBLE - 5;     // where we want to be
+            let smoothOffset = targetOffset;             // lerped display offset
+            let momentum     = 0;
+            let lastScrollY  = window.scrollY;
+
+            // Smooth price range (avoid Y-axis jumping)
+            let smoothPMin = 0, smoothPMax = 0;
+            let firstFrame = true;
+
+            // HUD stats — computed once per second, not every frame
+            let hudVol = '1.42M', hudIV = '13.21%', hudTs = '--:--:--';
+            setInterval(() => {
+                hudVol = `${(Math.random() * 0.5 + 1.1).toFixed(2)}M`;
+                hudIV  = `${(Math.random() * 2   + 12).toFixed(2)}%`;
+                const n = new Date();
+                hudTs  = `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+            }, 1000);
+
+            // Scroll -> gentle momentum
+            window.addEventListener('scroll', () => {
+                const delta = window.scrollY - lastScrollY;
+                lastScrollY  = window.scrollY;
+                momentum     = delta * 0.04;   // very gentle scaling
+            });
+
+            // Live price tick: tiny move, slow interval
+            setInterval(() => {
+                const last = candles[candles.length - 1];
+                last.c += (Math.random() - 0.48) * 6;  // ±6 pts max
+                last.h  = Math.max(last.h, last.c);
+                last.l  = Math.min(last.l, last.c);
+                // rarely close a candle
+                if (Math.random() < 0.04) {
+                    candles.push({ o: last.c, c: last.c + (Math.random()-0.5)*10,
+                                   h: last.c + Math.random()*20, l: last.c - Math.random()*20 });
+                    if (candles.length > TOTAL + 60) candles.shift();
+                }
+            }, 1800);
+
+            // ── Render loop ──────────────────────────────────────────────────
+            function draw() {
+                requestAnimationFrame(draw);
+
+                const W = canvas.width;
+                const H = canvas.height;
+
+                // Apply momentum with slow decay (smooth glide)
+                if (Math.abs(momentum) > 0.005) {
+                    targetOffset += momentum;
+                    momentum     *= 0.95;   // slow friction = smooth coast
+                } else {
+                    // Slow, automatic live market drift (smooth pan leftward)
+                    targetOffset += 0.008;
+                }
+
+                // Dynamically grow candles array if we approach the end
+                if (targetOffset > candles.length - VISIBLE - 25) {
+                    let lastP = candles[candles.length - 1].c;
+                    for (let k = 0; k < 60; k++) {
+                        const o = lastP;
+                        const c = lastP + (Math.random() - 0.48) * 80;
+                        const h = Math.max(o, c) + Math.random() * 38;
+                        const l = Math.min(o, c) - Math.random() * 38;
+                        candles.push({ o, c, h, l });
+                        lastP = c;
+                    }
+                }
+                
+                targetOffset = Math.max(0, Math.min(targetOffset, candles.length - VISIBLE));
+
+                // Lerp display offset toward target (silky smooth pan)
+                smoothOffset += (targetOffset - smoothOffset) * 0.08;
+
+                // Layout
+                const ML = 0, MR = 64, MT = 36, MB = 28;
+                const CW = W - ML - MR;
+                const CH = H - MT - MB;
+                const cw = CW / VISIBLE;
+
+                const si   = Math.floor(smoothOffset);
+                const frac = smoothOffset - si;
+
+                // Compute raw price range for visible window
+                let rMin = Infinity, rMax = -Infinity;
+                for (let i = si; i < si + VISIBLE + 1 && i < candles.length; i++) {
+                    rMin = Math.min(rMin, candles[i].l);
+                    rMax = Math.max(rMax, candles[i].h);
+                }
+                const padPct = (rMax - rMin) * 0.15;
+                rMin -= padPct; rMax += padPct;
+
+                // Smooth price range interpolation (no Y-axis snapping)
+                if (firstFrame) { smoothPMin = rMin; smoothPMax = rMax; firstFrame = false; }
+                smoothPMin += (rMin - smoothPMin) * 0.04;
+                smoothPMax += (rMax - smoothPMax) * 0.04;
+
+                const toY = (pr) => MT + CH - ((pr - smoothPMin) / (smoothPMax - smoothPMin)) * CH;
+
+                ctx.clearRect(0, 0, W, H);
+
+
+
+                // ── Candles ───────────────────────────────────────────────────
+                for (let i = -1; i < VISIBLE + 2; i++) {
+                    const ci = si + i;
+                    if (ci < 0 || ci >= candles.length) continue;
+                    const cd = candles[ci];
+                    const isGreen = cd.c >= cd.o;
+
+                    const cx    = ML + (i - frac) * cw + cw / 2;
+                    if (cx < -cw || cx > W + cw) continue;
+
+                    const openY  = toY(cd.o);
+                    const closeY = toY(cd.c);
+                    const highY  = toY(cd.h);
+                    const lowY   = toY(cd.l);
+                    const bTop   = Math.min(openY, closeY);
+                    const bH     = Math.max(1, Math.abs(openY - closeY));
+                    const bW     = Math.max(2.5, cw * 0.58);
+
+                    // Wick — brighter
+                    ctx.strokeStyle = isGreen ? 'rgba(0,220,100,0.45)' : 'rgba(230,80,80,0.45)';
+                    ctx.lineWidth   = 0.9;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, highY);
+                    ctx.lineTo(cx, lowY);
+                    ctx.stroke();
+
+                    // Body — brighter
+                    ctx.fillStyle = isGreen ? 'rgba(0,220,100,0.55)' : 'rgba(230,80,80,0.55)';
+                    ctx.beginPath();
+                    ctx.roundRect(cx - bW / 2, bTop, bW, bH, 1);
+                    ctx.fill();
+                }
+
+                // ── Current price line ────────────────────────────────────────
+                const lastC = candles[candles.length - 1];
+                const curY  = toY(lastC.c);
+                ctx.strokeStyle = 'rgba(0,180,90,0.3)';
+                ctx.lineWidth   = 0.7;
+                ctx.setLineDash([4, 8]);
+                ctx.beginPath();
+                ctx.moveTo(ML, curY);
+                ctx.lineTo(W - MR, curY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Price badge
+                ctx.fillStyle = 'rgba(0,180,90,0.45)';
+                ctx.beginPath();
+                ctx.roundRect(W - MR + 1, curY - 7, MR - 2, 14, 2);
+                ctx.fill();
+                ctx.fillStyle = 'rgba(8,8,10,0.9)';
+                ctx.font      = '8px JetBrains Mono, monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(Math.round(lastC.c).toLocaleString(), W - MR + 1 + (MR - 2) / 2, curY + 3);
+
+                // ── Faint terminal info ───────────────────────────────────────
+                ctx.fillStyle = 'rgba(55,55,60,0.55)';
+                ctx.font      = '7.5px JetBrains Mono, monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText(`NIFTY50  1-MIN  |  VOL: ${hudVol}  |  IV: ${hudIV}`, ML + 8, MT - 16);
+                ctx.textAlign = 'right';
+                ctx.fillText(hudTs + '  IST', W - MR - 8, MT - 16);
+            }
+
+            draw();
+        }
+
+
+        // Chat send key listener
+        const chatInput = document.getElementById('chat-input');
+        if (chatInput) {
+            chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+        }
+    </script>
+
+    <!-- Floating Quant HUD Cursor Overlay -->
+    <div id="quant-hud" class="fixed pointer-events-none z-50 font-mono text-[7px] text-[#00E676] opacity-0 transition-opacity duration-200 bg-[#08080A]/95 border border-[#1C1C21] px-1.5 py-0.5 rounded shadow-[0_0_15px_rgba(0,230,118,0.08)]">
+        X: <span id="hud-x">0</span> Y: <span id="hud-y">0</span> <span class="text-brand-dim">/</span> δ: <span id="hud-delta">0.00</span> <span class="text-brand-dim">/</span> IV: <span id="hud-iv">12.0%</span>
+    </div>
+
+    <!-- Viewport Terminal UI HUD Overlay -->
+    <div class="fixed inset-0 pointer-events-none z-40 select-none overflow-hidden font-mono text-[7px] text-brand-muted opacity-50 hidden md:block">
+        <!-- Top Left telemetry block -->
+        <div class="absolute top-4 left-4 flex flex-col items-start leading-relaxed">
+            <span class="text-brand-emerald font-bold">┌ CONVEX_TERMINAL_v3.2</span>
+            <span>│ PORT: 8000 // HOST: LOCALHOST</span>
+            <span>│ DATA_FEED: ACTIVE // TELEMETRY: ON</span>
+        </div>
+        <!-- Top Right telemetry block -->
+        <div class="absolute top-4 right-4 flex flex-col items-end leading-relaxed">
+            <span class="text-brand-emerald font-bold">SYS_MODE: COMPUTE_ENGINE ┐</span>
+            <span>INDEX_REF: NIFTY50_STREAM │</span>
+            <span>LATENCY: <span id="hud-latency">1.1</span>ms │</span>
+        </div>
+        <!-- Bottom Left telemetry block -->
+        <div class="absolute bottom-4 left-4 flex flex-col items-start leading-relaxed">
+            <span>│ SYS_MEM: [124.6 MB] // THREADS: [8]</span>
+            <span>│ SCROLL_Y: <span id="hud-scroll-y">0</span>px</span>
+            <span class="text-brand-emerald font-bold">└ CONTEXT_STATE: VERIFIED</span>
+        </div>
+        <!-- Bottom Right telemetry block -->
+        <div class="absolute bottom-4 right-4 flex flex-col items-end leading-relaxed">
+            <span>SYS_INTEGRITY: 100.00% │</span>
+            <span>EST_FPS: 60.0 │</span>
+            <span class="text-brand-emerald font-bold">SECURE_CHANNEL_READY ┘</span>
+        </div>
+
+        <!-- Viewport Margin Rulers -->
+        <div class="absolute top-0 left-24 right-24 h-4 flex justify-between border-b border-[#1C1C21]/60 text-[6px] text-brand-dim items-center">
+            <span>+ 10%</span>
+            <span>+ 20%</span>
+            <span>+ 30%</span>
+            <span>+ 40%</span>
+            <span>+ 50%</span>
+            <span>+ 60%</span>
+            <span>+ 70%</span>
+            <span>+ 80%</span>
+            <span>+ 90%</span>
+        </div>
+        <div class="absolute bottom-0 left-24 right-24 h-4 flex justify-between border-t border-[#1C1C21]/60 text-[6px] text-brand-dim items-center">
+            <span>- 10%</span>
+            <span>- 20%</span>
+            <span>- 30%</span>
+            <span>- 40%</span>
+            <span>- 50%</span>
+            <span>- 60%</span>
+            <span>- 70%</span>
+            <span>- 80%</span>
+            <span>- 90%</span>
+        </div>
+
+        <!-- Dynamic Tracking Crosshairs -->
+        <div id="hud-crosshair-h" class="absolute left-0 right-0 h-px bg-brand-emerald/10" style="top: -100px; transition: top 0.04s linear;"></div>
+        <div id="hud-crosshair-v" class="absolute top-0 bottom-0 w-px bg-brand-emerald/10" style="left: -100px; transition: left 0.04s linear;"></div>
+    </div>
+
+    <!-- Ambient Mouse Glow (fixed background flashlight) -->
+    <div id="mouse-glow" style="position:fixed;width:400px;height:400px;background:radial-gradient(circle, rgba(0, 230, 118, 0.08) 0%, transparent 70%);transform:translate(-50%,-50%);pointer-events:none;z-index:-1;opacity:0;transition:opacity 0.25s ease;"></div>
+
+    <!-- Full-viewport live Bloomberg terminal canvas background -->
+    <canvas id="bg-chart" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-2;opacity:0.15;pointer-events:none;"></canvas>
+</body>
+</html>
+
