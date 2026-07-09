@@ -2649,8 +2649,6 @@
                  + '<polygon points="716,381 806,380 792,425 680,426"/>'
                  + '<path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z"/>';
 
-        // Variant definitions: [flipX, flipY]
-        // Creates the sequence: normal → mirrorH → mirrorV → 180° → repeat alternating
         var VARIANTS = [
             [false, false],  // 0 normal
             [true,  false],  // 1 mirror horizontal
@@ -2667,62 +2665,45 @@
         svg.setAttribute('aria-hidden', 'true');
         svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
         svg.setAttribute('preserveAspectRatio', 'none');
-        svg.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;opacity:0.15;';
+        svg.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;opacity:0.25;'; // increased opacity slightly for better visibility
 
         // Build all defs
         var defsHTML = ''
-            // Dot grid — 8px spacing, 1.7px radius, in screen pixel space
-            + '<pattern id="lhd" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">'
-            + '<circle cx="4" cy="4" r="1.7" fill="#FFA500"/>'
-            + '</pattern>';
+            // Dot grid pattern - clean, readable, in screen pixel space
+            + '<pattern id="lhd" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">'
+            + '<circle cx="5" cy="5" r="2.0" fill="#FFA500"/>'
+            + '</pattern>'
+            // Radial gradient inside the native logo coordinate space
+            + '<radialGradient id="logoGrad" gradientUnits="userSpaceOnUse" cx="512" cy="326" r="480">'
+            + '<stop offset="0%"   stop-color="white" stop-opacity="0.95"/>'
+            + '<stop offset="55%"  stop-color="white" stop-opacity="0.6"/>'
+            + '<stop offset="100%" stop-color="white" stop-opacity="0"/>'
+            + '</radialGradient>';
 
         for (var i = 0; i < COUNT; i++) {
             var v      = VARIANTS[i % VARIANTS.length];
             var flipX  = v[0], flipY = v[1];
-            // Scale signs
             var scX    = flipX ? -sx :  sx;
             var scY    = flipY ? -sy :  sy;
-            // Translate so the (possibly flipped) logo lands at row i
-            // Normal:  translate(0,   i*VH)     scale( sx,  sy)
-            // flipX:   translate(VW,  i*VH)     scale(-sx,  sy)
-            // flipY:   translate(0,  (i+1)*VH)  scale( sx, -sy)
-            // rot180:  translate(VW, (i+1)*VH)  scale(-sx, -sy)
             var tX     = flipX ? VW : 0;
             var tY     = flipY ? (i + 1) * VH : i * VH;
 
-            // Radial gradient centred in this viewport row (screen-pixel space)
-            var gcx    = VW * 0.5;
-            var gcy    = (i + 0.5) * VH;
-            var gr     = Math.max(VW, VH) * 0.56;
-
+            // Generate mask containing a black rect (transparent) and the logo group in white (visible)
+            // Logo group has fill="url(#logoGrad)" to apply the radial fade within the mask itself
             defsHTML +=
-                '<radialGradient id="lhg' + i + '" gradientUnits="userSpaceOnUse"'
-                + ' cx="' + gcx + '" cy="' + gcy + '" r="' + gr + '">'
-                + '<stop offset="0%"   stop-color="white" stop-opacity="0.9"/>'
-                + '<stop offset="40%"  stop-color="white" stop-opacity="0.48"/>'
-                + '<stop offset="80%"  stop-color="white" stop-opacity="0.07"/>'
-                + '<stop offset="100%" stop-color="white" stop-opacity="0"/>'
-                + '</radialGradient>'
-
-                + '<mask id="lhm' + i + '" maskUnits="userSpaceOnUse"'
-                + ' x="0" y="' + (i * VH) + '" width="' + VW + '" height="' + VH + '">'
-                + '<rect x="0" y="' + (i * VH) + '" width="' + VW + '" height="' + VH
-                + '" fill="url(#lhg' + i + ')"/>'
-                + '</mask>'
-
-                // clipPath: logo shapes transformed into screen-pixel space with the right variant
-                + '<clipPath id="lhc' + i + '" clipPathUnits="userSpaceOnUse">'
-                + '<g transform="translate(' + tX + ',' + tY + ') scale(' + scX + ',' + scY + ')">'
+                '<mask id="lhm' + i + '" maskUnits="userSpaceOnUse" x="0" y="' + (i * VH) + '" width="' + VW + '" height="' + VH + '">'
+                + '<rect x="0" y="' + (i * VH) + '" width="' + VW + '" height="' + VH + '" fill="black" />'
+                + '<g transform="translate(' + tX + ',' + tY + ') scale(' + scX + ',' + scY + ')" fill="url(#logoGrad)">'
                 + LOGO
                 + '</g>'
-                + '</clipPath>';
+                + '</mask>';
         }
 
         var defs = document.createElementNS(NS, 'defs');
         defs.innerHTML = defsHTML;
         svg.appendChild(defs);
 
-        // One rect per logo instance
+        // One screen-space rect per logo section, filled with the dot pattern and masked by the respective logo mask
         for (var j = 0; j < COUNT; j++) {
             var r = document.createElementNS(NS, 'rect');
             r.setAttribute('x', 0);
@@ -2730,7 +2711,6 @@
             r.setAttribute('width', VW);
             r.setAttribute('height', VH);
             r.setAttribute('fill', 'url(#lhd)');
-            r.setAttribute('clip-path', 'url(#lhc' + j + ')');
             r.setAttribute('mask', 'url(#lhm' + j + ')');
             svg.appendChild(r);
         }
@@ -2738,7 +2718,6 @@
         document.body.appendChild(svg);
 
         // Scroll parallax: SVG viewBox moves at 0.88× scroll speed
-        // so logos drift slightly slower than the page content
         var raf = null;
         function tick() {
             var py = window.scrollY * 0.88;
