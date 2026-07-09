@@ -374,7 +374,7 @@
                 <span class="sm:whitespace-nowrap">for 
                     <span class="relative inline-block pb-1 align-bottom select-none">
                         <span class="text-brand-amber drop-shadow-[0_0_25px_rgba(255,165,0,0.3)]">Option Quants.</span>
-                        <span id="scramble-indicator" class="absolute bottom-0 left-0 h-[1.5px] bg-[#FFA500] opacity-55 shadow-[0_0_8px_#FFA500] w-0"></span>
+                        
                     </span>
                 </span>
             </h1>
@@ -2161,137 +2161,6 @@
             draw();
         }
 
-        // Mathematical Text Scrambler (Option Quants <-> Derivative Traders) - Calm & Subtle
-        function initHeroTextScrambler() {
-            const el = document.querySelector('h1 span.text-brand-amber');
-            const indicator = document.getElementById('scramble-indicator');
-            if (!el) return;
-
-            const words = ["Option Quants.", "Derivative Traders."];
-            let wordIdx = 0;
-
-            const greeks = ["α", "β", "γ", "δ", "θ", "λ", "σ", "ρ", "μ", "ω", "Ξ", "Ψ", "Φ", "Ω", "Γ", "Δ", "Θ", "Λ", "Σ"];
-
-            // Start initial line fill
-            if (indicator) {
-                setTimeout(() => {
-                    indicator.style.transition = 'width 9.5s linear';
-                    indicator.style.width = '100%';
-                }, 100);
-            }
-
-            function scrambleTransition(targetWord) {
-                // Reset indicator line instantly
-                if (indicator) {
-                    indicator.style.transition = 'none';
-                    indicator.style.width = '0%';
-                    indicator.offsetHeight; // force repaint
-                }
-
-                const startWord = el.innerText;
-                const maxLen = Math.max(startWord.length, targetWord.length);
-                
-                const resolveFrames = [];
-                for (let i = 0; i < maxLen; i++) {
-                    resolveFrames.push({
-                        char: targetWord[i] || "",
-                        original: startWord[i] || "",
-                        resolveAt: Math.floor(Math.random() * 30) + 35,
-                        greekAt: Math.floor(Math.random() * 15) + 5
-                    });
-                }
-
-                let frame = 0;
-                const totalFrames = 80;
-
-                const charGreekMap = [];
-                for (let i = 0; i < maxLen; i++) {
-                    charGreekMap.push(greeks[Math.floor(Math.random() * greeks.length)]);
-                }
-
-                function animate() {
-                    frame++;
-                    if (frame <= totalFrames) {
-                        if (frame % 4 === 0) {
-                            for (let i = 0; i < maxLen; i++) {
-                                charGreekMap[i] = greeks[Math.floor(Math.random() * greeks.length)];
-                            }
-                        }
-
-                        let currentText = "";
-                        const progress = frame / totalFrames;
-                        // Clamp the render length strictly to targetWord's max length
-                        const maxAllowedLength = targetWord.length;
-                        const currentLength = Math.round(startWord.length + (targetWord.length - startWord.length) * progress);
-                        const renderLength = Math.min(currentLength, maxAllowedLength);
-                        
-                        for (let i = 0; i < renderLength; i++) {
-                            const item = resolveFrames[i];
-                            if (!item) continue;
-                            if (frame >= item.resolveAt) {
-                                currentText += item.char;
-                            } else if (frame >= item.greekAt) {
-                                currentText += charGreekMap[i];
-                            } else {
-                                currentText += item.original;
-                            }
-                        }
-                        el.innerText = currentText;
-                        requestAnimationFrame(animate);
-                    } else {
-                        el.innerText = targetWord;
-                        // Start indicator line fill again for next cycle
-                        if (indicator) {
-                            setTimeout(() => {
-                                indicator.style.transition = 'width 9.5s linear';
-                                indicator.style.width = '100%';
-                            }, 50);
-                        }
-                    }
-                }
-                requestAnimationFrame(animate);
-            }
-
-            // Calm transition interval: every 9.5 seconds
-            setInterval(() => {
-                wordIdx = (wordIdx + 1) % words.length;
-                scrambleTransition(words[wordIdx]);
-            }, 9500);
-        }
-
-        // Initialize routines on window load
-        window.addEventListener('load', () => {
-            try { runLoader(); } catch(e) {}
-            try { initLoaderSurface(); } catch(e) {}
-            try { drawStrategyLines(); } catch(e) {}
-            try { drawBacktestChart(); } catch(e) {}
-            try { initChartInteractions(); } catch(e) {}
-            
-            // Start option chain feed and IV curve animations
-            try { updateOptionChain(); } catch(e) {}
-            setInterval(() => { try { updateOptionChain(); } catch(e) {} }, 250);
-
-            // Trigger visual node system assembly animation
-            try { runNodeIntroSequence(); } catch(e) {}
-
-            // Initialize scroll reveal animations
-            initScrollReveal();
-
-            // Delayed calls for functions defined later
-            setTimeout(() => {
-                try { animateVolatilitySmile(); } catch(e) {}
-                setInterval(() => { try { animateVolatilitySmile(); } catch(e) {} }, 3000);
-                
-                try { initQuantHUD(); } catch(e) {}
-                try { initHeroTextScrambler(); } catch(e) {}
-            }, 100);
-        });
-
-        window.addEventListener('resize', () => {
-            drawStrategyLines();
-            drawBacktestChart();
-        });
-
         // Floating Quant HUD Follower
         function initQuantHUD() {
             const hud = document.getElementById('quant-hud');
@@ -2423,36 +2292,10 @@
             <span>- 60%</span>
             <span>- 70%</span>
             <span>- 80%</span>
+        </div>
         <!-- Dynamic Tracking Crosshairs -->
-                                currentText += item.char;
-                            } else if (frame >= item.greekAt) {
-                                currentText += charGreekMap[i];
-                            } else {
-                                currentText += item.original;
-                            }
-                        }
-                        el.innerText = currentText;
-                        requestAnimationFrame(animate);
-                    } else {
-                        el.innerText = targetWord;
-                        // Start indicator line fill again for next cycle
-                        if (indicator) {
-                            setTimeout(() => {
-                                indicator.style.transition = 'width 9.5s linear';
-                                indicator.style.width = '100%';
-                            }, 50);
-                        }
-                    }
-                }
-                requestAnimationFrame(animate);
-            }
-
-            // Calm transition interval: every 9.5 seconds
-            setInterval(() => {
-                wordIdx = (wordIdx + 1) % words.length;
-                scrambleTransition(words[wordIdx]);
-            }, 9500);
-        }
+        <div id="hud-crosshair-h" class="absolute left-0 right-0 h-px bg-brand-amber/10" style="top: -100px; transition: top 0.04s linear;"></div>
+        <div id="hud-crosshair-v" class="absolute top-0 bottom-0 w-px bg-brand-amber/10" style="left: -100px; transition: left 0.04s linear;"></div>
 
         // Initialize routines on window load
         window.addEventListener('load', () => {
@@ -2478,7 +2321,7 @@
                 setInterval(() => { try { animateVolatilitySmile(); } catch(e) {} }, 3000);
                 
                 try { initQuantHUD(); } catch(e) {}
-                try { initHeroTextScrambler(); } catch(e) {}
+                
             }, 100);
         });
 
