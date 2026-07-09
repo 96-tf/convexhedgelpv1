@@ -12,7 +12,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 652' fill='%23C6FF33'%3E%3Cpath d='M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z'/%3E%3Cpolygon points='336,165 618,165 483,0'/%3E%3Cpolygon points='785,26 1023,26 493,645 389,452'/%3E%3Cpolygon points='716,381 806,380 792,425 680,426'/%3E%3Cpath d='M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 652' fill='%23C6FF33'%3E%3Cg stroke='%2308080a' stroke-width='28' stroke-linejoin='round' stroke-linecap='round' style='paint-order: stroke fill;'%3E%3Cpath d='M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z'/%3E%3Cpolygon points='336,165 618,165 483,0'/%3E%3Cpolygon points='785,26 1023,26 493,645 389,452'/%3E%3Cpolygon points='716,381 806,380 792,425 680,426'/%3E%3Cpath d='M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z'/%3E%3C/g%3E%3C/svg%3E">
     <title>Convex Hedge // Precision Infrastructure for Derivative Trading</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -304,7 +304,19 @@
         .hero-title {
             font-size: clamp(26px, 7.5vw, 72px) !important;
         }
-    </style>
+    
+        /* Loader logo filled-state gap styling */
+        #loader-logo.filled-state {
+            stroke: none !important;
+        }
+        #loader-logo.filled-state .loader-logo-group {
+            stroke: #08080A !important;
+            stroke-width: 28px !important;
+            stroke-linejoin: round !important;
+            stroke-linecap: round !important;
+            paint-order: stroke fill !important;
+        }
+</style>
 </head>
 <body class="bg-brand-void text-brand-pure font-sans antialiased selection:bg-brand-accent selection:text-brand-void overflow-x-hidden">
 
@@ -317,16 +329,18 @@
             <!-- Animated SVG Logo -->
             <div id="loader-logo-wrap" class="relative mb-8 transition-transform duration-[1200ms] cubic-bezier(0.85, 0, 0.15, 1) transform">
                 <svg id="loader-logo" class="w-24 h-16 text-brand-accent" viewBox="0 0 1024 652" fill="none" stroke="#C6FF33" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
-                    <!-- Shape 1: Left C-loop -->
-                    <path class="draw-path" d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
-                    <!-- Shape 2: Top-middle triangle -->
-                    <polygon class="draw-path" points="336,165 618,165 483,0" />
-                    <!-- Shape 3: Main diagonal slash -->
-                    <polygon class="draw-path" points="785,26 1023,26 493,645 389,452" />
-                    <!-- Shape 4: Small middle folder -->
-                    <polygon class="draw-path" points="716,381 806,380 792,425 680,426" />
-                    <!-- Shape 5: Bottom-right loop -->
-                    <path class="draw-path" d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                    <g class="loader-logo-group">
+                        <!-- Shape 1: Left C-loop -->
+                        <path class="draw-path" d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
+                        <!-- Shape 2: Top-middle triangle -->
+                        <polygon class="draw-path" points="336,165 618,165 483,0" />
+                        <!-- Shape 3: Main diagonal slash -->
+                        <polygon class="draw-path" points="785,26 1023,26 493,645 389,452" />
+                        <!-- Shape 4: Small middle folder -->
+                        <polygon class="draw-path" points="716,381 806,380 792,425 680,426" />
+                        <!-- Shape 5: Bottom-right loop -->
+                        <path class="draw-path" d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                    </g>
                 </svg>
             </div>
             
@@ -352,16 +366,18 @@
         <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
             <div class="flex items-center space-x-3 logo-container cursor-pointer">
                 <svg class="w-6 h-4 text-brand-accent" viewBox="0 0 1024 652" fill="currentColor">
-                    <!-- Shape 1: Left C-loop -->
-                    <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
-                    <!-- Shape 2: Top-middle triangle -->
-                    <polygon points="336,165 618,165 483,0" />
-                    <!-- Shape 3: Main diagonal slash -->
-                    <polygon points="785,26 1023,26 493,645 389,452" />
-                    <!-- Shape 4: Small middle folder -->
-                    <polygon points="716,381 806,380 792,425 680,426" />
-                    <!-- Shape 5: Bottom-right loop -->
-                    <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                    <g stroke="#08080A" stroke-width="28" stroke-linejoin="round" stroke-linecap="round" style="paint-order: stroke fill;">
+                        <!-- Shape 1: Left C-loop -->
+                        <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
+                        <!-- Shape 2: Top-middle triangle -->
+                        <polygon points="336,165 618,165 483,0" />
+                        <!-- Shape 3: Main diagonal slash -->
+                        <polygon points="785,26 1023,26 493,645 389,452" />
+                        <!-- Shape 4: Small middle folder -->
+                        <polygon points="716,381 806,380 792,425 680,426" />
+                        <!-- Shape 5: Bottom-right loop -->
+                        <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                    </g>
                 </svg>
                 <span class="font-display font-extrabold tracking-tight text-sm uppercase text-white">Convex Hedge</span>
             </div>
@@ -527,16 +543,18 @@
                             <!-- Centered Background Logo Backdrop -->
                             <div id="canvas-logo-backdrop" class="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 transition-all duration-[1200ms] ease-out opacity-100 scale-100 glowing">
                                 <svg class="w-80 h-48 text-[#1C1C21]/60 transition-colors duration-[1200ms]" viewBox="0 0 1024 652" fill="currentColor">
-                                    <!-- Shape 1: Left C-loop -->
-                                    <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
-                                    <!-- Shape 2: Top-middle triangle -->
-                                    <polygon points="336,165 618,165 483,0" />
-                                    <!-- Shape 3: Main diagonal slash -->
-                                    <polygon points="785,26 1023,26 493,645 389,452" />
-                                    <!-- Shape 4: Small middle folder -->
-                                    <polygon points="716,381 806,380 792,425 680,426" />
-                                    <!-- Shape 5: Bottom-right loop -->
-                                    <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                                    <g stroke="#08080A" stroke-width="28" stroke-linejoin="round" stroke-linecap="round" style="paint-order: stroke fill;">
+                                        <!-- Shape 1: Left C-loop -->
+                                        <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
+                                        <!-- Shape 2: Top-middle triangle -->
+                                        <polygon points="336,165 618,165 483,0" />
+                                        <!-- Shape 3: Main diagonal slash -->
+                                        <polygon points="785,26 1023,26 493,645 389,452" />
+                                        <!-- Shape 4: Small middle folder -->
+                                        <polygon points="716,381 806,380 792,425 680,426" />
+                                        <!-- Shape 5: Bottom-right loop -->
+                                        <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                                    </g>
                                 </svg>
                             </div>
 
@@ -1260,16 +1278,18 @@
             <!-- Massive Brand Wordmark -->
             <div class="w-full flex flex-col items-center justify-center mb-16 select-none overflow-hidden logo-container cursor-pointer">
                 <svg class="w-14 h-9 text-brand-accent mb-6 hover:scale-105 transition-transform duration-300" viewBox="0 0 1024 652" fill="currentColor">
-                    <!-- Shape 1: Left C-loop -->
-                    <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
-                    <!-- Shape 2: Top-middle triangle -->
-                    <polygon points="336,165 618,165 483,0" />
-                    <!-- Shape 3: Main diagonal slash -->
-                    <polygon points="785,26 1023,26 493,645 389,452" />
-                    <!-- Shape 4: Small middle folder -->
-                    <polygon points="716,381 806,380 792,425 680,426" />
-                    <!-- Shape 5: Bottom-right loop -->
-                    <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                    <g stroke="#08080A" stroke-width="28" stroke-linejoin="round" stroke-linecap="round" style="paint-order: stroke fill;">
+                        <!-- Shape 1: Left C-loop -->
+                        <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
+                        <!-- Shape 2: Top-middle triangle -->
+                        <polygon points="336,165 618,165 483,0" />
+                        <!-- Shape 3: Main diagonal slash -->
+                        <polygon points="785,26 1023,26 493,645 389,452" />
+                        <!-- Shape 4: Small middle folder -->
+                        <polygon points="716,381 806,380 792,425 680,426" />
+                        <!-- Shape 5: Bottom-right loop -->
+                        <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                    </g>
                 </svg>
                 <h2 class="text-[5vw] font-display font-black tracking-tighter text-white leading-none uppercase opacity-[0.85] hover:text-brand-accent transition-colors duration-500 whitespace-nowrap" style="font-size: clamp(28px, 5vw, 96px);">
                     convex hedge
@@ -2036,6 +2056,7 @@
                     // Complete loading
                     if (logo) {
                         logo.setAttribute('fill', '#C6FF33');
+                        logo.classList.add('filled-state');
                         logo.style.transition = 'fill 0.4s ease';
                     }
 
