@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convex Hedge // Backtest Result Dashboard</title>
+    <script src="assets/tailwind.js"></script>
+    <link href="assets/fonts.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            void: '#0A0A0A',
+                            aside: '#0F0F0F',
+                            card: '#0E0E0E',
+                            border: '#2A2A2A',
+                            precision: '#1C1C21',
+                            accent: '#FBBF24',
+                            accentDim: '#251C05',
+                            up: '#4ADE80',
+                            down: '#F87171',
+                            muted: '#888888',
+                            dim: '#666666'
+                        }
+                    },
+                    fontFamily: {
+                        display: ['"PP Neue Machina"', 'system-ui', 'sans-serif'],
+                        sans: ['Inter', '-apple-system', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @font-face {
+            font-family: 'PP Neue Machina';
+            src: url('fonts/PPNeueMachina-PlainRegular.otf') format('opentype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'PP Neue Machina';
+            src: url('fonts/PPNeueMachina-PlainUltrabold.otf') format('opentype');
+            font-weight: 800;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        body {
+            background-color: #0A0A0A;
+            color: #E5E5E5;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar for dashboard feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0A0A;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1C1C21;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2A2A2A;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Transition for sidebar collapse */
+        .sidebar-transition {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="font-mono text-xs select-none">
+
+    <!-- Root Dashboard Layout -->
+    <div class="h-screen w-screen flex flex-col overflow-hidden">
+        
+        <!-- TOP NAVIGATION BAR -->
+        <header class="h-7 shrink-0 border-b border-brand-border bg-brand-aside flex items-center justify-between px-3 text-[11px] tracking-wider z-50">
+            <div class="flex items-center">
+                <span class="font-bold text-brand-accent tracking-[1.1px] uppercase">CONVEX HEDGE</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-[#e5e5e5] tracking-[1.1px]">2026-07-10 15:48:20</span>
+                <span class="text-brand-muted lowercase">thomas@convexhedge.ai</span>
+                <div class="h-3 w-px bg-brand-border"></div>
+                <button onclick="window.location.href='index.html'" class="flex items-center space-x-1 text-brand-muted hover:text-white transition-colors cursor-pointer group">
+                    <!-- Sign-out icon -->
+                    <svg class="w-3.5 h-3.5 text-brand-muted group-hover:text-white transition-colors" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"></path>
+                    </svg>
+                    <span class="text-[10px]">SIGN OUT</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- LEFT SIDEBAR -->
+            <aside id="sidebar" class="w-[220px] sidebar-transition shrink-0 bg-brand-aside border-r border-brand-border flex flex-col justify-between overflow-hidden z-40">
+                <div class="flex flex-col">
+                    <!-- Collapse Button Row -->
+                    <div class="border-b border-brand-border py-2 px-3 flex items-center justify-between text-[10px]">
+                        <span id="sidebar-collapse-text" class="text-brand-muted tracking-[0.5px]">COLLAPSE</span>
+                        <button onclick="toggleSidebar()" class="p-1 hover:bg-brand-precision rounded text-brand-muted hover:text-white transition-colors cursor-pointer">
+                            <svg id="sidebar-toggle-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Navigation Items -->
+                    <nav class="flex flex-col text-[12px] tracking-[0.3px] font-mono">
+                        <!-- Backtest Results (Active) -->
+                        <a href="#" class="bg-brand-accent/10 border-b border-brand-border py-2 px-3 flex items-center space-x-3 text-brand-accent transition-all duration-200">
+                            <!-- Chart Icon -->
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 18.375v-5.25zM9 9.75c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.625c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V9.75zM15 5.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V5.625z"></path>
+                            </svg>
+                            <span class="sidebar-label flex-1 flex justify-between">
+                                <span class="text-brand-muted text-[11px]">BKT</span>
+                                <span class="font-bold">BACKTEST RESULTS</span>
+                            </span>
+                        </a>
+
+                        <!-- Strategy Builder -->
+                        <a href="#" onclick="alert('Module loading... Phase 1 Strategy Builder')" class="border-b border-brand-border py-2 px-3 flex items-center space-x-3 text-[#e5e5e5] hover:bg-brand-precision/30 transition-all duration-200">
+                            <!-- Code Icon -->
+                            <svg class="w-3.5 h-3.5 shrink-0 text-brand-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"></path>
+                            </svg>
+                            <span class="sidebar-label flex-1 flex justify-between">
+                                <span class="text-brand-muted text-[11px]">SBD</span>
+                                <span>STRATEGY BUILDER</span>
+                            </span>
+                        </a>
+
+                        <!-- Strategies -->
+                        <a href="#" onclick="alert('Module loading... Strategies')" class="border-b border-brand-border py-2 px-3 flex items-center space-x-3 text-[#e5e5e5] hover:bg-brand-precision/30 transition-all duration-200">
+                            <!-- Bookmark Icon -->
+                            <svg class="w-3.5 h-3.5 shrink-0 text-brand-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"></path>
+                            </svg>
+                            <span class="sidebar-label flex-1 flex justify-between">
+                                <span class="text-brand-muted text-[11px]">LIB</span>
+                                <span>STRATEGIES</span>
+                            </span>
+                        </a>
+
+                        <!-- Option Chain -->
+                        <a href="#" onclick="alert('Module loading... Option Chain')" class="border-b border-brand-border py-2 px-3 flex items-center space-x-3 text-[#e5e5e5] hover:bg-brand-precision/30 transition-all duration-200">
+                            <!-- Circle Icon -->
+                            <svg class="w-3.5 h-3.5 shrink-0 text-brand-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"></path>
+                            </svg>
+                            <span class="sidebar-label flex-1 flex justify-between">
+                                <span class="text-brand-muted text-[11px]">CHN</span>
+                                <span>OPTION CHAIN</span>
+                            </span>
+                        </a>
+
+                        <!-- Structure Chain -->
+                        <a href="#" onclick="alert('Module loading... Structure Chain')" class="border-b border-brand-border py-2 px-3 flex items-center space-x-3 text-[#e5e5e5] hover:bg-brand-precision/30 transition-all duration-200">
+                            <!-- Link Icon -->
+                            <svg class="w-3.5 h-3.5 shrink-0 text-brand-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"></path>
+                            </svg>
+                            <span class="sidebar-label flex-1 flex justify-between">
+                                <span class="text-brand-muted text-[11px]">STR</span>
+                                <span>STRUCTURE CHAIN</span>
+                            </span>
+                        </a>
+
+                        <!-- Volatility -->
+                        <a href="#" onclick="alert('Module loading... Volatility')" class="border-b border-brand-border py-2 px-3 flex items-center space-x-3 text-[#e5e5e5] hover:bg-brand-precision/30 transition-all duration-200">
+                            <!-- Wave Icon -->
+                            <svg class="w-3.5 h-3.5 shrink-0 text-brand-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z"></path>
+                            </svg>
+                            <span class="sidebar-label flex-1 flex justify-between">
+                                <span class="text-brand-muted text-[11px]">VOL</span>
+                                <span>VOLATILITY</span>
+                            </span>
+                        </a>
+
+                        <!-- Open Interest -->
+                        <a href="#" onclick="alert('Module loading... Open Interest')" class="border-b border-brand-border py-2 px-3 flex items-center space-x-3 text-[#e5e5e5] hover:bg-brand-precision/30 transition-all duration-200">
+                            <!-- Grid Icon -->
+                            <svg class="w-3.5 h-3.5 shrink-0 text-brand-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"></path>
+                            </svg>
+                            <span class="sidebar-label flex-1 flex justify-between">
+                                <span class="text-brand-muted text-[11px]">OI</span>
+                                <span>OPEN INTEREST</span>
+                            </span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Sidebar Footer -->
+                <div class="border-t border-brand-border py-2.5 px-3">
+                    <span class="text-brand-muted text-[10px] tracking-[0.5px] uppercase whitespace-nowrap block">V0.1 &nbsp;&middot;&nbsp; PHASE 1</span>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT AREA -->
+            <main class="flex-1 flex flex-col overflow-y-auto p-6 bg-brand-void relative">
+                
+                <!-- HEADER NAVIGATION & BACK CONTROLS -->
+                <div class="flex items-center justify-between shrink-0 mb-4">
+                    <div class="flex items-center space-x-4">
+                        <a href="index.html" class="text-brand-muted hover:text-white transition-colors text-base font-mono cursor-pointer flex items-center">&larr; back</a>
+                        <h1 class="text-brand-accent text-sm tracking-[2.1px] font-bold font-mono">NIFTY_INTRADAY_STRANGLE V1</h1>
+                        <span class="text-brand-muted text-base font-mono">2024-04-01 &rarr; 2026-04-01</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <!-- Run History Dropdown -->
+                        <div class="relative">
+                            <button onclick="toggleDropdown('run-history-menu')" class="border border-brand-border bg-transparent hover:bg-brand-precision/20 px-3 py-1.5 text-[10px] tracking-wider font-mono text-[#aaa] flex items-center space-x-1 uppercase cursor-pointer">
+                                <span>Run History &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▾ (1)</span>
+                            </button>
+                            <div id="run-history-menu" class="hidden absolute right-0 mt-1 w-56 border border-brand-border bg-brand-aside p-2 z-50 rounded shadow-2xl">
+                                <div class="text-[9px] text-brand-dim uppercase tracking-wider border-b border-brand-border pb-1 mb-1">AVAILABLE SIMULATION RUNS</div>
+                                <a href="#" class="block py-1 px-1.5 bg-brand-accent/5 text-brand-accent hover:bg-brand-accent/10 border-l-2 border-brand-accent font-mono text-[10px]">
+                                    RUN #0912 // 2026-07-10 (ACTIVE)
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Params Dropdown -->
+                        <div class="relative">
+                            <button onclick="toggleDropdown('params-menu')" class="border border-brand-border bg-transparent hover:bg-brand-precision/20 px-3 py-1.5 text-[10px] tracking-wider font-mono text-[#aaa] flex items-center space-x-1 uppercase cursor-pointer">
+                                <span>Params ▾</span>
+                            </button>
+                            <div id="params-menu" class="hidden absolute right-0 mt-1 w-64 border border-brand-border bg-brand-aside p-3 z-50 rounded shadow-2xl font-mono text-[10px] text-brand-muted">
+                                <div class="text-[9px] text-[#e5e5e5] font-bold uppercase tracking-wider border-b border-brand-border pb-1 mb-2">MODEL PARAMETERS</div>
+                                <div class="flex justify-between py-1"><span>Target Strangle:</span><span class="text-white">ATM Strangle</span></div>
+                                <div class="flex justify-between py-1"><span>Entry Trigger:</span><span class="text-white">9:20 AM</span></div>
+                                <div class="flex justify-between py-1"><span>Exit Time:</span><span class="text-white">3:10 PM</span></div>
+                                <div class="flex justify-between py-1"><span>Stop Loss per leg:</span><span class="text-brand-down font-bold">35.0%</span></div>
+                                <div class="flex justify-between py-1"><span>Re-entry:</span><span class="text-white">None</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOGGLE CONTROLS (CAPITAL VS PER UNIT) -->
+                <div class="flex items-center space-x-0 shrink-0 mb-6">
+                    <button id="toggle-capital" onclick="setCapitalMode(true)" class="bg-brand-accent border border-brand-accent px-4 py-1.5 text-[10px] tracking-[1.2px] uppercase font-bold text-brand-void transition-colors cursor-pointer">
+                        CAPITAL
+                    </button>
+                    <button id="toggle-perunit" onclick="setCapitalMode(false)" class="border border-brand-accent hover:bg-brand-accent/5 px-4 py-1.5 text-[10px] tracking-[1.2px] uppercase font-bold text-brand-muted transition-colors cursor-pointer">
+                        PER UNIT
+                    </button>
+                </div>
+
+                <!-- KEY METRICS ROW -->
+                <div class="grid grid-cols-7 gap-px bg-brand-border border border-brand-border shrink-0 mb-6 font-mono">
+                    <!-- Net P&L -->
+                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                        <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">NET P&L</span>
+                        <span id="metric-pnl" class="text-brand-up text-[26px] font-bold font-mono leading-none mt-1">+30.19%</span>
+                        <span id="metric-pnl-sub" class="text-brand-muted text-[12px] font-mono leading-none">+₹30,19,190.58</span>
+                    </div>
+                    <!-- Annualised -->
+                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                        <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">ANNUALISED</span>
+                        <span id="metric-ann" class="text-brand-up text-[26px] font-bold font-mono leading-none mt-1">+15.46%</span>
+                        <span class="text-brand-muted text-[12px] font-mono leading-none">capital track</span>
+                    </div>
+                    <!-- Max Drawdown -->
+                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                        <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">MAX DRAWDOWN</span>
+                        <span id="metric-mdd" class="text-brand-down text-[26px] font-bold font-mono leading-none mt-1">-2.32%</span>
+                        <span id="metric-mdd-sub" class="text-brand-muted text-[12px] font-mono leading-none">−₹2,60,728.52</span>
+                    </div>
+                    <!-- Sharpe -->
+                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                        <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">SHARPE</span>
+                        <span class="text-[#e5e5e5] text-[26px] font-bold font-mono leading-none mt-1">1.73</span>
+                        <span class="text-brand-muted text-[12px] font-mono leading-none">daily, annualised</span>
+                    </div>
+                    <!-- Calmar -->
+                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                        <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">CALMAR</span>
+                        <span class="text-[#e5e5e5] text-[26px] font-bold font-mono leading-none mt-1">6.68</span>
+                        <span class="text-brand-muted text-[12px] font-mono leading-none">ann ret / |MDD|</span>
+                    </div>
+                    <!-- Win Rate -->
+                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                        <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">WIN RATE</span>
+                        <span class="text-[#e5e5e5] text-[26px] font-bold font-mono leading-none mt-1">62.5%</span>
+                        <span class="text-brand-muted text-[12px] font-mono leading-none">1003 / 1604 trades</span>
+                    </div>
+                    <!-- Profit Factor -->
+                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                        <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">PROFIT FACTOR</span>
+                        <span class="text-[#e5e5e5] text-[26px] font-bold font-mono leading-none mt-1">1.26</span>
+                        <span class="text-brand-muted text-[12px] font-mono leading-none">wins / losses</span>
+                    </div>
+                </div>
+
+                <!-- TABS & DATE RANGE BAR -->
+                <div class="flex flex-col shrink-0 mb-6">
+                    <!-- Tab Headers -->
+                    <div class="flex items-center justify-between border-b border-brand-border shrink-0 font-mono text-[10px]">
+                        <div class="flex space-x-0">
+                            <button id="tab-overview" onclick="switchTab('overview')" class="border-l border-r border-t border-[#fbbf24] text-brand-accent px-4 py-2 uppercase font-bold cursor-pointer bg-[#fbbf24]/5">
+                                OVERVIEW
+                            </button>
+                            <button id="tab-daylog" onclick="switchTab('daylog')" class="border-t border-[transparent] text-brand-muted hover:text-white px-4 py-2 uppercase cursor-pointer hover:bg-brand-precision/10 transition-colors">
+                                DAYLOG
+                            </button>
+                            <button id="tab-trades" onclick="switchTab('trades')" class="border-t border-[transparent] text-brand-muted hover:text-white px-4 py-2 uppercase cursor-pointer hover:bg-brand-precision/10 transition-colors">
+                                TRADES
+                            </button>
+                            <button id="tab-diagnostics-tab" onclick="switchTab('diagnostics-tab')" class="border-t border-[transparent] text-brand-muted hover:text-white px-4 py-2 uppercase cursor-pointer hover:bg-brand-precision/10 transition-colors">
+                                DIAGNOSTICS
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Date Range Filter Bar -->
+                    <div class="border border-[#1a1a1a] bg-brand-card/30 p-2.5 flex items-center space-x-3 shrink-0 text-[10px] font-mono text-brand-dim mt-2">
+                        <span class="text-brand-muted font-bold tracking-[1.3px]">OVERVIEW DATE RANGE</span>
+                        <div class="flex items-center space-x-2">
+                            <span>FROM</span>
+                            <div class="bg-[#050505] border border-brand-border px-2 py-1 flex items-center space-x-2">
+                                <input type="text" id="filter-from-date" value="01-04-2024" class="bg-transparent text-[#ccc] w-20 outline-none border-none text-center font-mono">
+                                <svg class="w-3.5 h-3.5 text-brand-dim" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z"></path>
+                                </svg>
+                            </div>
+                            <span>TO</span>
+                            <div class="bg-[#050505] border border-brand-border px-2 py-1 flex items-center space-x-2">
+                                <input type="text" id="filter-to-date" value="01-04-2026" class="bg-transparent text-[#ccc] w-20 outline-none border-none text-center font-mono">
+                                <svg class="w-3.5 h-3.5 text-brand-dim" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z"></path>
+                                </svg>
+                            </div>
+                            <button onclick="resetDateRange()" class="border border-brand-border bg-transparent hover:bg-brand-precision/20 px-3 py-1 font-mono text-[#aaa] cursor-pointer">
+                                ALL
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABS INNER CONTAINERS -->
+                <div id="tab-content-area" class="flex-1 flex flex-col">
+                    
+                    <!-- TAB STATE: OVERVIEW -->
+                    <div id="view-overview" class="flex-1 flex flex-col gap-6 fade-in">
+                        
+                        <!-- PERFORMANCE SECTION -->
+                        <section class="flex flex-col gap-2">
+                            <!-- Section Title -->
+                            <div class="flex items-center space-x-3 text-[9px] tracking-[1.6px] text-[#FBBF24] uppercase shrink-0 font-mono">
+                                <span>PERFORMANCE</span>
+                                <div class="flex-1 h-px bg-brand-border"></div>
+                            </div>
+
+                            <!-- Performance Chart + Sidebar stats container -->
+                            <div class="grid grid-cols-1 lg:grid-cols-12 border border-brand-border gap-px bg-brand-border">
+                                
+                                <!-- Equity & Drawdown Chart Frame -->
+                                <div class="lg:col-span-8 bg-[#070707] p-6 flex flex-col justify-between">
+                                    <div class="flex justify-between items-center text-[10px] font-mono text-brand-muted mb-4">
+                                        <div class="flex items-center space-x-4">
+                                            <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-brand-accent mr-1.5"></span>● EQUITY</span>
+                                            <span class="flex items-center px-2 py-0.5 border border-brand-down bg-brand-down/10 text-brand-down rounded-sm select-none">● DD %</span>
+                                            <button onclick="resetChartGlow()" class="border border-brand-border bg-transparent hover:bg-brand-precision/20 px-2 py-0.5 text-brand-muted hover:text-[#fff] transition-colors cursor-pointer text-[9px]">⟲ RESET</button>
+                                        </div>
+                                        <div>EQUITY + DRAWDOWN &middot; ANCHOR ₹1,00,00,000</div>
+                                    </div>
+
+                                    <!-- Chart Wrapper -->
+                                    <div class="relative w-full h-[320px] bg-[#070707]" id="chart-wrapper">
+                                        <svg id="dashboard-chart" class="w-full h-full overflow-visible z-10 relative">
+                                            <!-- Grid lines group -->
+                                            <g id="dashboard-grids" stroke="#121215" stroke-width="1"></g>
+                                            
+                                            <!-- Drawdown line + area -->
+                                            <path id="dashboard-dd-area" fill="url(#dd-grad)" opacity="0.3" stroke="none" />
+                                            <path id="dashboard-dd-line" stroke="#F87171" stroke-width="1.2" fill="none" opacity="0.9" />
+
+                                            <!-- Equity line -->
+                                            <path id="dashboard-eq-line" stroke="#FBBF24" stroke-width="2.5" fill="none" class="drop-shadow-[0_0_10px_rgba(251,191,36,0.35)]" />
+
+                                            <!-- Vertical Crosshair / Highlight Dot -->
+                                            <line id="dashboard-crosshair" x1="0" y1="0" x2="0" y2="320" stroke="#FBBF24" stroke-width="1" stroke-dasharray="2 2" opacity="0" />
+                                            <circle id="dashboard-dot" r="4.5" fill="#FBBF24" stroke="#0A0A0A" stroke-width="1.5" opacity="0" />
+
+                                            <defs>
+                                                <linearGradient id="dd-grad" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stop-color="#F87171" stop-opacity="0.3" />
+                                                    <stop offset="100%" stop-color="#F87171" stop-opacity="0.01" />
+                                                </linearGradient>
+                                            </defs>
+                                        </svg>
+                                        
+                                        <!-- Tooltip -->
+                                        <div id="dashboard-tooltip" class="absolute hidden bg-[#0F0F0F] border border-brand-border p-3 rounded shadow-2xl z-30 pointer-events-none font-mono text-[10px] text-white w-48">
+                                            <div class="text-brand-accent font-bold mb-1" id="db-tooltip-date">Aug 2025</div>
+                                            <div class="flex justify-between">
+                                                <span class="text-brand-muted">Equity:</span>
+                                                <span class="font-bold text-brand-up" id="db-tooltip-eq">₹1,15,00,000</span>
+                                            </div>
+                                            <div class="flex justify-between mt-0.5">
+                                                <span class="text-brand-muted">Drawdown:</span>
+                                                <span class="text-brand-down font-bold" id="db-tooltip-dd">-2.10%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sidebar Stats Table -->
+                                <div class="lg:col-span-4 bg-[#0A0A0C] p-6 flex flex-col justify-between font-mono text-xs">
+                                    <div class="space-y-6">
+                                        <!-- Returns Section -->
+                                        <div>
+                                            <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[0.45px] text-[9px] mb-3">RETURNS</div>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">TOTAL P&L</span>
+                                                    <span id="stat-total-pnl" class="text-brand-up font-bold">+₹30,19,190.58</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">TOTAL RETURN</span>
+                                                    <span id="stat-total-ret" class="text-brand-up font-bold">+30.19%</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">ANNUALISED RETURN</span>
+                                                    <span id="stat-ann-ret" class="text-brand-up font-bold">+15.46%</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">AVG DAILY RETURN</span>
+                                                    <span class="text-brand-up font-bold">+0.06%</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">AVG WEEKLY RETURN</span>
+                                                    <span class="text-brand-up font-bold">+0.29%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Risk Section -->
+                                        <div>
+                                            <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[0.45px] text-[9px] mb-3">RISK</div>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">MAX DRAWDOWN</span>
+                                                    <span id="stat-max-dd" class="text-brand-down font-bold">-2.32%</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">MAX DD DURATION</span>
+                                                    <span class="text-white">42d</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">SHARPE RATIO</span>
+                                                    <span class="text-white">1.73</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">SORTINO RATIO</span>
+                                                    <span class="text-white">2.48</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">CALMAR RATIO</span>
+                                                    <span class="text-white">6.68</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- DIAGNOSTICS ROW -->
+                        <section class="flex flex-col gap-2">
+                            <!-- Section Title -->
+                            <div class="flex items-center space-x-3 text-[9px] tracking-[1.6px] text-[#FBBF24] uppercase shrink-0 font-mono">
+                                <span>DIAGNOSTICS</span>
+                                <div class="flex-1 h-px bg-brand-border"></div>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <!-- Card 1: KDE Distribution -->
+                                <div class="bg-brand-card border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
+                                    <div>
+                                        <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">DAILY RETURNS DISTRIBUTION - CAPITAL - Σ=0.33%</div>
+                                        <div class="h-44 w-full relative pt-2">
+                                            <!-- SVG KDE distribution -->
+                                            <svg class="w-full h-full overflow-visible" fill="none">
+                                                <!-- Distribution histogram bars representation -->
+                                                <rect x="52" y="100" width="8" height="30" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="62" y="90" width="8" height="40" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="72" y="85" width="8" height="45" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="82" y="75" width="8" height="55" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="92" y="65" width="8" height="65" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="102" y="50" width="8" height="80" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="112" y="30" width="8" height="100" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="122" y="15" width="8" height="115" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="132" y="45" width="8" height="85" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="142" y="70" width="8" height="60" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="152" y="80" width="8" height="50" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="162" y="95" width="8" height="35" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+                                                <rect x="172" y="105" width="8" height="25" fill="#152b1b" stroke="#103c1c" stroke-width="0.5" />
+
+                                                <!-- KDE density curve -->
+                                                <path d="M 10,130 Q 70,130 90,100 T 110,60 T 122,10 T 134,50 T 146,90 T 160,115 T 220,130" stroke="#fbbf24" stroke-width="1.8" class="drop-shadow-[0_0_6px_rgba(251,191,36,0.35)]" />
+                                                <!-- Zero axis line -->
+                                                <line x1="0" y1="130" x2="240" y2="130" stroke="#2A2A2A" stroke-width="1" />
+                                                
+                                                <!-- Mean line -->
+                                                <line x1="122" y1="0" x2="122" y2="130" stroke="#4ADE80" stroke-width="1" stroke-dasharray="2 2" />
+                                                <!-- VaR line -->
+                                                <line x1="90" y1="0" x2="90" y2="130" stroke="#F87171" stroke-width="1" stroke-dasharray="2 2" />
+                                                <!-- CVaR line -->
+                                                <line x1="72" y1="0" x2="72" y2="130" stroke="#F87171" stroke-width="1" opacity="0.6" stroke-dasharray="2 2" />
+                                                
+                                                <!-- Grid labels -->
+                                                <text x="5" y="20" fill="#666" font-size="8" font-family="monospace">300</text>
+                                                <text x="5" y="65" fill="#666" font-size="8" font-family="monospace">200</text>
+                                                <text x="5" y="110" fill="#666" font-size="8" font-family="monospace">100</text>
+                                                <text x="5" y="128" fill="#666" font-size="8" font-family="monospace">0</text>
+                                                
+                                                <text x="45" y="142" fill="#666" font-size="8" font-family="monospace">-1.5%</text>
+                                                <text x="80" y="142" fill="#666" font-size="8" font-family="monospace">-1.0%</text>
+                                                <text x="115" y="142" fill="#666" font-size="8" font-family="monospace">-0.5%</text>
+                                                <text x="150" y="142" fill="#666" font-size="8" font-family="monospace">0.0%</text>
+                                                <text x="185" y="142" fill="#666" font-size="8" font-family="monospace">0.5%</text>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center text-[9px] font-mono text-brand-dim mt-2 pt-2 border-t border-[#1C1C21]">
+                                        <span class="text-white font-bold">● KDE</span>
+                                        <span class="text-brand-up font-bold">● MEAN 0.05%</span>
+                                        <span class="text-brand-down font-bold">● VAR -0.51%</span>
+                                        <span class="text-brand-down font-bold" style="opacity:0.65">● CVAR -0.71%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Card 2: Day Extremes -->
+                                <div class="bg-brand-card border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
+                                    <div>
+                                        <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">RUN STATS &middot; CAPITAL TRACK &middot; LEFT</div>
+                                        <div class="space-y-3 font-mono text-xs pt-1">
+                                            <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold">DAY EXTREMES</div>
+                                            <div class="flex justify-between items-center border-b border-brand-precision pb-1.5">
+                                                <span class="text-brand-muted">BEST DAY</span>
+                                                <span class="text-brand-up font-bold">+₹74,552.18</span>
+                                                <span class="text-brand-dim text-[9px]">2026-02-03</span>
+                                            </div>
+                                            <div class="flex justify-between items-center border-b border-brand-precision pb-1.5">
+                                                <span class="text-brand-muted">WORST DAY</span>
+                                                <span class="text-brand-down font-bold">-₹1,73,777.19</span>
+                                                <span class="text-brand-dim text-[9px]">2026-06-04</span>
+                                            </div>
+                                            
+                                            <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold pt-1.5">TAIL RISK</div>
+                                            <div class="flex justify-between">
+                                                <span class="text-brand-muted">VaR (95%)</span>
+                                                <span class="text-white">-0.51%</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-brand-muted">CVaR (95%)</span>
+                                                <span class="text-white">-0.71%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card 3: Activity / Costs -->
+                                <div class="bg-brand-card border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
+                                    <div>
+                                        <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">RUN STATS &middot; CAPITAL TRACK &middot; RIGHT</div>
+                                        <div class="space-y-2 font-mono text-xs pt-1">
+                                            <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold">ACTIVITY</div>
+                                            <div class="flex justify-between">
+                                                <span class="text-brand-muted">AVG TRADES / DAY</span>
+                                                <span class="text-white">3.26</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-brand-muted">AVG TRADES / WEEK</span>
+                                                <span class="text-white">16.30</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-brand-muted">TOTAL SIGNALS</span>
+                                                <span class="text-white">3,452</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-brand-muted">REJECTED SIGNALS</span>
+                                                <span class="text-white">0</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-brand-muted">AVG MARGIN / DAY</span>
+                                                <span class="text-white">₹2,28,403</span>
+                                            </div>
+                                            
+                                            <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold pt-1.5">COSTS</div>
+                                            <div class="flex justify-between border-t border-brand-precision pt-1.5">
+                                                <span class="text-brand-muted">TOTAL CHARGES</span>
+                                                <span class="text-brand-down font-bold">-₹4,76,951.17</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-brand-muted">CHARGES / [RETURNS]</span>
+                                                <span class="text-brand-up font-bold">+15.80%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- DISTRIBUTION SECTION -->
+                        <section class="flex flex-col gap-2">
+                            <!-- Section Title -->
+                            <div class="flex items-center space-x-3 text-[9px] tracking-[1.6px] text-[#FBBF24] uppercase shrink-0 font-mono">
+                                <span>DISTRIBUTION</span>
+                                <div class="flex-1 h-px bg-brand-border"></div>
+                            </div>
+
+                            <!-- Heatmap card -->
+                            <div class="bg-brand-card border border-brand-precision rounded-sm p-4 shrink-0">
+                                <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">MONTHLY RETURNS HEATMAP (WITH YEAR TOTALS)</div>
+                                
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-center font-mono border-collapse text-[11px] min-w-[700px]">
+                                        <thead>
+                                            <tr class="border-b border-brand-precision text-brand-dim uppercase text-[10px]">
+                                                <th class="py-2 text-left font-normal w-12">Year</th>
+                                                <th class="py-2 font-normal">Jan</th>
+                                                <th class="py-2 font-normal">Feb</th>
+                                                <th class="py-2 font-normal">Mar</th>
+                                                <th class="py-2 font-normal">Apr</th>
+                                                <th class="py-2 font-normal">May</th>
+                                                <th class="py-2 font-normal">Jun</th>
+                                                <th class="py-2 font-normal">Jul</th>
+                                                <th class="py-2 font-normal">Aug</th>
+                                                <th class="py-2 font-normal">Sep</th>
+                                                <th class="py-2 font-normal">Oct</th>
+                                                <th class="py-2 font-normal">Nov</th>
+                                                <th class="py-2 font-normal">Dec</th>
+                                                <th class="py-2 font-bold text-white border-l border-brand-precision w-16">Year</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-[#151515]">
+                                            <!-- 2024 Row -->
+                                            <tr class="hover:bg-brand-precision/20 transition-colors">
+                                                <td class="py-2.5 text-left font-bold text-[#e5e5e5]">2024</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 bg-[#122e1b]/40 text-[#4ade80] hover:bg-[#122e1b]/70 transition-all font-semibold">+1.23%</td>
+                                                <td class="py-2.5 bg-[#0e3b1c]/55 text-[#4ade80] hover:bg-[#0e3b1c]/80 transition-all font-semibold">+3.09%</td>
+                                                <td class="py-2.5 bg-[#361519]/40 text-[#f87171] hover:bg-[#361519]/70 transition-all font-semibold">-0.37%</td>
+                                                <td class="py-2.5 bg-[#12331c]/45 text-[#4ade80] hover:bg-[#12331c]/75 transition-all font-semibold">+1.87%</td>
+                                                <td class="py-2.5 bg-[#103a1c]/50 text-[#4ade80] hover:bg-[#103a1c]/80 transition-all font-semibold">+2.59%</td>
+                                                <td class="py-2.5 bg-[#14261a]/30 text-[#4ade80] hover:bg-[#14261a]/60 transition-all font-semibold">+0.92%</td>
+                                                <td class="py-2.5 bg-[#12301c]/40 text-[#4ade80] hover:bg-[#12301c]/70 transition-all font-semibold">+1.45%</td>
+                                                <td class="py-2.5 bg-[#15231c]/25 text-[#4ade80] hover:bg-[#15231c]/55 transition-all font-semibold">+0.55%</td>
+                                                <td class="py-2.5 bg-[#0e381b]/50 text-[#4ade80] font-bold border-l border-brand-precision hover:bg-[#0e381b]/85 transition-all">+13.09%</td>
+                                            </tr>
+                                            <!-- 2025 Row -->
+                                            <tr class="hover:bg-brand-precision/20 transition-colors">
+                                                <td class="py-2.5 text-left font-bold text-[#e5e5e5]">2025</td>
+                                                <td class="py-2.5 bg-[#12321c]/45 text-[#4ade80] hover:bg-[#12321c]/75 transition-all font-semibold">+1.61%</td>
+                                                <td class="py-2.5 bg-[#10381c]/50 text-[#4ade80] hover:bg-[#10381c]/80 transition-all font-semibold">+2.42%</td>
+                                                <td class="py-2.5 bg-[#3a1418]/50 text-[#f87171] hover:bg-[#3a1418]/80 transition-all font-semibold">-0.73%</td>
+                                                <td class="py-2.5 bg-[#18201a]/15 text-[#4ade80] hover:bg-[#18201a]/45 transition-all font-semibold">+0.03%</td>
+                                                <td class="py-2.5 bg-[#12301c]/40 text-[#4ade80] hover:bg-[#12301c]/70 transition-all font-semibold">+1.40%</td>
+                                                <td class="py-2.5 bg-[#122c1b]/35 text-[#4ade80] hover:bg-[#122c1b]/65 transition-all font-semibold">+1.12%</td>
+                                                <td class="py-2.5 bg-[#12311c]/42 text-[#4ade80] hover:bg-[#12311c]/72 transition-all font-semibold">+1.54%</td>
+                                                <td class="py-2.5 bg-[#12341c]/47 text-[#4ade80] hover:bg-[#12341c]/77 transition-all font-semibold">+1.94%</td>
+                                                <td class="py-2.5 bg-[#14251a]/30 text-[#4ade80] hover:bg-[#14251a]/60 transition-all font-semibold">+0.87%</td>
+                                                <td class="py-2.5 bg-[#151c1a]/20 text-[#4ade80] hover:bg-[#151c1a]/50 transition-all font-semibold">+0.23%</td>
+                                                <td class="py-2.5 bg-[#12331c]/46 text-[#4ade80] hover:bg-[#12331c]/76 transition-all font-semibold">+1.74%</td>
+                                                <td class="py-2.5 bg-[#122d1b]/38 text-[#4ade80] hover:bg-[#122d1b]/68 transition-all font-semibold">+1.16%</td>
+                                                <td class="py-2.5 bg-[#0e3b1c]/55 text-[#4ade80] font-bold border-l border-brand-precision hover:bg-[#0e3b1c]/85 transition-all">+15.94%</td>
+                                            </tr>
+                                            <!-- 2026 Row -->
+                                            <tr class="hover:bg-brand-precision/20 transition-colors">
+                                                <td class="py-2.5 text-left font-bold text-[#e5e5e5]">2026</td>
+                                                <td class="py-2.5 bg-[#151c1a]/20 text-[#4ade80] hover:bg-[#151c1a]/50 transition-all font-semibold">+0.23%</td>
+                                                <td class="py-2.5 bg-[#12301c]/40 text-[#4ade80] hover:bg-[#12301c]/70 transition-all font-semibold">+1.44%</td>
+                                                <td class="py-2.5 bg-[#122c1b]/35 text-[#4ade80] hover:bg-[#122c1b]/65 transition-all font-semibold">+1.18%</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 text-brand-dim font-light">-</td>
+                                                <td class="py-2.5 bg-[#103c1c]/52 text-[#4ade80] font-bold border-l border-brand-precision hover:bg-[#103c1c]/82 transition-all">+2.87%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Bar Chart: Daily Returns Capital Track -->
+                            <div class="bg-brand-card border border-brand-precision rounded-sm p-4 shrink-0">
+                                <div class="flex justify-between items-center text-[10px] font-mono text-brand-muted mb-3 border-b border-brand-precision pb-2">
+                                    <span class="text-brand-dim uppercase tracking-[1px] text-[9px] font-bold">DAILY RETURNS &middot; CAPITAL TRACK</span>
+                                    <div class="flex items-center space-x-3 text-[9px]">
+                                        <span class="text-brand-up font-bold">● UP</span>
+                                        <span class="text-brand-down font-bold">● DOWN</span>
+                                        <button onclick="drawDailyBars()" class="text-brand-muted hover:text-white uppercase transition-colors cursor-pointer">⟲ RESET</button>
+                                    </div>
+                                </div>
+                                <div class="h-32 w-full relative">
+                                    <!-- Dynamic SVG Bar Chart for Daily Performance -->
+                                    <svg id="daily-performance-bars" class="w-full h-full overflow-visible"></svg>
+                                </div>
+                                <div class="flex justify-between items-center text-[9px] text-brand-dim mt-2 pt-2 border-t border-[#1C1C21]">
+                                    <span>Feb 2024</span>
+                                    <span>Aug 2024</span>
+                                    <span>Feb 2025</span>
+                                    <span>Aug 2025</span>
+                                    <span>Feb 2026</span>
+                                    <span class="text-brand-up font-bold">max +0.75%</span>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+
+                    <!-- TAB STATE: DAYLOG -->
+                    <div id="view-daylog" class="hidden flex-1 flex flex-col gap-6 fade-in">
+                        <section class="flex flex-col gap-2">
+                            <div class="flex items-center space-x-3 text-[9px] tracking-[1.6px] text-brand-accent uppercase shrink-0 font-mono">
+                                <span>SIMULATION DAILY LOGS</span>
+                                <div class="flex-1 h-px bg-brand-border"></div>
+                            </div>
+                            
+                            <!-- Daylog table -->
+                            <div class="bg-brand-card border border-brand-precision rounded-sm p-4 overflow-hidden">
+                                <table class="w-full font-mono text-xs text-left">
+                                    <thead>
+                                        <tr class="text-brand-dim border-b border-brand-precision pb-2 text-[9px] tracking-wider uppercase">
+                                            <th class="py-2">Date</th>
+                                            <th class="py-2">Option Strangle Pair</th>
+                                            <th class="py-2">Trades Count</th>
+                                            <th class="py-2">Daily Net Profit/Loss</th>
+                                            <th class="py-2 text-right">Margin Used</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="daylog-table-body" class="divide-y divide-[#151515]">
+                                        <!-- Will be filled by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- TAB STATE: TRADES -->
+                    <div id="view-trades" class="hidden flex-1 flex flex-col gap-6 fade-in">
+                        <section class="flex flex-col gap-2">
+                            <div class="flex items-center space-x-3 text-[9px] tracking-[1.6px] text-brand-accent uppercase shrink-0 font-mono">
+                                <span>EXECUTED TRADE LEDGER</span>
+                                <div class="flex-1 h-px bg-brand-border"></div>
+                            </div>
+                            
+                            <!-- Trades table -->
+                            <div class="bg-brand-card border border-brand-precision rounded-sm p-4 overflow-hidden">
+                                <table class="w-full font-mono text-xs text-left">
+                                    <thead>
+                                        <tr class="text-brand-dim border-b border-brand-precision pb-2 text-[9px] tracking-wider uppercase">
+                                            <th class="py-2">Timestamp</th>
+                                            <th class="py-2">Symbol</th>
+                                            <th class="py-2">Type</th>
+                                            <th class="py-2">Qty</th>
+                                            <th class="py-2">Entry Price</th>
+                                            <th class="py-2">Exit Price</th>
+                                            <th class="py-2">P&L (Gross)</th>
+                                            <th class="py-2 text-right">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="trades-table-body" class="divide-y divide-[#151515]">
+                                        <!-- Will be filled by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- TAB STATE: DIAGNOSTICS DETAILED -->
+                    <div id="view-diagnostics-tab" class="hidden flex-1 flex flex-col gap-6 fade-in">
+                        <section class="flex flex-col gap-4">
+                            <div class="flex items-center space-x-3 text-[9px] tracking-[1.6px] text-brand-accent uppercase shrink-0 font-mono">
+                                <span>MODEL SENSITIVITY & GREEKS DIAGNOSTICS</span>
+                                <div class="flex-1 h-px bg-brand-border"></div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Delta Skew Chart -->
+                                <div class="bg-brand-card border border-brand-precision p-5 rounded-sm">
+                                    <span class="text-brand-muted text-[10px] uppercase font-bold tracking-wider">Delta Hedging Skewness</span>
+                                    <div class="h-44 w-full relative mt-4">
+                                        <svg class="w-full h-full" stroke="#fbbf24" stroke-width="1.5" fill="none">
+                                            <!-- Skew lines -->
+                                            <path d="M 10,130 Q 120,30 240,130" stroke="#fbbf24" opacity="0.4" stroke-dasharray="2 2" />
+                                            <path d="M 10,140 C 70,60 180,30 240,20" stroke="#4ade80" stroke-width="2" class="drop-shadow-[0_0_8px_rgba(74,222,128,0.25)]" />
+                                            <line x1="0" y1="140" x2="240" y2="140" stroke="#1C1C21" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex justify-between items-center text-[10px] font-mono text-brand-dim mt-4">
+                                        <span>Skew asymmetry: +0.22</span>
+                                        <span class="text-brand-up">Balanced Coverage</span>
+                                    </div>
+                                </div>
+
+                                <!-- Theta Decay Curve -->
+                                <div class="bg-brand-card border border-brand-precision p-5 rounded-sm">
+                                    <span class="text-brand-muted text-[10px] uppercase font-bold tracking-wider">Intraday Theta Decay Profile</span>
+                                    <div class="h-44 w-full relative mt-4">
+                                        <svg class="w-full h-full" stroke="#fbbf24" stroke-width="1.5" fill="none">
+                                            <!-- Decay curve -->
+                                            <path d="M 10,20 C 50,22 120,40 180,80 T 240,135" stroke="#fbbf24" stroke-width="2" class="drop-shadow-[0_0_8px_rgba(251,191,36,0.2)]" />
+                                            <line x1="0" y1="140" x2="240" y2="140" stroke="#1C1C21" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex justify-between items-center text-[10px] font-mono text-brand-dim mt-4">
+                                        <span>Atm Decay rate: ₹842/min</span>
+                                        <span class="text-brand-accent">Optimal Decay Curve</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- BACKTEST DATA & LOGIC -->
+    <script>
+        // High-Fidelity Data Generation matching the user's screenshot curves
+        const pivotEquity = [
+            { idx: 0, date: "Apr", eq: 10000000.00 },
+            { idx: 10, date: "Jun", eq: 10620000.00 },
+            { idx: 20, date: "Aug", eq: 10540000.00 },
+            { idx: 30, date: "Oct", eq: 10980000.00 },
+            { idx: 40, date: "Dec", eq: 11520000.00 },
+            { idx: 50, date: "Feb", eq: 11390000.00 },
+            { idx: 60, date: "Apr", eq: 11840000.00 },
+            { idx: 70, date: "Jun", eq: 12020000.00 },
+            { idx: 80, date: "Aug", eq: 11980000.00 },
+            { idx: 90, date: "Oct", eq: 12240000.00 },
+            { idx: 100, date: "Dec", eq: 12450000.00 },
+            { idx: 110, date: "Feb", eq: 12380000.00 },
+            { idx: 120, date: "Apr", eq: 13019190.58 }
+        ];
+
+        // Specific Drawdown spikes to mimic the exact red spikes hanging down
+        const drawdownSpikes = {
+            3: -0.45,
+            12: -1.65,
+            13: -1.78,
+            24: -0.95,
+            38: -2.15,
+            39: -2.32, // Peak Max Drawdown
+            51: -0.80,
+            68: -1.45,
+            79: -0.92,
+            96: -1.15,
+            104: -2.25,
+            105: -2.05
+        };
+
+        const backtestData = [];
+        const totalPoints = 121; // 2 years, weekly points approx
+        
+        let rollingPeak = 10000000;
+        
+        for (let i = 0; i < totalPoints; i++) {
+            // Find bounding pivot points
+            let pStart = pivotEquity[0];
+            let pEnd = pivotEquity[pivotEquity.length - 1];
+            
+            for (let j = 0; j < pivotEquity.length - 1; j++) {
+                if (i >= pivotEquity[j].idx && i <= pivotEquity[j+1].idx) {
+                    pStart = pivotEquity[j];
+                    pEnd = pivotEquity[j+1];
+                    break;
+                }
+            }
+            
+            const t = (i - pStart.idx) / (pEnd.idx - pStart.idx || 1);
+            let eq = pStart.eq + t * (pEnd.eq - pStart.eq);
+            
+            // Add high-frequency noise/walk
+            let noise = Math.sin(i * 0.9) * 45000 + Math.cos(i * 2.3) * 20000;
+            if (i > 0 && i < totalPoints - 1) {
+                eq += noise;
+            }
+            
+            rollingPeak = Math.max(rollingPeak, eq);
+            
+            // Apply hardcoded drawdown spikes at matching index positions
+            let dd = 0;
+            if (drawdownSpikes[i] !== undefined) {
+                dd = drawdownSpikes[i];
+                // adjust equity to reflect this drawdown exactly
+                eq = rollingPeak * (1 + dd / 100);
+            } else {
+                dd = ((eq - rollingPeak) / rollingPeak) * 100;
+                // smooth out small decimals to 0
+                if (dd > -0.05) dd = 0;
+            }
+            
+            // Date string mapping
+            let dateStr = "";
+            const months = ["Apr 2024", "Jun 2024", "Aug 2024", "Oct 2024", "Dec 2024", "Feb 2025", "Apr 2025", "Jun 2025", "Aug 2025", "Oct 2025", "Dec 2025", "Feb 2026", "Apr 2026"];
+            const mIdx = Math.floor((i / totalPoints) * months.length);
+            dateStr = months[Math.min(mIdx, months.length - 1)];
+            
+            backtestData.push({
+                idx: i,
+                date: dateStr,
+                eq: eq,
+                dd: dd
+            });
+        }
+
+        // Capital vs Per Unit State
+        let isCapitalMode = true;
+
+        // Toggle drop down menu helper
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('hidden')) {
+                document.querySelectorAll('#run-history-menu, #params-menu').forEach(m => m.classList.add('hidden'));
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // Toggle Sidebar Expand / Collapse
+        let sidebarCollapsed = false;
+        function toggleSidebar() {
+            sidebarCollapsed = !sidebarCollapsed;
+            const sidebar = document.getElementById('sidebar');
+            const collapseText = document.getElementById('sidebar-collapse-text');
+            const toggleIcon = document.getElementById('sidebar-toggle-icon');
+            
+            if (sidebarCollapsed) {
+                sidebar.style.width = '60px';
+                collapseText.classList.add('hidden');
+                toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5"></path>';
+                document.querySelectorAll('.sidebar-label').forEach(lbl => lbl.classList.add('hidden'));
+            } else {
+                sidebar.style.width = '220px';
+                collapseText.classList.remove('hidden');
+                toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"></path>';
+                document.querySelectorAll('.sidebar-label').forEach(lbl => lbl.classList.remove('hidden'));
+            }
+            
+            setTimeout(() => {
+                drawPerformanceChart();
+                drawDailyBars();
+            }, 300);
+        }
+
+        // Switch Active Tab
+        function switchTab(tabId) {
+            document.getElementById('view-overview').classList.add('hidden');
+            document.getElementById('view-daylog').classList.add('hidden');
+            document.getElementById('view-trades').classList.add('hidden');
+            document.getElementById('view-diagnostics-tab').classList.add('hidden');
+
+            const tabButtons = ['overview', 'daylog', 'trades', 'diagnostics-tab'];
+            tabButtons.forEach(btn => {
+                const el = document.getElementById('tab-' + btn);
+                el.className = "border-t border-[transparent] text-brand-muted hover:text-white px-4 py-2 uppercase cursor-pointer hover:bg-brand-precision/10 transition-colors";
+            });
+
+            if (tabId === 'overview') {
+                document.getElementById('view-overview').classList.remove('hidden');
+                document.getElementById('tab-overview').className = "border-l border-r border-t border-[#fbbf24] text-brand-accent px-4 py-2 uppercase font-bold cursor-pointer bg-[#fbbf24]/5";
+                setTimeout(drawPerformanceChart, 50);
+            } else if (tabId === 'daylog') {
+                document.getElementById('view-daylog').classList.remove('hidden');
+                document.getElementById('tab-daylog').className = "border-l border-r border-t border-[#fbbf24] text-brand-accent px-4 py-2 uppercase font-bold cursor-pointer bg-[#fbbf24]/5";
+                renderDayLogs();
+            } else if (tabId === 'trades') {
+                document.getElementById('view-trades').classList.remove('hidden');
+                document.getElementById('tab-trades').className = "border-l border-r border-t border-[#fbbf24] text-brand-accent px-4 py-2 uppercase font-bold cursor-pointer bg-[#fbbf24]/5";
+                renderTradesLedger();
+            } else if (tabId === 'diagnostics-tab') {
+                document.getElementById('view-diagnostics-tab').classList.remove('hidden');
+                document.getElementById('tab-diagnostics-tab').className = "border-l border-r border-t border-[#fbbf24] text-brand-accent px-4 py-2 uppercase font-bold cursor-pointer bg-[#fbbf24]/5";
+            }
+        }
+
+        // Toggle Capital Mode
+        function setCapitalMode(val) {
+            isCapitalMode = val;
+            const btnCap = document.getElementById('toggle-capital');
+            const btnPer = document.getElementById('toggle-perunit');
+
+            if (isCapitalMode) {
+                btnCap.className = "bg-brand-accent border border-brand-accent px-4 py-1.5 text-[10px] tracking-[1.2px] uppercase font-bold text-brand-void transition-colors cursor-pointer";
+                btnPer.className = "border border-brand-accent hover:bg-brand-accent/5 px-4 py-1.5 text-[10px] tracking-[1.2px] uppercase font-bold text-brand-muted transition-colors cursor-pointer";
+                
+                document.getElementById('metric-pnl').innerText = "+30.19%";
+                document.getElementById('metric-pnl-sub').innerText = "+₹30,19,190.58";
+                document.getElementById('metric-ann').innerText = "+15.46%";
+                document.getElementById('metric-mdd').innerText = "-2.32%";
+                document.getElementById('metric-mdd-sub').innerText = "−₹2,60,728.52";
+                
+                document.getElementById('stat-total-pnl').innerText = "+₹30,19,190.58";
+                document.getElementById('stat-total-ret').innerText = "+30.19%";
+                document.getElementById('stat-ann-ret').innerText = "+15.46%";
+                document.getElementById('stat-max-dd').innerText = "-2.32%";
+            } else {
+                btnCap.className = "border border-brand-accent hover:bg-brand-accent/5 px-4 py-1.5 text-[10px] tracking-[1.2px] uppercase font-bold text-brand-muted transition-colors cursor-pointer";
+                btnPer.className = "bg-brand-accent border border-brand-accent px-4 py-1.5 text-[10px] tracking-[1.2px] uppercase font-bold text-brand-void transition-colors cursor-pointer";
+                
+                document.getElementById('metric-pnl').innerText = "+₹3,019.19";
+                document.getElementById('metric-pnl-sub').innerText = "per 1 Strangle Lot";
+                document.getElementById('metric-ann').innerText = "+₹1,546.00";
+                document.getElementById('metric-mdd').innerText = "-₹232.00";
+                document.getElementById('metric-mdd-sub').innerText = "per lot max drawdown";
+                
+                document.getElementById('stat-total-pnl').innerText = "+₹3,019.19";
+                document.getElementById('stat-total-ret').innerText = "+30.19%";
+                document.getElementById('stat-ann-ret').innerText = "+15.46%";
+                document.getElementById('stat-max-dd').innerText = "-₹232.00";
+            }
+        }
+
+        // Draw High-Fidelity Performance Chart with Double Axes, Labels, indicator pills, and Grids
+        function drawPerformanceChart() {
+            const svg = document.getElementById('dashboard-chart');
+            if (!svg) return;
+
+            // Clear previous elements
+            svg.innerHTML = '';
+
+            const width = svg.clientWidth;
+            const height = svg.clientHeight;
+
+            // Coordinate offsets to leave space for Y-axes labels and X-axis dates
+            const startX = 52;
+            const endX = width - 82;
+            const startY = 10;
+            const endY = height - 25;
+            
+            const plotWidth = endX - startX;
+            const plotHeight = endY - startY;
+
+            // Scale limits
+            const minEq = 9600000.00;
+            const maxEq = 13600000.00;
+            const minDd = -2.40;
+            const maxDd = 0.00;
+
+            // 1. Draw horizontal grid lines and Y-axes text labels
+            const gridLinesCount = 11;
+            for (let i = 0; i <= gridLinesCount; i++) {
+                const ratio = i / gridLinesCount;
+                const y = startY + ratio * plotHeight;
+
+                // Grid line
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", startX);
+                line.setAttribute("y1", y);
+                line.setAttribute("x2", endX);
+                line.setAttribute("y2", y);
+                line.setAttribute("stroke", "#121215");
+                line.setAttribute("stroke-width", "1");
+                if (i > 0 && i < gridLinesCount) {
+                    line.setAttribute("stroke-dasharray", "1 4");
+                }
+                svg.appendChild(line);
+
+                // Left Y-axis label: Drawdown % (red-ish/grey, ranging from 0.00 to -2.40)
+                if (i > 0) { // top line doesn't show 0.00 to keep it clean
+                    const ddVal = maxDd + ratio * (minDd - maxDd);
+                    const textL = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    textL.setAttribute("x", startX - 8);
+                    textL.setAttribute("y", y + 3.5);
+                    textL.setAttribute("fill", "#666");
+                    textL.setAttribute("text-anchor", "end");
+                    textL.setAttribute("font-size", "9px");
+                    textL.setAttribute("font-family", "monospace");
+                    textL.textContent = ddVal.toFixed(2);
+                    svg.appendChild(textL);
+                }
+
+                // Right Y-axis label: Equity Value (ranging from 13.6M down to 9.6M)
+                const eqVal = maxEq - ratio * (maxEq - minEq);
+                const textR = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                textR.setAttribute("x", endX + 8);
+                textR.setAttribute("y", y + 3.5);
+                textR.setAttribute("fill", "#666");
+                textR.setAttribute("text-anchor", "start");
+                textR.setAttribute("font-size", "9px");
+                textR.setAttribute("font-family", "monospace");
+                textR.textContent = eqVal.toFixed(2);
+                svg.appendChild(textR);
+            }
+
+            // 2. Draw vertical grid bounds
+            const borderLeft = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            borderLeft.setAttribute("x1", startX);
+            borderLeft.setAttribute("y1", startY);
+            borderLeft.setAttribute("x2", startX);
+            borderLeft.setAttribute("y2", endY);
+            borderLeft.setAttribute("stroke", "#2A2A2A");
+            svg.appendChild(borderLeft);
+
+            const borderRight = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            borderRight.setAttribute("x1", endX);
+            borderRight.setAttribute("y1", startY);
+            borderRight.setAttribute("x2", endX);
+            borderRight.setAttribute("y2", endY);
+            borderRight.setAttribute("stroke", "#2A2A2A");
+            svg.appendChild(borderRight);
+
+            const borderBottom = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            borderBottom.setAttribute("x1", startX);
+            borderBottom.setAttribute("y1", endY);
+            borderBottom.setAttribute("x2", endX);
+            borderBottom.setAttribute("y2", endY);
+            borderBottom.setAttribute("stroke", "#2A2A2A");
+            svg.appendChild(borderBottom);
+
+            // 3. Draw X-axis label dates at bottom
+            const xLabels = [
+                { pos: 0, text: "pr" },
+                { pos: 0.14, text: "Jun" },
+                { pos: 0.28, text: "Aug" },
+                { pos: 0.42, text: "Oct" },
+                { pos: 0.50, text: "5" },
+                { pos: 0.58, text: "2025" },
+                { pos: 0.72, text: "Mar" },
+                { pos: 0.86, text: "May" }
+            ];
+            xLabels.forEach(lbl => {
+                const x = startX + lbl.pos * plotWidth;
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", x);
+                text.setAttribute("y", endY + 16);
+                text.setAttribute("fill", "#666");
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("font-size", "9px");
+                text.setAttribute("font-family", "monospace");
+                text.textContent = lbl.text;
+                svg.appendChild(text);
+            });
+
+            // 4. Map backtestData coordinates
+            let eqPoints = [];
+            let ddPoints = [];
+
+            backtestData.forEach((d, idx) => {
+                const x = startX + (idx / (totalPoints - 1)) * plotWidth;
+                const yEq = startY + plotHeight - ((d.eq - minEq) / (maxEq - minEq)) * plotHeight;
+                
+                // Drawdown goes down from top boundary
+                const yDd = startY + ((d.dd - maxDd) / (minDd - maxDd)) * plotHeight;
+
+                eqPoints.push(`${x},${yEq}`);
+                ddPoints.push(`${x},${yDd}`);
+            });
+
+            // Defs for drawdown gradient fill
+            const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+            const grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+            grad.setAttribute("id", "dd-grad-hi");
+            grad.setAttribute("x1", "0");
+            grad.setAttribute("y1", "0");
+            grad.setAttribute("x2", "0");
+            grad.setAttribute("y2", "1");
+            const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+            stop1.setAttribute("offset", "0%");
+            stop1.setAttribute("stop-color", "#F87171");
+            stop1.setAttribute("stop-opacity", "0.25");
+            const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+            stop2.setAttribute("offset", "100%");
+            stop2.setAttribute("stop-color", "#F87171");
+            stop2.setAttribute("stop-opacity", "0.01");
+            grad.appendChild(stop1);
+            grad.appendChild(stop2);
+            defs.appendChild(grad);
+            svg.appendChild(defs);
+
+            // 5. Draw Drawdown Area & Line
+            const ddArea = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            ddArea.setAttribute("d", `M ${startX},${startY} L ` + ddPoints.join(" L ") + ` L ${endX},${startY} Z`);
+            ddArea.setAttribute("fill", "url(#dd-grad-hi)");
+            svg.appendChild(ddArea);
+
+            const ddLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            ddLine.setAttribute("d", "M " + ddPoints.join(" L "));
+            ddLine.setAttribute("stroke", "#F87171");
+            ddLine.setAttribute("stroke-width", "1.1");
+            ddLine.setAttribute("fill", "none");
+            ddLine.setAttribute("opacity", "0.8");
+            svg.appendChild(ddLine);
+
+            // 6. Draw Equity Line
+            const eqLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            eqLine.setAttribute("d", "M " + eqPoints.join(" L "));
+            eqLine.setAttribute("stroke", "#FBBF24");
+            eqLine.setAttribute("stroke-width", "2.2");
+            eqLine.setAttribute("fill", "none");
+            eqLine.setAttribute("class", "drop-shadow-[0_0_8px_rgba(251,191,36,0.35)]");
+            svg.appendChild(eqLine);
+
+            // 7. Render indicator status pills on axis walls (Figma-precise)
+            // Drawdown pill on the left axis: -0.49 drawdown%
+            const pillY = startY + ((-0.49 - maxDd) / (minDd - maxDd)) * plotHeight;
+            
+            const ddPillGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            ddPillGroup.setAttribute("transform", `translate(${startX - 62}, ${pillY - 7})`);
+            
+            const ddPillBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            ddPillBg.setAttribute("width", "62");
+            ddPillBg.setAttribute("height", "14");
+            ddPillBg.setAttribute("fill", "#381418");
+            ddPillBg.setAttribute("stroke", "#F87171");
+            ddPillBg.setAttribute("stroke-width", "0.8");
+            ddPillBg.setAttribute("rx", "1");
+            ddPillGroup.appendChild(ddPillBg);
+            
+            const ddPillText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            ddPillText.setAttribute("x", "31");
+            ddPillText.setAttribute("y", "10");
+            ddPillText.setAttribute("fill", "#F87171");
+            ddPillText.setAttribute("text-anchor", "middle");
+            ddPillText.setAttribute("font-size", "8.5px");
+            ddPillText.setAttribute("font-family", "monospace");
+            ddPillText.setAttribute("font-weight", "bold");
+            ddPillText.textContent = "-0.49 dd %";
+            ddPillGroup.appendChild(ddPillText);
+            
+            svg.appendChild(ddPillGroup);
+
+            // Equity final indicator pill on the right axis wall: 13019190.58
+            const eqPillY = startY + plotHeight - ((13019190.58 - minEq) / (maxEq - minEq)) * plotHeight;
+            
+            const eqPillGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            eqPillGroup.setAttribute("transform", `translate(${endX}, ${eqPillY - 7})`);
+            
+            const eqPillBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            eqPillBg.setAttribute("width", "78");
+            eqPillBg.setAttribute("height", "14");
+            eqPillBg.setAttribute("fill", "#FBBF24");
+            eqPillBg.setAttribute("rx", "1");
+            eqPillGroup.appendChild(eqPillBg);
+            
+            const eqPillText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            eqPillText.setAttribute("x", "39");
+            eqPillText.setAttribute("y", "10");
+            eqPillText.setAttribute("fill", "#0A0A0A");
+            eqPillText.setAttribute("text-anchor", "middle");
+            eqPillText.setAttribute("font-size", "8.5px");
+            eqPillText.setAttribute("font-family", "monospace");
+            eqPillText.setAttribute("font-weight", "bold");
+            eqPillText.textContent = "13019190.58";
+            eqPillGroup.appendChild(eqPillText);
+            
+            svg.appendChild(eqPillGroup);
+
+            // Initial capital indicator pill at the bottom right axis wall: 10000000.00
+            const eqInitY = startY + plotHeight - ((10000000.00 - minEq) / (maxEq - minEq)) * plotHeight;
+            
+            const initPillGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            initPillGroup.setAttribute("transform", `translate(${endX}, ${eqInitY - 7})`);
+            
+            const initPillBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            initPillBg.setAttribute("width", "78");
+            initPillBg.setAttribute("height", "14");
+            initPillBg.setAttribute("fill", "#1C1C21");
+            initPillBg.setAttribute("stroke", "#2A2A2A");
+            initPillBg.setAttribute("stroke-width", "0.8");
+            initPillBg.setAttribute("rx", "1");
+            initPillGroup.appendChild(initPillBg);
+            
+            const initPillText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            initPillText.setAttribute("x", "39");
+            initPillText.setAttribute("y", "10");
+            initPillText.setAttribute("fill", "#888");
+            initPillText.setAttribute("text-anchor", "middle");
+            initPillText.setAttribute("font-size", "8.5px");
+            initPillText.setAttribute("font-family", "monospace");
+            initPillText.textContent = "10000000.00";
+            initPillGroup.appendChild(initPillText);
+            
+            svg.appendChild(initPillGroup);
+
+            // 8. Dynamic crosshair lines (drawn on load, hidden by default)
+            const crosshair = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            crosshair.setAttribute("id", "dashboard-crosshair");
+            crosshair.setAttribute("x1", "0");
+            crosshair.setAttribute("y1", startY);
+            crosshair.setAttribute("x2", "0");
+            crosshair.setAttribute("y2", endY);
+            crosshair.setAttribute("stroke", "#FBBF24");
+            crosshair.setAttribute("stroke-width", "1");
+            crosshair.setAttribute("stroke-dasharray", "2 2");
+            crosshair.setAttribute("opacity", "0");
+            svg.appendChild(crosshair);
+
+            const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            dot.setAttribute("id", "dashboard-dot");
+            dot.setAttribute("r", "4.5");
+            dot.setAttribute("fill", "#FBBF24");
+            dot.setAttribute("stroke", "#0A0A0A");
+            dot.setAttribute("stroke-width", "1.5");
+            dot.setAttribute("opacity", "0");
+            svg.appendChild(dot);
+        }
+
+        // Draw Daily Performance Bars (Bottom Bar Chart)
+        function drawDailyBars() {
+            const svg = document.getElementById('daily-performance-bars');
+            if (!svg) return;
+
+            svg.innerHTML = '';
+            const width = svg.clientWidth;
+            const height = svg.clientHeight;
+
+            const startX = 0;
+            const endX = width - 82; // Align horizontally with the main chart plot area!
+            const plotWidth = endX - startX;
+
+            const barCount = 180;
+            const barWidth = plotWidth / barCount;
+
+            for (let i = 0; i < barCount; i++) {
+                const x = startX + i * barWidth;
+                
+                let magnitude = Math.random();
+                let isUp = Math.random() > 0.44;
+                if (magnitude > 0.85) magnitude *= 1.7;
+
+                const returnPercent = isUp ? magnitude * 0.42 : -magnitude * 0.52;
+                const limitMax = 0.75;
+                const limitMin = -1.0;
+
+                let barHeight = 0;
+                let y = height / 2;
+
+                if (returnPercent > 0) {
+                    barHeight = (returnPercent / limitMax) * (height / 2);
+                    y = (height / 2) - barHeight;
+                } else {
+                    barHeight = (returnPercent / limitMin) * (height / 2);
+                    y = height / 2;
+                }
+
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("x", x + 0.5);
+                rect.setAttribute("y", y);
+                rect.setAttribute("width", Math.max(1, barWidth - 1));
+                rect.setAttribute("height", Math.max(1, barHeight));
+                rect.setAttribute("fill", isUp ? "#4ADE80" : "#F87171");
+                rect.setAttribute("opacity", "0.8");
+                
+                rect.addEventListener('mouseenter', () => rect.setAttribute('opacity', '1'));
+                rect.addEventListener('mouseleave', () => rect.setAttribute('opacity', '0.8'));
+
+                svg.appendChild(rect);
+            }
+
+            // Zero baseline
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", startX);
+            line.setAttribute("y1", height / 2);
+            line.setAttribute("x2", endX);
+            line.setAttribute("y2", height / 2);
+            line.setAttribute("stroke", "#1C1C21");
+            line.setAttribute("stroke-width", "1");
+            svg.appendChild(line);
+
+            // Right-side Y labels matching user screenshot
+            const yLabels = [
+                { val: "0.1%", y: height * 0.25 },
+                { val: "0.0%", y: height * 0.5 + 3 },
+                { val: "-0.1%", y: height * 0.75 }
+            ];
+            yLabels.forEach(lbl => {
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", endX + 8);
+                text.setAttribute("y", lbl.y);
+                text.setAttribute("fill", "#666");
+                text.setAttribute("font-size", "8.5px");
+                text.setAttribute("font-family", "monospace");
+                text.textContent = lbl.val;
+                svg.appendChild(text);
+            });
+
+            // max and min indicator boxes on right
+            const maxGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            maxGroup.setAttribute("transform", `translate(${endX + 5}, 5)`);
+            const maxBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            maxBg.setAttribute("width", "62");
+            maxBg.setAttribute("height", "13");
+            maxBg.setAttribute("fill", "#152c1b");
+            maxBg.setAttribute("stroke", "#4ADE80");
+            maxBg.setAttribute("stroke-width", "0.8");
+            maxBg.setAttribute("rx", "1");
+            maxGroup.appendChild(maxBg);
+            const maxTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            maxTxt.setAttribute("x", "31");
+            maxTxt.setAttribute("y", "9");
+            maxTxt.setAttribute("fill", "#4ADE80");
+            maxTxt.setAttribute("font-weight", "bold");
+            maxTxt.setAttribute("text-anchor", "middle");
+            maxTxt.setAttribute("font-size", "8px");
+            maxTxt.setAttribute("font-family", "monospace");
+            maxTxt.textContent = "max +0.75%";
+            maxGroup.appendChild(maxTxt);
+            svg.appendChild(maxGroup);
+
+            const minGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            minGroup.setAttribute("transform", `translate(${endX + 5}, ${height - 18})`);
+            const minBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            minBg.setAttribute("width", "62");
+            minBg.setAttribute("height", "13");
+            minBg.setAttribute("fill", "#381418");
+            minBg.setAttribute("stroke", "#F87171");
+            minBg.setAttribute("stroke-width", "0.8");
+            minBg.setAttribute("rx", "1");
+            minGroup.appendChild(minBg);
+            const minTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            minTxt.setAttribute("x", "31");
+            minTxt.setAttribute("y", "9");
+            minTxt.setAttribute("fill", "#F87171");
+            minTxt.setAttribute("font-weight", "bold");
+            minTxt.setAttribute("text-anchor", "middle");
+            minTxt.setAttribute("font-size", "8px");
+            minTxt.setAttribute("font-family", "monospace");
+            minTxt.textContent = "min -1.0%";
+            minGroup.appendChild(minTxt);
+            svg.appendChild(minGroup);
+        }
+
+        // Initialize Performance Chart Hover Interactions
+        function initChartInteractions() {
+            const svg = document.getElementById('dashboard-chart');
+            if (!svg) return;
+
+            svg.addEventListener('mousemove', function(e) {
+                const rect = svg.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const width = svg.clientWidth;
+                const height = svg.clientHeight;
+
+                const startX = 52;
+                const endX = width - 82;
+                const startY = 10;
+                const endY = height - 25;
+                
+                const plotWidth = endX - startX;
+                const plotHeight = endY - startY;
+
+                if (x < startX || x > endX) {
+                    document.getElementById('dashboard-crosshair').setAttribute('opacity', '0');
+                    document.getElementById('dashboard-dot').setAttribute('opacity', '0');
+                    document.getElementById('dashboard-tooltip').classList.add('hidden');
+                    return;
+                }
+
+                const ratio = (x - startX) / plotWidth;
+                let idx = Math.round(ratio * (backtestData.length - 1));
+                idx = Math.max(0, Math.min(backtestData.length - 1, idx));
+
+                const point = backtestData[idx];
+                const ptX = startX + (idx / (backtestData.length - 1)) * plotWidth;
+
+                const crosshair = document.getElementById('dashboard-crosshair');
+                const dot = document.getElementById('dashboard-dot');
+                const tooltip = document.getElementById('dashboard-tooltip');
+
+                crosshair.setAttribute('x1', ptX);
+                crosshair.setAttribute('x2', ptX);
+                crosshair.setAttribute('y1', startY);
+                crosshair.setAttribute('y2', endY);
+                crosshair.setAttribute('opacity', '0.6');
+
+                const minEq = 9600000.00;
+                const maxEq = 13600000.00;
+                const ptY = startY + plotHeight - ((point.eq - minEq) / (maxEq - minEq)) * plotHeight;
+                
+                dot.setAttribute('cx', ptX);
+                dot.setAttribute('cy', ptY);
+                dot.setAttribute('opacity', '1');
+
+                document.getElementById('db-tooltip-date').innerText = point.date;
+                document.getElementById('db-tooltip-eq').innerText = "₹" + point.eq.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+                document.getElementById('db-tooltip-dd').innerText = point.dd.toFixed(2) + "%";
+
+                tooltip.style.left = (ptX + 15) + "px";
+                tooltip.style.top = (ptY - 50) + "px";
+                tooltip.classList.remove('hidden');
+            });
+
+            svg.addEventListener('mouseleave', function() {
+                document.getElementById('dashboard-crosshair').setAttribute('opacity', '0');
+                document.getElementById('dashboard-dot').setAttribute('opacity', '0');
+                document.getElementById('dashboard-tooltip').classList.add('hidden');
+            });
+        }
+
+        // Reset functions
+        function resetChartGlow() {
+            drawPerformanceChart();
+        }
+
+        // Reset date range filter
+        function resetDateRange() {
+            document.getElementById('filter-from-date').value = "01-04-2024";
+            document.getElementById('filter-to-date').value = "01-04-2026";
+            alert("Date range reset to ALL");
+        }
+
+        // Render logs dynamically
+        function renderDayLogs() {
+            const tbody = document.getElementById('daylog-table-body');
+            if (!tbody) return;
+
+            let html = '';
+            // Generate some realistic day log entries
+            const dates = ["2026-03-24", "2026-03-23", "2026-03-20", "2026-03-19", "2026-03-18", "2026-03-17", "2026-03-16"];
+            dates.forEach((date, idx) => {
+                const profit = (Math.random() > 0.4 ? 1 : -1) * (15000 + Math.random() * 45000);
+                const pnlClass = profit > 0 ? 'text-brand-up font-bold' : 'text-brand-down font-bold';
+                const pnlText = (profit > 0 ? '+₹' : '-₹') + Math.abs(profit).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+                
+                html += `
+                    <tr class="hover:bg-brand-precision/20 transition-colors border-b border-[#121215]">
+                        <td class="py-2.5 text-[#fff]">${date}</td>
+                        <td class="py-2.5 text-brand-muted font-mono">NIFTY26MAR21500PE/CE Strangle</td>
+                        <td class="py-2.5 text-[#ccc]">4 trades</td>
+                        <td class="py-2.5 ${pnlClass}">${pnlText}</td>
+                        <td class="py-2.5 text-right text-brand-muted">₹2,42,100</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // Render executed trades dynamically
+        function renderTradesLedger() {
+            const tbody = document.getElementById('trades-table-body');
+            if (!tbody) return;
+
+            let html = '';
+            const trades = [
+                { time: "2026-03-24 15:10:04", sym: "NIFTY 26MAR26 21500 CE", type: "SELL (EXIT)", qty: 250, entry: "₹184.20", exit: "₹120.40", pnl: 15950.00, stat: "COMPLETED" },
+                { time: "2026-03-24 15:10:04", sym: "NIFTY 26MAR26 21500 PE", type: "SELL (EXIT)", qty: 250, entry: "₹150.10", exit: "₹98.30", pnl: 12950.00, stat: "COMPLETED" },
+                { time: "2026-03-24 09:20:11", sym: "NIFTY 26MAR26 21500 CE", type: "BUY (ENTRY)", qty: 250, entry: "₹184.20", exit: "-", pnl: 0, stat: "OPEN" },
+                { time: "2026-03-24 09:20:11", sym: "NIFTY 26MAR26 21500 PE", type: "BUY (ENTRY)", qty: 250, entry: "₹150.10", exit: "-", pnl: 0, stat: "OPEN" }
+            ];
+
+            trades.forEach((trade) => {
+                const profit = trade.pnl;
+                const pnlClass = profit > 0 ? 'text-brand-up font-bold' : (profit < 0 ? 'text-brand-down font-bold' : 'text-brand-dim');
+                const pnlText = profit === 0 ? '-' : '+₹' + profit.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+                const statClass = trade.stat === 'COMPLETED' ? 'text-brand-up' : 'text-brand-accent animate-pulse';
+
+                html += `
+                    <tr class="hover:bg-brand-precision/20 transition-colors border-b border-[#121215]">
+                        <td class="py-2.5 text-[#fff]">${trade.time}</td>
+                        <td class="py-2.5 text-brand-muted font-bold">${trade.sym}</td>
+                        <td class="py-2.5 text-[#ccc]">${trade.type}</td>
+                        <td class="py-2.5 text-[#ccc]">${trade.qty}</td>
+                        <td class="py-2.5 text-brand-muted">${trade.entry}</td>
+                        <td class="py-2.5 text-brand-muted">${trade.exit}</td>
+                        <td class="py-2.5 ${pnlClass}">${pnlText}</td>
+                        <td class="py-2.5 text-right ${statClass} font-bold text-[10px]">${trade.stat}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // Close dropdowns when clicking outside
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('#run-history-menu') && !e.target.closest('#params-menu') && !e.target.closest('button')) {
+                document.querySelectorAll('#run-history-menu, #params-menu').forEach(m => m.classList.add('hidden'));
+            }
+        });
+
+        // Initialize dashboard elements on load
+        window.onload = function() {
+            drawPerformanceChart();
+            drawDailyBars();
+            initChartInteractions();
+        };
+
+        // Redraw on window resize for responsiveness
+        window.onresize = function() {
+            drawPerformanceChart();
+            drawDailyBars();
+        };
+    </script>
+</body>
+</html>
