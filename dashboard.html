@@ -35,6 +35,8 @@
                     --brand-accent: ${accentColor};
                     --brand-accent-dim: ${accentDim};
                     --brand-accent-rgb: ${glowRgb};
+                    --brand-up: #00E676;
+                    --brand-down: #E11D48;
                 }
                 .bento-glow:hover {
                     border-color: rgba(${glowRgb}, 0.05) !important;
@@ -62,8 +64,8 @@
                             pure: '#F5F5F7',
                             muted: '#8E8E93',
                             dim: '#48484A',
-                            up: '#00E676',
-                            down: '#E11D48'
+                            up: 'var(--brand-up)',
+                            down: 'var(--brand-down)'
                         }
                     },
                     fontFamily: {
@@ -94,7 +96,7 @@
         body {
             background-color: #08080A;
             color: #E5E5E5;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         /* Custom Scrollbar */
@@ -130,17 +132,41 @@
             filter: drop-shadow(0 0 8px var(--brand-accent));
             opacity: 0.35;
         }
+
+        /* Halftone Dot Grid Breathing Animation */
+        @keyframes halftone-breath {
+            0%, 100% { opacity: 0.12; }
+            50% { opacity: 0.06; }
+        }
+        .halftone-breathing {
+            animation: halftone-breath 7.5s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="font-mono text-xs select-none">
 
     <!-- Root Dashboard Layout -->
-    <div class="h-screen w-screen flex flex-col overflow-hidden">
+    <div class="h-screen w-screen flex flex-col overflow-hidden relative z-10">
         
         <!-- TOP NAVIGATION BAR -->
         <header class="h-7 shrink-0 border-b border-brand-precision bg-brand-elevate flex items-center justify-between px-3 text-[11px] tracking-wider z-50">
-            <div class="flex items-center">
-                <span class="font-bold text-brand-accent tracking-[1.1px] uppercase">CONVEX HEDGE</span>
+            <!-- Dynamic Logo and Text (Matches Landing Page) -->
+            <div class="flex items-center space-x-2.5 cursor-pointer" onclick="window.location.href='index.html'">
+                <svg class="w-5 h-3 text-brand-accent" viewBox="0 0 1024 652" fill="currentColor">
+                    <g stroke="#08080A" stroke-width="28" stroke-linejoin="round" stroke-linecap="round" style="paint-order: stroke fill;">
+                        <!-- Shape 1: Left C-loop -->
+                        <path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z" />
+                        <!-- Shape 2: Top-middle triangle -->
+                        <polygon points="336,165 618,165 483,0" />
+                        <!-- Shape 3: Main diagonal slash -->
+                        <polygon points="785,26 1023,26 493,645 389,452" />
+                        <!-- Shape 4: Small middle folder -->
+                        <polygon points="716,381 806,380 792,425 680,426" />
+                        <!-- Shape 5: Bottom-right loop -->
+                        <path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z" />
+                    </g>
+                </svg>
+                <span class="font-display font-extrabold tracking-tight text-[11px] uppercase text-white">CONVEX HEDGE</span>
             </div>
             <div class="flex items-center space-x-4">
                 <span class="text-brand-pure tracking-[1.1px]">2026-07-10 15:48:20</span>
@@ -257,8 +283,8 @@
                 </div>
             </aside>
 
-            <!-- MAIN CONTENT AREA -->
-            <main class="flex-1 flex flex-col overflow-y-auto p-6 bg-brand-void relative">
+            <!-- MAIN CONTENT AREA WITH PARALLAX VIEWPORT -->
+            <main id="main-viewport" class="flex-1 flex flex-col overflow-y-auto p-6 bg-brand-void/85 relative">
                 
                 <!-- HEADER NAVIGATION & BACK CONTROLS -->
                 <div class="flex items-center justify-between shrink-0 mb-4">
@@ -300,7 +326,7 @@
                 </div>
 
                 <!-- TOGGLE CONTROLS (CAPITAL VS PER UNIT) -->
-                <div class="flex items-center space-x-0 shrink-0 mb-6">
+                <div class="flex items-center space-x-0 shrink-0 mb-6 font-mono">
                     <button id="toggle-capital" onclick="setCapitalMode(true)" class="bg-brand-accent border border-brand-accent px-4 py-1.5 text-[10px] tracking-[1.2px] uppercase font-bold text-brand-void transition-colors cursor-pointer">
                         CAPITAL
                     </button>
@@ -312,43 +338,43 @@
                 <!-- KEY METRICS ROW -->
                 <div class="grid grid-cols-7 gap-px bg-brand-precision border border-brand-precision shrink-0 mb-6 font-mono">
                     <!-- Net P&L -->
-                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                    <div class="bg-brand-elevate p-4 flex flex-col justify-between h-[92px]">
                         <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">NET P&L</span>
                         <span id="metric-pnl" class="text-brand-up text-[26px] font-bold font-mono leading-none mt-1">+30.19%</span>
                         <span id="metric-pnl-sub" class="text-brand-muted text-[12px] font-mono leading-none">+₹30,19,190.58</span>
                     </div>
                     <!-- Annualised -->
-                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                    <div class="bg-brand-elevate p-4 flex flex-col justify-between h-[92px]">
                         <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">ANNUALISED</span>
                         <span id="metric-ann" class="text-brand-up text-[26px] font-bold font-mono leading-none mt-1">+15.46%</span>
                         <span class="text-brand-muted text-[12px] font-mono leading-none">capital track</span>
                     </div>
                     <!-- Max Drawdown -->
-                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                    <div class="bg-brand-elevate p-4 flex flex-col justify-between h-[92px]">
                         <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">MAX DRAWDOWN</span>
                         <span id="metric-mdd" class="text-brand-down text-[26px] font-bold font-mono leading-none mt-1">-2.32%</span>
                         <span id="metric-mdd-sub" class="text-brand-muted text-[12px] font-mono leading-none">−₹2,60,728.52</span>
                     </div>
                     <!-- Sharpe -->
-                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                    <div class="bg-brand-elevate p-4 flex flex-col justify-between h-[92px]">
                         <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">SHARPE</span>
                         <span class="text-brand-pure text-[26px] font-bold font-mono leading-none mt-1">1.73</span>
                         <span class="text-brand-muted text-[12px] font-mono leading-none">daily, annualised</span>
                     </div>
                     <!-- Calmar -->
-                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                    <div class="bg-brand-elevate p-4 flex flex-col justify-between h-[92px]">
                         <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">CALMAR</span>
                         <span class="text-brand-pure text-[26px] font-bold font-mono leading-none mt-1">6.68</span>
                         <span class="text-brand-muted text-[12px] font-mono leading-none">ann ret / |MDD|</span>
                     </div>
                     <!-- Win Rate -->
-                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                    <div class="bg-brand-elevate p-4 flex flex-col justify-between h-[92px]">
                         <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">WIN RATE</span>
                         <span class="text-brand-pure text-[26px] font-bold font-mono leading-none mt-1">62.5%</span>
                         <span class="text-brand-muted text-[12px] font-mono leading-none">1003 / 1604 trades</span>
                     </div>
                     <!-- Profit Factor -->
-                    <div class="bg-brand-card p-4 flex flex-col justify-between h-[92px]">
+                    <div class="bg-brand-elevate p-4 flex flex-col justify-between h-[92px]">
                         <span class="text-brand-muted text-[10px] tracking-[1.2px] uppercase">PROFIT FACTOR</span>
                         <span class="text-brand-pure text-[26px] font-bold font-mono leading-none mt-1">1.26</span>
                         <span class="text-brand-muted text-[12px] font-mono leading-none">wins / losses</span>
@@ -376,7 +402,7 @@
                     </div>
                     
                     <!-- Date Range Filter Bar -->
-                    <div class="border border-brand-precision bg-brand-card/30 p-2.5 flex items-center space-x-3 shrink-0 text-[10px] font-mono text-brand-dim mt-2">
+                    <div class="border border-brand-precision bg-brand-elevate/50 p-2.5 flex items-center space-x-3 shrink-0 text-[10px] font-mono text-brand-dim mt-2">
                         <span class="text-brand-muted font-bold tracking-[1.3px]">OVERVIEW DATE RANGE</span>
                         <div class="flex items-center space-x-2">
                             <span>FROM</span>
@@ -418,7 +444,7 @@
                             <div class="grid grid-cols-1 lg:grid-cols-12 border border-brand-precision gap-px bg-brand-precision">
                                 
                                 <!-- Equity & Drawdown Chart Frame -->
-                                <div class="lg:col-span-8 bg-brand-card p-6 flex flex-col justify-between">
+                                <div class="lg:col-span-8 bg-brand-elevate p-6 flex flex-col justify-between">
                                     <div class="flex justify-between items-center text-[10px] font-mono text-brand-muted mb-4">
                                         <div class="flex items-center space-x-4">
                                             <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-brand-accent mr-1.5"></span>● EQUITY</span>
@@ -432,7 +458,7 @@
                                     <div class="relative w-full h-[320px] bg-brand-void/50" id="chart-wrapper">
                                         <svg id="dashboard-chart" class="w-full h-full overflow-visible z-10 relative">
                                             <!-- Grid lines group -->
-                                            <g id="dashboard-grids" stroke="#121215" stroke-width="1"></g>
+                                            <g id="dashboard-grids" stroke="#1C1C21" stroke-width="1"></g>
                                             
                                             <!-- Drawdown line + area -->
                                             <path id="dashboard-dd-area" fill="url(#dd-grad)" opacity="0.35" stroke="none" />
@@ -539,7 +565,7 @@
 
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 <!-- Card 1: KDE Distribution -->
-                                <div class="bg-brand-card border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
+                                <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
                                     <div>
                                         <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">DAILY RETURNS DISTRIBUTION - CAPITAL - &Sigma;=0.33%</div>
                                         <div class="h-44 w-full relative pt-2">
@@ -587,7 +613,7 @@
                                 </div>
 
                                 <!-- Card 2: Day Extremes -->
-                                <div class="bg-brand-card border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
+                                <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
                                     <div>
                                         <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">RUN STATS &middot; CAPITAL TRACK &middot; LEFT</div>
                                         <div class="space-y-3 font-mono text-xs pt-1">
@@ -617,7 +643,7 @@
                                 </div>
 
                                 <!-- Card 3: Activity / Costs -->
-                                <div class="bg-brand-card border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
+                                <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
                                     <div>
                                         <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">RUN STATS &middot; CAPITAL TRACK &middot; RIGHT</div>
                                         <div class="space-y-2 font-mono text-xs pt-1">
@@ -667,13 +693,13 @@
                             </div>
 
                             <!-- Heatmap card -->
-                            <div class="bg-brand-card border border-brand-precision rounded-sm p-4 shrink-0">
+                            <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 shrink-0">
                                 <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">MONTHLY RETURNS HEATMAP (WITH YEAR TOTALS)</div>
                                 
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-center font-mono border-collapse text-[11px] min-w-[700px]">
                                         <thead>
-                                            <tr class="border-b border-brand-precision text-brand-dim uppercase text-[10px]">
+                                            <tr class="border-b border-brand-precision text-brand-muted uppercase text-[10px]">
                                                 <th class="py-2 text-left font-normal w-12">Year</th>
                                                 <th class="py-2 font-normal">Jan</th>
                                                 <th class="py-2 font-normal">Feb</th>
@@ -748,7 +774,7 @@
                             </div>
 
                             <!-- Bar Chart: Daily Returns Capital Track -->
-                            <div class="bg-brand-card border border-brand-precision rounded-sm p-4 shrink-0">
+                            <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 shrink-0">
                                 <div class="flex justify-between items-center text-[10px] font-mono text-brand-muted mb-3 border-b border-brand-precision pb-2">
                                     <span class="text-brand-dim uppercase tracking-[1px] text-[9px] font-bold">DAILY RETURNS &middot; CAPITAL TRACK</span>
                                     <div class="flex items-center space-x-3 text-[9px]">
@@ -782,10 +808,10 @@
                             </div>
                             
                             <!-- Daylog table -->
-                            <div class="bg-brand-card border border-brand-precision rounded-sm p-4 overflow-hidden">
+                            <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 overflow-hidden">
                                 <table class="w-full font-mono text-xs text-left">
                                     <thead>
-                                        <tr class="text-brand-dim border-b border-brand-precision pb-2 text-[9px] tracking-wider uppercase">
+                                        <tr class="text-brand-muted border-b border-brand-precision pb-2 text-[9px] tracking-wider uppercase">
                                             <th class="py-2">Date</th>
                                             <th class="py-2">Option Strangle Pair</th>
                                             <th class="py-2">Trades Count</th>
@@ -809,10 +835,10 @@
                             </div>
                             
                             <!-- Trades table -->
-                            <div class="bg-brand-card border border-brand-precision rounded-sm p-4 overflow-hidden">
+                            <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 overflow-hidden">
                                 <table class="w-full font-mono text-xs text-left">
                                     <thead>
-                                        <tr class="text-brand-dim border-b border-brand-precision pb-2 text-[9px] tracking-wider uppercase">
+                                        <tr class="text-brand-muted border-b border-brand-precision pb-2 text-[9px] tracking-wider uppercase">
                                             <th class="py-2">Timestamp</th>
                                             <th class="py-2">Symbol</th>
                                             <th class="py-2">Type</th>
@@ -840,7 +866,7 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Delta Skew Chart -->
-                                <div class="bg-brand-card border border-brand-precision p-5 rounded-sm">
+                                <div class="bg-brand-elevate border border-brand-precision p-5 rounded-sm">
                                     <span class="text-brand-muted text-[10px] uppercase font-bold tracking-wider">Delta Hedging Skewness</span>
                                     <div class="h-44 w-full relative mt-4">
                                         <svg class="w-full h-full" stroke="var(--brand-accent)" stroke-width="1.5" fill="none">
@@ -856,7 +882,7 @@
                                 </div>
 
                                 <!-- Theta Decay Curve -->
-                                <div class="bg-brand-card border border-brand-precision p-5 rounded-sm">
+                                <div class="bg-brand-elevate border border-brand-precision p-5 rounded-sm">
                                     <span class="text-brand-muted text-[10px] uppercase font-bold tracking-wider">Intraday Theta Decay Profile</span>
                                     <div class="h-44 w-full relative mt-4">
                                         <svg class="w-full h-full" stroke="var(--brand-accent)" stroke-width="1.5" fill="none">
@@ -1097,7 +1123,7 @@
                 line.setAttribute("y1", y);
                 line.setAttribute("x2", endX);
                 line.setAttribute("y2", y);
-                line.setAttribute("stroke", "#121215");
+                line.setAttribute("stroke", "#1C1C21");
                 line.setAttribute("stroke-width", "1");
                 if (i > 0 && i < gridLinesCount) {
                     line.setAttribute("stroke-dasharray", "1 4");
@@ -1235,7 +1261,7 @@
             const ddPillBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             ddPillBg.setAttribute("width", "62");
             ddPillBg.setAttribute("height", "14");
-            ddPillBg.setAttribute("fill", "var(--brand-accentDim)");
+            ddPillBg.setAttribute("fill", "var(--brand-accent-dim)");
             ddPillBg.setAttribute("stroke", "var(--brand-down)");
             ddPillBg.setAttribute("stroke-width", "0.8");
             ddPillBg.setAttribute("rx", "1");
@@ -1571,6 +1597,104 @@
             });
             tbody.innerHTML = html;
         }
+
+        // Halftone dots background logo pattern generator mapping the landing page
+        (function buildLogoHalftone() {
+            var old = document.getElementById('logo-halftone-bg');
+            if (old) old.remove();
+
+            var VW = window.innerWidth;
+            var VH = window.innerHeight;
+            var LW = 1024, LH = 652;   // native logo viewBox size
+            var sx = VW / LW;
+            var sy = VH / LH;
+            var COUNT = 2;             // 2 logo layers for background scroll
+            var NS = 'http://www.w3.org/2000/svg';
+
+            var LOGO = '<path d="M 220,0 L 474,0 L 336,165 L 92,454 L 382,456 L 484,648 L 250,648 C 110,648 0,530 0,324 C 0,120 100,0 220,0 Z"/>'
+                     + '<polygon points="336,165 618,165 483,0"/>'
+                     + '<polygon points="785,26 1023,26 493,645 389,452"/>'
+                     + '<polygon points="716,381 806,380 792,425 680,426"/>'
+                     + '<path d="M 816,381 L 615,651 L 877,649 C 930,649 947,580 947,510 C 947,440 900,381 816,381 Z"/>';
+
+            var VARIANTS = [
+                [false, false],  // Normal
+                [true,  true ],  // Mirrored
+            ];
+
+            var svg = document.createElementNS(NS, 'svg');
+            svg.id = 'logo-halftone-bg';
+            svg.setAttribute('aria-hidden', 'true');
+            svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
+            svg.setAttribute('preserveAspectRatio', 'none');
+            svg.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;';
+            svg.classList.add('halftone-breathing');
+
+            var defsHTML = ''
+                + '<pattern id="lhd" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">'
+                + '<circle cx="8" cy="8" r="2.2" fill="var(--brand-accent)"/>'
+                + '</pattern>'
+                + '<radialGradient id="logoGrad" gradientUnits="userSpaceOnUse" cx="512" cy="326" r="480">'
+                + '<stop offset="0%"   stop-color="white" stop-opacity="0.95"/>'
+                + '<stop offset="55%"  stop-color="white" stop-opacity="0.6"/>'
+                + '<stop offset="100%" stop-color="white" stop-opacity="0"/>'
+                + '</radialGradient>';
+
+            for (var i = 0; i < COUNT; i++) {
+                var v      = VARIANTS[i % VARIANTS.length];
+                var flipX  = v[0], flipY = v[1];
+                var scX    = flipX ? -sx :  sx;
+                var scY    = flipY ? -sy :  sy;
+                var tX     = flipX ? VW : 0;
+                var tY     = flipY ? (i + 1) * VH : i * VH;
+
+                defsHTML +=
+                    '<mask id="lhm' + i + '" maskUnits="userSpaceOnUse" x="0" y="' + (i * VH) + '" width="' + VW + '" height="' + VH + '">'
+                    + '<rect x="0" y="' + (i * VH) + '" width="' + VW + '" height="' + VH + '" fill="black" />'
+                    + '<g transform="translate(' + tX + ',' + tY + ') scale(' + scX + ',' + scY + ')" fill="url(#logoGrad)">'
+                    + LOGO
+                    + '</g>'
+                    + '</mask>';
+            }
+
+            var defs = document.createElementNS(NS, 'defs');
+            defs.innerHTML = defsHTML;
+            svg.appendChild(defs);
+
+            var scrollGroup = document.createElementNS(NS, 'g');
+            scrollGroup.id = 'halftone-scroll-group';
+            scrollGroup.style.cssText = 'will-change: transform; transition: transform 0.22s cubic-bezier(0.1, 0.88, 0.25, 0.97);';
+
+            for (var j = 0; j < COUNT; j++) {
+                var r = document.createElementNS(NS, 'rect');
+                r.setAttribute('x', 0);
+                r.setAttribute('y', j * VH);
+                r.setAttribute('width', VW);
+                r.setAttribute('height', VH);
+                r.setAttribute('fill', 'url(#lhd)');
+                r.setAttribute('mask', 'url(#lhm' + j + ')');
+                scrollGroup.appendChild(r);
+            }
+            svg.appendChild(scrollGroup);
+            document.body.appendChild(svg);
+
+            // Parallax scroll binding mapped directly to the dashboard viewport container
+            var viewport = document.getElementById('main-viewport');
+            var raf = null;
+            function tick() {
+                if (viewport) {
+                    var py = viewport.scrollTop * 0.35;
+                    scrollGroup.style.transform = 'translate3d(0, ' + (-py) + 'px, 0)';
+                }
+                raf = null;
+            }
+            if (viewport) {
+                viewport.addEventListener('scroll', function() {
+                    if (!raf) raf = requestAnimationFrame(tick);
+                }, { passive: true });
+            }
+            tick();
+        })();
 
         window.addEventListener('click', function(e) {
             if (!e.target.closest('#run-history-menu') && !e.target.closest('#params-menu') && !e.target.closest('button')) {
