@@ -563,120 +563,93 @@
                                 <div class="flex-1 h-px bg-brand-precision"></div>
                             </div>
 
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                <!-- Card 1: KDE Distribution -->
-                                <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
+                            <div class="flex flex-col gap-6">
+                                <!-- Card 1: KDE Distribution (Full Width) -->
+                                <div class="bg-brand-elevate border border-brand-precision rounded-sm p-5 flex flex-col justify-between">
                                     <div>
-                                        <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">DAILY RETURNS DISTRIBUTION - CAPITAL - &Sigma;=0.33%</div>
-                                        <div class="h-44 w-full relative pt-2">
-                                            <svg class="w-full h-full overflow-visible" fill="none">
-                                                <rect x="52" y="100" width="8" height="30" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="62" y="90" width="8" height="40" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="72" y="85" width="8" height="45" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="82" y="75" width="8" height="55" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="92" y="65" width="8" height="65" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="102" y="50" width="8" height="80" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="112" y="30" width="8" height="100" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="122" y="15" width="8" height="115" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="132" y="45" width="8" height="85" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="142" y="70" width="8" height="60" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="152" y="80" width="8" height="50" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="162" y="95" width="8" height="35" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-                                                <rect x="172" y="105" width="8" height="25" fill="var(--brand-accent-dim)" stroke="var(--brand-accent)" stroke-width="0.5" style="opacity:0.25" />
-
-                                                <path d="M 10,130 Q 70,130 90,100 T 110,60 T 122,10 T 134,50 T 146,90 T 160,115 T 220,130" stroke="var(--brand-accent)" stroke-width="1.8" class="chart-glow" />
-                                                <line x1="0" y1="130" x2="240" y2="130" stroke="#1C1C21" stroke-width="1" />
-                                                
-                                                <line x1="122" y1="0" x2="122" y2="130" stroke="var(--brand-up)" stroke-width="1" stroke-dasharray="2 2" />
-                                                <line x1="90" y1="0" x2="90" y2="130" stroke="var(--brand-down)" stroke-width="1" stroke-dasharray="2 2" />
-                                                <line x1="72" y1="0" x2="72" y2="130" stroke="var(--brand-down)" stroke-width="1" opacity="0.6" stroke-dasharray="2 2" />
-                                                
-                                                <text x="5" y="20" fill="#48484A" font-size="8" font-family="monospace">300</text>
-                                                <text x="5" y="65" fill="#48484A" font-size="8" font-family="monospace">200</text>
-                                                <text x="5" y="110" fill="#48484A" font-size="8" font-family="monospace">100</text>
-                                                <text x="5" y="128" fill="#48484A" font-size="8" font-family="monospace">0</text>
-                                                
-                                                <text x="45" y="142" fill="#48484A" font-size="8" font-family="monospace">-1.5%</text>
-                                                <text x="80" y="142" fill="#48484A" font-size="8" font-family="monospace">-1.0%</text>
-                                                <text x="115" y="142" fill="#48484A" font-size="8" font-family="monospace">-0.5%</text>
-                                                <text x="150" y="142" fill="#48484A" font-size="8" font-family="monospace">0.0%</text>
-                                                <text x="185" y="142" fill="#48484A" font-size="8" font-family="monospace">0.5%</text>
-                                            </svg>
+                                        <div class="flex justify-between items-center border-b border-brand-precision pb-2 mb-3">
+                                            <div class="text-brand-dim uppercase tracking-[1px] text-[9px] font-bold">DAILY RETURNS DISTRIBUTION &middot; CAPITAL &middot; &Sigma;=0.33%</div>
+                                            <div class="flex items-center space-x-4 text-[9px] font-mono">
+                                                <span class="text-[#4D90FE] font-bold">● KDE</span>
+                                                <span class="text-brand-up font-bold">● MEAN 0.06%</span>
+                                                <span class="text-brand-down font-bold">● VAR -0.51%</span>
+                                                <span class="text-brand-down font-bold" style="color: #FF5A5A">● CVAR -0.71%</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="flex justify-between items-center text-[9px] font-mono text-brand-dim mt-2 pt-2 border-t border-brand-precision">
-                                        <span class="text-brand-pure font-bold">● KDE</span>
-                                        <span class="text-brand-up font-bold">● MEAN 0.05%</span>
-                                        <span class="text-brand-down font-bold">● VAR -0.51%</span>
-                                        <span class="text-brand-down font-bold" style="opacity:0.65">● CVAR -0.71%</span>
-                                    </div>
-                                </div>
-
-                                <!-- Card 2: Day Extremes -->
-                                <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
-                                    <div>
-                                        <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">RUN STATS &middot; CAPITAL TRACK &middot; LEFT</div>
-                                        <div class="space-y-3 font-mono text-xs pt-1">
-                                            <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold">DAY EXTREMES</div>
-                                            <div class="flex justify-between items-center border-b border-brand-precision pb-1.5">
-                                                <span class="text-brand-muted">BEST DAY</span>
-                                                <span class="text-brand-up font-bold">+₹74,552.18</span>
-                                                <span class="text-brand-dim text-[9px]">2026-02-03</span>
-                                            </div>
-                                            <div class="flex justify-between items-center border-b border-brand-precision pb-1.5">
-                                                <span class="text-brand-muted">WORST DAY</span>
-                                                <span class="text-brand-down font-bold">-₹1,73,777.19</span>
-                                                <span class="text-brand-dim text-[9px]">2026-06-04</span>
-                                            </div>
-                                            
-                                            <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold pt-1.5">TAIL RISK</div>
-                                            <div class="flex justify-between">
-                                                <span class="text-brand-muted">VaR (95%)</span>
-                                                <span class="text-brand-pure">-0.51%</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-brand-muted">CVaR (95%)</span>
-                                                <span class="text-brand-pure">-0.71%</span>
-                                            </div>
+                                        <div class="h-64 w-full relative pt-2">
+                                            <svg id="diagnostics-kde-chart" class="w-full h-full overflow-visible" fill="none"></svg>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Card 3: Activity / Costs -->
-                                <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 flex flex-col justify-between h-[314px]">
-                                    <div>
-                                        <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">RUN STATS &middot; CAPITAL TRACK &middot; RIGHT</div>
-                                        <div class="space-y-2 font-mono text-xs pt-1">
-                                            <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold">ACTIVITY</div>
-                                            <div class="flex justify-between">
-                                                <span class="text-brand-muted">AVG TRADES / DAY</span>
-                                                <span class="text-brand-pure">3.26</span>
+                                <!-- Cards 2 & 3: Run Stats Left and Right Side-by-Side -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Card 2: Run Stats Left -->
+                                    <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 flex flex-col justify-between">
+                                        <div>
+                                            <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">RUN STATS &middot; CAPITAL TRACK &middot; LEFT</div>
+                                            <div class="space-y-3 font-mono text-xs pt-1">
+                                                <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold">DAY EXTREMES</div>
+                                                <div class="flex justify-between items-center border-b border-brand-precision pb-1.5">
+                                                    <span class="text-brand-muted">BEST DAY</span>
+                                                    <span class="text-brand-up font-bold">+₹74,552.18</span>
+                                                    <span class="text-brand-dim text-[9px]">2026-02-03</span>
+                                                </div>
+                                                <div class="flex justify-between items-center border-b border-brand-precision pb-1.5">
+                                                    <span class="text-brand-muted">WORST DAY</span>
+                                                    <span class="text-brand-down font-bold">-₹1,73,777.19</span>
+                                                    <span class="text-brand-dim text-[9px]">2026-06-04</span>
+                                                </div>
+                                                
+                                                <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold pt-1.5">TAIL RISK</div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">VaR (95%)</span>
+                                                    <span class="text-brand-pure">-0.51%</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">CVaR (95%)</span>
+                                                    <span class="text-brand-pure">-0.71%</span>
+                                                </div>
                                             </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-brand-muted">AVG TRADES / WEEK</span>
-                                                <span class="text-brand-pure">16.30</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-brand-muted">TOTAL SIGNALS</span>
-                                                <span class="text-brand-pure">3,452</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-brand-muted">REJECTED SIGNALS</span>
-                                                <span class="text-brand-pure">0</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-brand-muted">AVG MARGIN / DAY</span>
-                                                <span class="text-brand-pure">₹2,28,403</span>
-                                            </div>
-                                            
-                                            <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold pt-1.5">COSTS</div>
-                                            <div class="flex justify-between border-t border-brand-precision pt-1.5">
-                                                <span class="text-brand-muted">TOTAL CHARGES</span>
-                                                <span class="text-brand-down font-bold">-₹4,76,951.17</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-brand-muted">CHARGES / [RETURNS]</span>
-                                                <span class="text-brand-up font-bold">+15.80%</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Card 3: Run Stats Right -->
+                                    <div class="bg-brand-elevate border border-brand-precision rounded-sm p-4 flex flex-col justify-between">
+                                        <div>
+                                            <div class="text-brand-dim border-b border-brand-precision pb-2 uppercase tracking-[1px] text-[9px] mb-3">RUN STATS &middot; CAPITAL TRACK &middot; RIGHT</div>
+                                            <div class="space-y-2 font-mono text-xs pt-1">
+                                                <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold">ACTIVITY</div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">AVG TRADES / DAY</span>
+                                                    <span class="text-brand-pure">3.26</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">AVG TRADES / WEEK</span>
+                                                    <span class="text-brand-pure">16.30</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">TOTAL SIGNALS</span>
+                                                    <span class="text-brand-pure">3,452</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">REJECTED SIGNALS</span>
+                                                    <span class="text-brand-pure">0</span>
+                                                </div>
+                                                <div class="flex justify-between border-b border-brand-precision pb-1.5">
+                                                    <span class="text-brand-muted">AVG MARGIN / DAY</span>
+                                                    <span class="text-brand-pure">₹2,28,403</span>
+                                                </div>
+                                                
+                                                <div class="text-[9px] text-brand-accent tracking-wider uppercase font-bold pt-1.5">COSTS</div>
+                                                <div class="flex justify-between border-t border-brand-precision pt-1.5">
+                                                    <span class="text-brand-muted">TOTAL CHARGES</span>
+                                                    <span class="text-brand-down font-bold">-₹4,76,951.17</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-brand-muted">CHARGES / [RETURNS]</span>
+                                                    <span class="text-brand-up font-bold">+15.80%</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1022,6 +995,7 @@
             setTimeout(() => {
                 drawPerformanceChart();
                 drawDailyBars();
+                drawDiagnosticsChart();
             }, 300);
         }
 
@@ -1040,7 +1014,10 @@
             if (tabId === 'overview') {
                 document.getElementById('view-overview').classList.remove('hidden');
                 document.getElementById('tab-overview').className = "border-l border-r border-t border-brand-accent text-brand-accent px-4 py-2 uppercase font-bold cursor-pointer bg-brand-accent/5";
-                setTimeout(drawPerformanceChart, 50);
+                setTimeout(() => {
+                    drawPerformanceChart();
+                    drawDiagnosticsChart();
+                }, 50);
             } else if (tabId === 'daylog') {
                 document.getElementById('view-daylog').classList.remove('hidden');
                 document.getElementById('tab-daylog').className = "border-l border-r border-t border-brand-accent text-brand-accent px-4 py-2 uppercase font-bold cursor-pointer bg-brand-accent/5";
@@ -1464,6 +1441,229 @@
             svg.appendChild(minGroup);
         }
 
+        function drawDiagnosticsChart() {
+            const svg = document.getElementById('diagnostics-kde-chart');
+            if (!svg) return;
+
+            svg.innerHTML = '';
+            const width = svg.clientWidth;
+            const height = svg.clientHeight;
+
+            const startX = 35;
+            const endX = width - 20;
+            const startY = 10;
+            const endY = height - 25;
+
+            const plotWidth = endX - startX;
+            const plotHeight = endY - startY;
+
+            const minX = -1.8;
+            const maxX = 0.8;
+            const maxY = 350;
+
+            function getX(xVal) {
+                return startX + ((xVal - minX) / (maxX - minX)) * plotWidth;
+            }
+
+            function getY(yVal) {
+                return endY - (yVal / maxY) * plotHeight;
+            }
+
+            // Draw Grid Lines (Horizontal & Vertical)
+            const yLabels = [0, 50, 100, 150, 200, 250, 300];
+            yLabels.forEach(yVal => {
+                const y = getY(yVal);
+                
+                // Grid line
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", startX);
+                line.setAttribute("y1", y);
+                line.setAttribute("x2", endX);
+                line.setAttribute("y2", y);
+                line.setAttribute("stroke", "#141416");
+                line.setAttribute("stroke-width", "1");
+                svg.appendChild(line);
+
+                // Y label text
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", startX - 8);
+                text.setAttribute("y", y + 3);
+                text.setAttribute("fill", "#48484A");
+                text.setAttribute("text-anchor", "end");
+                text.setAttribute("font-size", "8.5px");
+                text.setAttribute("font-family", "monospace");
+                text.textContent = yVal;
+                svg.appendChild(text);
+            });
+
+            const xTicks = [-1.5, -1.0, -0.5, 0.0, 0.5];
+            xTicks.forEach(xVal => {
+                const x = getX(xVal);
+
+                // Vertical grid line
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", x);
+                line.setAttribute("y1", startY);
+                line.setAttribute("x2", x);
+                line.setAttribute("y2", endY);
+                line.setAttribute("stroke", "#141416");
+                line.setAttribute("stroke-width", "1");
+                svg.appendChild(line);
+
+                // X label text
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", x);
+                text.setAttribute("y", endY + 14);
+                text.setAttribute("fill", "#48484A");
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("font-size", "8.5px");
+                text.setAttribute("font-family", "monospace");
+                text.textContent = xVal.toFixed(1) + "%";
+                svg.appendChild(text);
+            });
+
+            // Draw Border Box
+            const border = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            border.setAttribute("x", startX);
+            border.setAttribute("y", startY);
+            border.setAttribute("width", plotWidth);
+            border.setAttribute("height", plotHeight);
+            border.setAttribute("stroke", "#1C1C21");
+            border.setAttribute("stroke-width", "1");
+            border.setAttribute("fill", "none");
+            svg.appendChild(border);
+
+            // Histogram Bars Data (yellow/amber columns in screenshot)
+            const bars = [
+                { x: -0.80, y: 5 },
+                { x: -0.72, y: 8 },
+                { x: -0.64, y: 12 },
+                { x: -0.56, y: 22 },
+                { x: -0.48, y: 45 },
+                { x: -0.40, y: 40 },
+                { x: -0.32, y: 28 },
+                { x: -0.24, y: 58 },
+                { x: -0.16, y: 62 },
+                { x: -0.08, y: 65 },
+                { x: 0.06, y: 300 }, // Tall bar
+                { x: 0.14, y: 85 },
+                { x: 0.22, y: 80 },
+                { x: 0.30, y: 50 },
+                { x: 0.38, y: 70 },
+                { x: 0.46, y: 60 },
+                { x: 0.54, y: 30 },
+                { x: 0.62, y: 10 }
+            ];
+
+            const barSpan = 0.055; // Width span of each bar in data units
+            const barWidthPx = (barSpan / (maxX - minX)) * plotWidth;
+
+            bars.forEach(b => {
+                const barLeft = getX(b.x) - barWidthPx / 2;
+                const barHeight = (b.y / maxY) * plotHeight;
+                const barTop = endY - barHeight;
+
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("x", barLeft);
+                rect.setAttribute("y", barTop);
+                rect.setAttribute("width", Math.max(1, barWidthPx - 1.5));
+                rect.setAttribute("height", Math.max(1, barHeight));
+                rect.setAttribute("fill", "var(--brand-accent)");
+                rect.setAttribute("fill-opacity", "0.15");
+                rect.setAttribute("stroke", "var(--brand-accent)");
+                rect.setAttribute("stroke-opacity", "0.45");
+                rect.setAttribute("stroke-width", "0.8");
+                svg.appendChild(rect);
+            });
+
+            // Vertical Indicator Lines
+            // MEAN = 0.06%
+            const xMean = getX(0.06);
+            const meanLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            meanLine.setAttribute("x1", xMean);
+            meanLine.setAttribute("y1", startY);
+            meanLine.setAttribute("x2", xMean);
+            meanLine.setAttribute("y2", endY);
+            meanLine.setAttribute("stroke", "var(--brand-up)");
+            meanLine.setAttribute("stroke-width", "1.2");
+            meanLine.setAttribute("stroke-dasharray", "3 3");
+            svg.appendChild(meanLine);
+
+            // VAR = -0.51%
+            const xVar = getX(-0.51);
+            const varLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            varLine.setAttribute("x1", xVar);
+            varLine.setAttribute("y1", startY);
+            varLine.setAttribute("x2", xVar);
+            varLine.setAttribute("y2", endY);
+            varLine.setAttribute("stroke", "var(--brand-down)");
+            varLine.setAttribute("stroke-width", "1.2");
+            varLine.setAttribute("stroke-dasharray", "3 3");
+            svg.appendChild(varLine);
+
+            // CVAR = -0.71%
+            const xCvar = getX(-0.71);
+            const cvarLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            cvarLine.setAttribute("x1", xCvar);
+            cvarLine.setAttribute("y1", startY);
+            cvarLine.setAttribute("x2", xCvar);
+            cvarLine.setAttribute("y2", endY);
+            cvarLine.setAttribute("stroke", "var(--brand-down)");
+            cvarLine.setAttribute("stroke-width", "1.2");
+            svg.appendChild(cvarLine);
+
+            // Smooth KDE Curve Points (blue line in screenshot)
+            const kdePoints = [
+                { x: -1.80, y: 1 },
+                { x: -1.70, y: 1 },
+                { x: -1.60, y: 2 },
+                { x: -1.50, y: 2 },
+                { x: -1.40, y: 3 },
+                { x: -1.30, y: 3 },
+                { x: -1.20, y: 4 },
+                { x: -1.10, y: 5 },
+                { x: -1.00, y: 6 },
+                { x: -0.90, y: 10 },
+                { x: -0.80, y: 12 },
+                { x: -0.70, y: 15 },
+                { x: -0.60, y: 22 },
+                { x: -0.50, y: 32 },
+                { x: -0.40, y: 35 },
+                { x: -0.30, y: 32 },
+                { x: -0.20, y: 45 },
+                { x: -0.10, y: 75 },
+                { x: 0.00, y: 198 }, // Peak
+                { x: 0.06, y: 180 },
+                { x: 0.10, y: 120 },
+                { x: 0.15, y: 92 },
+                { x: 0.20, y: 86 },
+                { x: 0.25, y: 82 },
+                { x: 0.30, y: 75 },
+                { x: 0.35, y: 68 },
+                { x: 0.40, y: 71 },
+                { x: 0.45, y: 73 }, // Bump
+                { x: 0.50, y: 65 },
+                { x: 0.55, y: 52 },
+                { x: 0.60, y: 35 },
+                { x: 0.65, y: 18 },
+                { x: 0.70, y: 8 },
+                { x: 0.75, y: 3 },
+                { x: 0.80, y: 1 }
+            ];
+
+            let pathD = "M " + getX(kdePoints[0].x) + "," + getY(kdePoints[0].y);
+            for (let k = 1; k < kdePoints.length; k++) {
+                pathD += " L " + getX(kdePoints[k].x) + "," + getY(kdePoints[k].y);
+            }
+
+            const kdePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            kdePath.setAttribute("d", pathD);
+            kdePath.setAttribute("stroke", "#4D90FE"); // Beautiful blue matching screenshot
+            kdePath.setAttribute("stroke-width", "2");
+            kdePath.setAttribute("fill", "none");
+            svg.appendChild(kdePath);
+        }
+
         function initChartInteractions() {
             const svg = document.getElementById('dashboard-chart');
             if (!svg) return;
@@ -1705,12 +1905,14 @@
         window.onload = function() {
             drawPerformanceChart();
             drawDailyBars();
+            drawDiagnosticsChart();
             initChartInteractions();
         };
 
         window.onresize = function() {
             drawPerformanceChart();
             drawDailyBars();
+            drawDiagnosticsChart();
         };
     </script>
 
